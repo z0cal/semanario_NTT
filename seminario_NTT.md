@@ -51,3 +51,17 @@ e^{-i\frac{2\pi}{N}((N-1)\cdot 0)} & e^{-i\frac{2\pi}{N}((N-1)\cdot 1)} & \dots 
 \begin{bmatrix} x[0] \\ x[1] \\ \vdots \\ x[N-1] \end{bmatrix}
 $$
 (note que essa matriz eh uma matriz de vandermonde)
+### 4. A Multiplicação de Polinômios e a Complexidade Computacional
+
+Um problema simplificado pela mudanca de domino eh a multiplicacao de polinomios. Tome os polinomios $f(x)$ e $g(x)$ de grau $n-1$:
+
+$$f(x) = \sum_{i=0}^{n-1} a_i x^i, \quad g(x) = \sum_{j=0}^{n-1} b_j x^j$$
+
+Na abordagem clássica , o produto $h(x) = f(x) \cdot g(x)$ é obtido distribuindo-se cada termo de $f$ sobre todos os termos de $g$. Este processo resulta em um novo polinômio de grau $2n-2$:
+
+$$h(x) = \sum_{k=0}^{2n-2} c_k x^k$$
+onde $c_k = \sum_{i+j=k} a_i b_j$.
+
+Nesta metodologia, o cálculo de cada coeficiente $c_k$ exige múltiplas operações de produto e soma, resultando em uma complexidade assintótica $O(n^2)$. Para polinômios com grandes volumes de coeficientes, este custo computacional torna o metodo inviavel.
+
+---
