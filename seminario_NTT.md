@@ -105,3 +105,44 @@ $$
 \end{aligned}
 $$
 por isso percebe-se que a cada 4 "deslocamento"(DFT pode ser visto como o operdor deslocamento) o valor se torna o oposto, como ilustrado na figura:
+![Raízes da Unidade](diagrama.svg)
+
+De forma mais geral:
+
+
+> $
+\zeta_N = e^{\frac{2\pi i}{N}}
+$,
+uma raiz $N$-ésima primitiva da unidade. Então para todo inteiro $a$,
+$
+{\zeta_N^{a+\frac{N}{2}} = -\,\zeta_N^{a}}.
+$
+
+<details>
+<summary><strong>Demonstração</strong></summary>
+
+
+Como $\zeta_N = e^{\frac{2\pi i}{N}}$, temos
+$$
+\zeta_N^{a+\frac{N}{2}}
+= e^{\frac{2\pi i}{N}\left(a+\frac{N}{2}\right)}
+= e^{\frac{2\pi i a}{N}} \cdot e^{\frac{2\pi i}{N}\cdot \frac{N}{2}}
+= \zeta_N^{a}\cdot e^{\pi i}.
+$$
+Mas $e^{\pi i} = -1$. Logo,
+$$
+\zeta_N^{a+\frac{N}{2}} = \zeta_N^{a}\cdot (-1) = -\zeta_N^{a}.
+$$
+$\square$
+</details>
+---
+O algoritmo decompõe uma DFT de tamanho $N$ em duas sub-transformadas de tamanho $N/2$, separando os índices pares e ímpares da sequência original:
+
+$$X[k] = \sum_{m=0}^{N/2-1} x[2m] \zeta_{N/2}^{mk} + \zeta_N^k \sum_{m=0}^{N/2-1} x[2m+1] \zeta_{N/2}^{mk}$$
+
+Esta estrutura permite calcular dois valores de saída ($X[k]$ e $X[k+N/2]$) utilizando os mesmos resultados intermediários, através da denominada **operação borboleta** (*butterfly operation*):
+
+1. $X[k] = E[k] + \zeta_N^k O[k]$
+2. $X[k + N/2] = E[k] - \zeta_N^k O[k]$
+
+como pode ser visto na imagem 
