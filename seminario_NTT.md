@@ -65,3 +65,16 @@ onde $c_k = \sum_{i+j=k} a_i b_j$.
 Nesta metodologia, o cálculo de cada coeficiente $c_k$ exige múltiplas operações de produto e soma, resultando em uma complexidade assintótica $O(n^2)$. Para polinômios com grandes volumes de coeficientes, este custo computacional torna o metodo inviavel.
 
 ---
+### 5. O Teorema da Convolução
+
+A conexão entre a álgebra polinomial e a análise de Fourier reside na observação de que os coeficientes $c_k$ do produto $h(x)$ são, por definição, o resultado da **convolução linear** entre os vetores de coeficientes de $f$ e $g$:
+
+$$c_k = \sum_{i+j=k} a_i b_j$$
+
+> **Teorema da Convolução** : a transformada de uma convolução no domínio do tempo (ou espaço) é equivalente ao produto ponto a ponto (produto de Hadamard) das respectivas transformadas no domínio da frequência:
+
+$$\mathcal{F}(f * g) = \mathcal{F}(f) \cdot \mathcal{F}(g)$$
+
+Logo, a distributiva complicada e custosa se transformou em uma operacao ponto a ponto, contudo, isso vem a custo do calculo da transformada, que tambem eh $O(n^2)$, por isso nao houve ganho de eficiencia algum. 
+
+---
