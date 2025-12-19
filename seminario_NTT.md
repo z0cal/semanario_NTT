@@ -146,3 +146,38 @@ Esta estrutura permite calcular dois valores de saída ($X[k]$ e $X[k+N/2]$) uti
 2. $X[k + N/2] = E[k] - \zeta_N^k O[k]$
 
 como pode ser visto na imagem 
+![Butterfly](butterfly.svg)
+
+o a implementacao em python esta a seguir
+```python
+def fft(a, omega):
+
+    n = len(a)
+    if n == 1:
+        return a[:]  
+
+
+    a_par = fft(a[0::2], omega^2)
+    a_impar  = fft(a[1::2], omega^2)
+
+    A = [0] * n
+    w = 1
+    half = n // 2
+    for k in range(half):
+        t = w * a_impar[k]
+        A[k]          = a_par[k] + t
+        A[k + half]   = a_par[k] - t
+        w *= omega
+    return A
+                     
+```
+---
+## Problemas da FTT
+
+Grande problema da FTT eh que ela trabalha com ponto flutuante, o que, para computadores, eh um grande problemas que pode causar erro de arredondamentos e, assim causar um falha nos esquemas criptograficos.
+
+> Exemplo 
+ 
+ citar o exemplo das series em ordem diferentes divergindo 
+
+ Solucao: utilizar um transformada que utiliza apenas numeros exatos
