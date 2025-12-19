@@ -12,3 +12,15 @@ Esta ferramenta é um pilar fundamental em diversas áreas do conhecimento:
 * **Engenharia:** Processamento de sinais, compressão de dados (MP3, JPEG) e telecomunicações.
 
 ---
+### 3. Transformada de Fourier Contínua (CTFT)
+Para uma função contínua $f(t)$, a transformada é definida pela integral:
+
+$$F(\omega) = \int_{-\infty}^{\infty} f(t) e^{-i\omega t} \, dt$$
+
+Apesar de sua elegância teórica, a CTFT apresenta desafios para a aplicação prática em sistemas digitais:
+
+1.  **Natureza Analítica:** A resolução de integrais impróprias exige uma manipulação simbólica que é difícil de automatizar em computadores comuns.
+2.  **Limite Infinito:** A definição pressupõe que conhecemos o sinal de $-\infty$ a $+\infty$, o que é impossível em cenários reais.
+3.  **Amostragem Finita:** Na prática, os sinais são capturados de forma discreta (amostras) e por um tempo limitado, o que torna a integral contínua inaplicável.
+
+---
