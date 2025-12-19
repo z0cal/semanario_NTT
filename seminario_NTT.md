@@ -78,3 +78,30 @@ $$\mathcal{F}(f * g) = \mathcal{F}(f) \cdot \mathcal{F}(g)$$
 Logo, a distributiva complicada e custosa se transformou em uma operacao ponto a ponto, contudo, isso vem a custo do calculo da transformada, que tambem eh $O(n^2)$, por isso nao houve ganho de eficiencia algum. 
 
 ---
+### 6. A Fast Fourier Transform
+
+A FFT (Fast Fourier Transform) eh uma maneira de otimizar o calculo da DFT.
+
+O algoritmo da FFT foi redescoberta por Cooley e Tukey em 1965, uma vez que Gauss ja tinha utilzado um algoritmo semelhante para calcular a orbitas de asteroides em 1805. 
+
+O algoritmo se baseia em **dividir para conquistar**.
+
+> Relembrando
+
+os numeros complexos possuem certas propriedades ciclicas e certas simetria que permite a economia nos calculos, vejamos um exemplo.
+$$\zeta_8^1 = e^{i\frac{2\pi}{8}} = e^{i45^\circ}
+    \ 
+$$
+
+$$
+\begin{aligned}
+\zeta^2 &= i \qquad\qquad
+\zeta^3 = i\cdot\zeta = \zeta^* \qquad\qquad
+\zeta^4 = -1 \\[6pt]
+\zeta^5 &= -\zeta \qquad\qquad
+\zeta^6 = -i \qquad\qquad
+\zeta^7 = -i\cdot\zeta = -\zeta^* \qquad\qquad
+\zeta^8 = 1
+\end{aligned}
+$$
+por isso percebe-se que a cada 4 "deslocamento"(DFT pode ser visto como o operdor deslocamento) o valor se torna o oposto, como ilustrado na figura:
