@@ -1,0 +1,11 @@
+# artefatos gerados
+*.aux
+*.log
+*.out
+*.synctex.gz
+
+
+
+# animações geradas
+animation/**/*.mp4
+animation/**/*.png

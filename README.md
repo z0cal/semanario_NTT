@@ -1,6 +1,8 @@
 D
 # semanario_NTT
-arquivos usados no seminario NTT
+arquivos usados do seminario NTT
+veja o repositorio
+ https://github.com/SheafificationOfG/Fibsonisheaf
 =======
 ## Inicialização para o Fibsonicsheaf
 
@@ -60,9 +62,6 @@ Existem, claro, outras flags.
 
 ## Plotando desempenho
 
-> **Aviso**
-> Não há nada científico na forma como esses algoritmos são benchmarkados.
-> Não prometo consistência entre o que você obtiver e o que eu apresento nos vídeos.
 
 Para gerar dados para plotagem, rode:
 
