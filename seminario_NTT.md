@@ -1,3 +1,9 @@
+---
+title: "Semanário NTT"
+author: "Gabriel Zocal Santos"
+---
+
+
 # semanario NTT 
 
 ### 1. A Dualidade entre Tempo e Frequência
@@ -19,7 +25,7 @@ $$F(\omega) = \int_{-\infty}^{\infty} f(t) e^{-i\omega t} \, dt$$
 
 Apesar de sua elegância teórica, a CTFT apresenta desafios para a aplicação prática em sistemas digitais:
 
-1.  **Natureza Analítica:** A resolução de integrais impróprias exige uma manipulação simbólica que é difícil de automatizar em computadores comuns.
+1.  **Natureza Analítica:** A resolução de integrais impróprias exige uma manipulação simbólica que é difícil de implementarz em computadores comuns.
 2.  **Limite Infinito:** A definição pressupõe que conhecemos o sinal de $-\infty$ a $+\infty$, o que é impossível em cenários reais.
 3.  **Amostragem Finita:** Na prática, os sinais são capturados de forma discreta (amostras) e por um tempo limitado, o que torna a integral contínua inaplicável.
 
@@ -105,6 +111,7 @@ $$
 \end{aligned}
 $$
 por isso percebe-se que a cada 4 "deslocamento"(DFT pode ser visto como o operdor deslocamento) o valor se torna o oposto, como ilustrado na figura:
+
 ![Raízes da Unidade](diagrama.svg)
 
 De forma mais geral:
@@ -148,7 +155,7 @@ Esta estrutura permite calcular dois valores de saída ($X[k]$ e $X[k+N/2]$) uti
 como pode ser visto na imagem 
 ![Butterfly](butterfly.svg)
 
-o a implementacao em python esta a seguir
+o a implementacao em sage esta a seguir
 ```python
 def fft(a, omega):
 
@@ -171,13 +178,82 @@ def fft(a, omega):
     return A
                      
 ```
----
-## Problemas da FTT
+Desse modo, reduzimos a complexidade da transformada de  $O(n^2) \text{ para } O(n\cdot log n)$
+. Por causa disso, podemos utilizar a FFT, junto com o **teorema da convolucao**, para multiplicar polinomios em $O(n\cdot log n)$
 
-Grande problema da FTT eh que ela trabalha com ponto flutuante, o que, para computadores, eh um grande problemas que pode causar erro de arredondamentos e, assim causar um falha nos esquemas criptograficos.
+---
+## 7. Problemas da FTT
+
+Uns dos  problemas da FTT eh que ela trabalha com ponto flutuante, o que, para computadores, eh um grande problemas que pode causar erro de arredondamentos e, assim causar um falha nos esquemas criptograficos. Alem disso, o polinomio dobram de tamanho a cada concolucao o que rapidamente torna-se um problema tanto computacional quanto de armazenamento .
 
 > Exemplo 
  
  citar o exemplo das series em ordem diferentes divergindo 
 
  Solucao: utilizar um transformada que utiliza apenas numeros exatos
+
+## 8. Number Theoretic Transform (NTT)
+> Fundamentos
+> 
+As propriedades que usamos na FFT — em especial a existência de uma raiz $N$-ésima da unidade
+$\zeta_N$ e o fato de que suas potências percorrem uniformemente o círculo — têm um análogo
+perfeito em teoria dos números, dentro de corpos (ou anéis) finitos. Isso não é coincidência:
+a FFT nada mais é do que a transformada de Fourier no grupo cíclico $\mathbb{Z}/N\mathbb{Z}$,
+e a mesma construção existe em outros contextos algébricos.
+
+Mais formalmente, se $\zeta_N$ é uma raiz $N$-ésima primitiva da unidade, então o conjunto
+de todas as $N$-ésimas raízes
+$$
+\mu_N=\{1,\zeta_N,\zeta_N^2,\dots,\zeta_N^{N-1}\}
+$$
+forma um grupo multiplicativo cíclico de ordem $N$. Existe um isomorfismo natural de grupos
+$$
+\varphi:\mathbb{Z}/N\mathbb{Z}\to \mu_N,\qquad \varphi([k])=\zeta_N^k,
+$$
+onde o lado esquerdo usa a soma módulo $N$ e o lado direito usa multiplicação:
+$$
+\varphi([k+\ell])=\zeta_N^{k+\ell}=\zeta_N^k\zeta_N^\ell=\varphi([k])\,\varphi([\ell]).
+$$
+<details>
+<summary><strong>Raiz primitva</summary></strong>
+
+Diferente da DFT complexa, onde raízes da unidade sempre existem para qualquer $n$, a NTT exige que o corpo finito $\mathbb{Z}_p$ suporte a ordem da transformada. 
+
+Para que exista uma raiz primitiva $n$-ésima da unidade em $\mathbb{Z}_p$, o tamanho da sequência $n$ deve dividir a ordem do grupo multiplicativo do corpo:
+$$n \mid (p - 1)$$
+
+
+
+</details>
+Agora, iremos tratar da estrutura aritimetica, na qual a NTT ocorre:
+
+Ela opera no anel quociente
+$$
+R= \mathbb{Z_p}[x]/(x^n-1)
+$$
+onde $\mathbb{Z_p}[x]$ representa o coeficientes do polinomio $mod\text{ } p$ e o $/(x^n-1)$ faz com que a cadeia longa de polinomio dobre em si mesma formando um ciclo, por esse muitas vezes eles sao chamados de ciclotomicos.
+
+a imagem {ref} ilustra a sequencia das duas operacoes visualmente.
+![torus](torus.svg)
+
+Escolhemos modulo de um primo para que $Z_p$ seja um field, i.e, para que a aritimedica tenha propiedades agradaveis e escolhemos $(x^n-1)$ para que haja raizes distinta e se preserve as "informacoes" indepentes o que garante que ele possa ser decomposto completamente.
+### O Isomorfismo via Teorema Chinês dos Restos (CRT)
+
+A fundamentação algébrica da NTT reside na decomposição do anel de polinômios. Se $\omega$ é uma raiz primitiva $n$-ésima da unidade no corpo finito $\mathbb{Z}_p$, o polinômio $x^n - 1$ pode ser fatorado completamente em binômios lineares distintos:
+
+$$x^n - 1 = \prod_{i=0}^{n-1} (x - \omega^i)$$
+
+Como cada termo $(x - \omega^i)$ é irredutível e todos são coprimos entre si, o **Teorema Chinês dos Restos (CRT)** garante a existência de um isomorfismo de anéis:
+
+$$\frac{\mathbb{Z}_p[x]}{(x^n - 1)} \cong \frac{\mathbb{Z}_p[x]}{(x - \omega^0)} \times \frac{\mathbb{Z}_p[x]}{(x - \omega^1)} \times \dots \times \frac{\mathbb{Z}_p[x]}{(x - \omega^{n-1})}$$
+
+Este isomorfismo é o que permite interpretar a NTT não apenas como uma transformação de vetores, mas como uma mudança de representação
+
+fonte: https://github.com/SheafificationOfG/Fibsonisheaf
+| Algorithm | Fibonacci index |
+|:--------- | ---------------:|
+| Algoritmo Naive | 44 |
+| Algoritmo Linear | 566'053 |
+| Algoritmo FFT | 3'145'816 |
+| Algoritmo NTT  | 24'178'839 |
+| Algoritmo GMP  | 238'961'323 |

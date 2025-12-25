@@ -1,0 +1,420 @@
+\documentclass[12pt]{article}
+\usepackage{float}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[brazil]{babel}
+\usepackage{amsmath, amssymb}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{tikz}
+\usetikzlibrary{positioning, arrows.meta, fit, backgrounds}
+\usepackage{amssymb}
+\usetikzlibrary{arrows.meta, bending, decorations.markings, calc, shapes.geometric}
+\tikzset{
+  glueArrow/.style={-{Stealth[length=3mm]}, very thick, shorten >=2pt, shorten <=2pt},
+  % estilo com argumento (permite usar pathArrow=0.55, etc.)
+  pathArrow/.style args={#1}{
+    postaction={decorate},
+    decoration={markings,
+      mark=at position #1 with {\arrow[scale=1.5]{Stealth}}
+    }
+  },
+  cycleLines/.style={very thick}
+}
+\usepackage{listings}
+\usepackage{xcolor}
+
+% Definição de cores para o tema
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.96,0.96,0.96}
+
+% Estilo personalizado para SageMath/Python
+\lstdefinestyle{sagemathstyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{blue},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\small,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=4,
+    language=Python,
+    frame=single, % Adiciona uma borda ao redor do código
+    rulecolor=\color{black!10}
+}
+
+\lstset{style=sagemathstyle}
+
+\geometry{margin=2.5cm}
+
+\begin{document}
+
+\section{semanario NTT}
+
+\section{ A Dualidade entre Tempo e Frequência}
+A Transformada de Fourier é uma operação matemática que mapeia uma função do domínio do tempo (ou espaço) para o seu domínio dual: a frequência. Essa transição é extremamente útil, pois propriedades que são complexas de analisar no tempo tornam-se claras no espectro de frequências.
+
+Além da análise, essa mudança de espaço possibilita a simplificação de operações fundamentais.
+
+\section{ Aplicabilidade e Importância}
+Esta ferramenta é um pilar fundamental em diversas áreas do conhecimento:
+
+\begin{itemize}
+    \item \textbf{Matemática Pura:} Essencial na Teoria Analítica dos Números e no estudo de Equações Diferenciais Parciais (EDPs).
+    \item \textbf{Física Moderna:} É a base matemática do \textbf{Princípio da Incerteza de Heisenberg} na Mecânica Quântica, onde a posição e o momento de uma partícula formam um par de variáveis conjugadas de Fourier.
+    \item \textbf{Engenharia:} Processamento de sinais, compressão de dados (MP3, JPEG) e telecomunicações.
+\end{itemize}
+
+
+\section{ Transformada de Fourier Contínua (CTFT)}
+Para uma função contínua $f(t)$, a transformada é definida pela integral:
+
+\[F(f) = \int_{-\infty}^{\infty} g(t) e^{-2\pi if t} \, dt\]
+
+Ela pode ser entendida como um produto interno(uma projeção) do sinal com todos as frequencias da reta real $ \langle g, e^{-2\pi i ft} \rangle$, que, devido a ortoganalidade das frequências diferentes e que funcoes bem comportadas podem ser decompostas em series de autofuncoes $e^{-ift}$, consegue extrair extamente as frequências do sinal.
+Apesar de sua elegância teórica, a CTFT apresenta desafios para a aplicação prática em sistemas digitais:
+
+\begin{enumerate}
+    \item \textbf{Natureza Analítica:} A resolução de integrais impróprias exige uma manipulação simbólica que é difícil de implementarz em computadores comuns.
+    \item \textbf{Limite Infinito:} A definição pressupõe que conhecemos o sinal de $-\infty$ a $+\infty$, o que é impossível em cenários reais.
+    \item \textbf{Amostragem Finita:} Na prática, os sinais são capturados de forma discreta (amostras) e por um tempo limitado, o que torna a integral contínua inaplicável.
+\end{enumerate}
+
+
+\section{ Transformada Discreta de Fourier (DFT)}
+Para viabilizar o processamento em computadores, utilizamos a \textbf{DFT}. Ela opera sobre uma sequência finita de $N$ amostras, mapeando dados discretos no tempo para dados discretos na frequência:
+
+\[X[k] = \sum_{n=0}^{N-1} x[n] e^{-i \frac{2\pi}{N} kn}\]
+
+Para $k = 0, 1, \dots, N-1$.
+
+Diferente da versão contínua, a DFT lida com somatórios e vetores numéricos, permitindo que a teoria de Fourier seja aplicada em qualquer dispositivo digital.
+Eh possivel provar que a DFT eh um transformacao linear, logo, pode ser representada matricialmente.
+
+Seja $\zeta_N = e^{-i\frac{2\pi}{N}}$. A representação matricial da DFT para $n = 0, 1, \dots, N-1$ é:
+
+\[
+\begin{bmatrix} 
+X[0] \\ X[1] \\ \vdots \\ X[N-1] 
+\end{bmatrix}
+=
+\begin{bmatrix}
+1 & 1 & 1 & \dots & 1 \\
+1 & \zeta_N^{1} & \zeta_N^{2} & \dots & \zeta_N^{N-1} \\
+1 & \zeta_N^{2} & \zeta_N^{4} & \dots & \zeta_N^{2(N-1)} \\
+\vdots & \vdots & \vdots & \ddots & \vdots \\
+1 & \zeta_N^{N-1} & \zeta_N^{2(N-1)} & \dots & \zeta_N^{(N-1)(N-1)}
+\end{bmatrix}
+\begin{bmatrix} 
+x[0] \\ x[1] \\ \vdots \\ x[N-1] 
+\end{bmatrix}
+\]
+
+\subsection{Definição da IDFT}
+A reconstrução do sinal original no domínio do tempo a partir de suas amostras de frequência é realizada pela IDFT:
+
+\[
+x[n] = \frac{1}{N} \sum_{k=0}^{N-1} X[k] \zeta_N^{-nk}, \quad n = 0, 1, \dots, N-1
+\]
+
+Onde $\zeta_N^{-nk} = e^{i \frac{2\pi}{N} nk}$. Matricialmente, a IDFT é dada por:
+
+\[
+\begin{bmatrix} 
+x[0] \\ x[1] \\ x[2] \\ \vdots \\ x[N-1] 
+\end{bmatrix}
+=
+\frac{1}{N}
+\begin{bmatrix}
+1 & 1 & 1 & \dots & 1 \\
+1 & \zeta_N^{-1} & \zeta_N^{-2} & \dots & \zeta_N^{-(N-1)} \\
+1 & \zeta_N^{-2} & \zeta_N^{-4} & \dots & \zeta_N^{-2(N-1)} \\
+\vdots & \vdots & \vdots & \ddots & \vdots \\
+1 & \zeta_N^{-(N-1)} & \zeta_N^{-2(N-1)} & \dots & \zeta_N^{-(N-1)(N-1)}
+\end{bmatrix}
+\begin{bmatrix} 
+X[0] \\ X[1] \\ X[2] \\ \vdots \\ X[N-1] 
+\end{bmatrix}
+\]
+Percebe-se que nesse caso discreto, a DFT e IDFT atuam como uma matriz mudanca de base, saindo da base do tempo e indo para base das raizes unitarias
+
+
+\section{ A Multiplicação de Polinômios e a Complexidade Computacional}
+
+Um problema simplificado pela mudanca de domino eh a multiplicacao de polinomios. Tome os polinomios $f(x)$ e $g(x)$ de grau $n-1$: 
+
+\[f(x) = \sum_{i=0}^{n-1} a_i x^i, \quad g(x) = \sum_{j=0}^{n-1} b_j x^j\]
+
+Na abordagem clássica , o produto $h(x) = f(x) \cdot g(x)$ é obtido distribuindo-se cada termo de $f$ sobre todos os termos de $g$. Este processo resulta em um novo polinômio de grau $2n-2$:
+
+\[h(x) = \sum_{k=0}^{2n-2} c_k x^k\]
+onde $c_k = \sum_{i+j=k} a_i b_j$.
+
+Nesta metodologia, o cálculo de cada coeficiente $c_k$ exige múltiplas operações de produto e soma, resultando em uma complexidade assintótica $O(n^2)$. Para polinômios com grandes volumes de coeficientes, este custo computacional torna o metodo inviavel.
+
+
+\section{ O Teorema da Convolução}
+
+A conexão entre a multiplicacao de polinomio e a análise de Fourier reside na observação de que os coeficientes $c_k$ do produto $h(x)$ são, por definição, o resultado da \textbf{convolução linear} entre os vetores de coeficientes de $f$ e $g$:
+
+\[c_k = \sum_{i=0}^k a[i]\cdot b[k-i]\]
+Nesse trabalho em especifico, devido ao foco na NTT, trabalhemos com a \textbf{convolução circular} que é definida por:
+\[c_k = \sum_{i=0}^k a[i]\cdot b[(k-i)_3]\]
+\begin{quote}
+
+\textbf{Teorema da Convolução} : a transformada de uma convolução no domínio do tempo (ou espaço) é equivalente ao produto ponto a ponto (produto de Hadamard) das respectivas transformadas no domínio da frequência:
+\end{quote}
+
+\[\mathcal{F}(f * g) = \mathcal{F}(f) \cdot \mathcal{F}(g)\]
+
+Logo, a distributiva complicada e custosa se transformou em uma operacao ponto a ponto, isso ocorre devido a diagonalizacao do operador convolucao pelas raizes unitarias. Contudo, isso vem a custo do calculo da transformada, que tambem eh $O(n^2)$, por isso nao houve ganho de eficiencia algum. 
+
+
+\section{ A Fast Fourier Transform}
+
+A FFT (Fast Fourier Transform) eh uma maneira de otimizar o calculo da DFT.
+
+O algoritmo da FFT foi redescoberta por Cooley e Tukey em 1965, uma vez que Gauss ja tinha utilzado um algoritmo semelhante para calcular a orbitas de asteroides em 1805. 
+
+O algoritmo se baseia em \textbf{dividir para conquistar}.
+
+\begin{quote}
+Relembrando
+\end{quote}
+
+As raízes unitárias possuem propriedades cíclicas e certas simetrias que permitem a economia nos cálculos, vejamos um exemplo.
+\[\zeta_4^1 = e^{i\frac{2\pi}{4}} = e^{i90^\circ} = i\]
+
+\[
+\begin{aligned}
+\zeta^1 &= i \qquad\qquad
+\zeta^2 = -1 \\[6pt]
+\zeta^3 &= -i \qquad\qquad
+\zeta^4 = 1
+\end{aligned}
+\]
+por isso, percebe-se que, a cada 2 "deslocamentos", o valor se torna o oposto, como ilustrado na figura:
+
+%verificar se usar com duas raizes ou apenas a 4-esima raiz
+
+\begin{figure}
+\centering
+
+% --- Subfigura 1: 4-ésimas raízes ---
+\begin{subfigure}[b]{0.48\linewidth}
+    \centering
+    \begin{tikzpicture}[scale=1.8]
+        \def\R{1}
+        \draw[gray, thin, dashed] (0,0) circle (\R);
+        \draw[->, >=Stealth, gray!50] (-1.2,0) -- (1.2,0) node[right] {\tiny Re};
+        \draw[->, >=Stealth, gray!50] (0,-1.2) -- (0,1.2) node[above] {\tiny Im};
+
+        \foreach \k in {0,1,2,3} {
+            \coordinate (P\k) at ({\k*360/4}:\R);
+            \fill (P\k) circle (1.5pt);
+        }
+
+        \node[above right] at (P0) {\tiny $1$};
+        \node[above right] at (P1) {\tiny $\zeta = i$};
+        \node[above left]  at (P2) {\tiny $\zeta^2 = -1$};
+        \node[below left]  at (P3) {\tiny $\zeta^3 = -i$};
+
+        \draw[blue!30, thin] (P0) -- (P2);
+        \draw[blue!30, thin] (P1) -- (P3);
+    \end{tikzpicture}
+    \caption{4-ésimas raízes da unidade}
+    \label{fig:raizes_4}
+\end{subfigure}
+\hfill
+% --- Subfigura 2: 8-ésimas raízes ---
+\begin{subfigure}[b]{0.48\linewidth}
+    \centering
+    \begin{tikzpicture}[scale=1.8]
+        \def\R{1}
+        \draw[gray, thin, dashed] (0,0) circle (\R);
+        \draw[->, >=Stealth, gray!50] (-1.2,0) -- (1.2,0) node[right] {\tiny Re};
+        \draw[->, >=Stealth, gray!50] (0,-1.2) -- (0,1.2) node[above] {\tiny Im};
+
+        \foreach \k in {0,...,7} {
+            \coordinate (P\k) at ({\k*360/8}:\R);
+            \fill (P\k) circle (1.5pt);
+        }
+
+        \node[above right] at (P0) {\tiny $1$};
+        \node[above right] at (P1) {\tiny $\zeta$};
+        \node[above]       at (P2) {\tiny $\zeta^2 = i$};
+        \node[above left]  at (P4) {\tiny $\zeta^4 = -1$};
+        \node[below]       at (P6) {\tiny $\zeta^6 = -i$};
+
+        \draw[blue!30, thin] (P1) -- (P5);
+        \draw[blue!30, thin] (P3) -- (P7);
+    \end{tikzpicture}
+    \caption{8-ésimas raízes da unidade}
+    \label{fig:raizes_8}
+\end{subfigure}
+
+\caption{Comparação entre as raízes da unidade no plano complexo.}
+\label{fig:comparacao_raizes}
+
+\end{figure}
+
+
+
+De forma mais geral:
+
+\begin{quote}
+$ \zeta_N = e^{\frac{2\pi i}{N}} $, uma raiz $N$-ésima primitiva da unidade. Então para todo inteiro $a$, $ {\zeta_N^{a+\frac{N}{2}} = -\,\zeta_N^{a}}. $
+\end{quote}
+Alem de que, pela periodicidade $\zeta_N^{a+N}=\zeta_N^a$.
+Para esse caso a DFT eh representada desse modo:
+\[
+ \begin{bmatrix} 1 & 1 & 1 & 1 \\ 1 & -i & -1 & i \\ 1 & -1 & 1 & -1 \\ 1 & i & -1 & -i \end{bmatrix}
+\]
+
+
+Voltandao a FFT, o algoritmo decompõe uma DFT de tamanho $N$ em duas sub-transformadas de tamanho $N/2$, separando os índices pares e ímpares da sequência original:
+
+\begin{align}
+X[k]
+&= \sum_{m=0}^{\frac{N}{2}-1} x[2m] \, \zeta_N^{2mk}
+  + \sum_{m=0}^{\frac{N}{2}-1} x[2m+1] \, \zeta_N^{(2m+1)k} \nonumber\\
+&= \sum_{m=0}^{\frac{N}{2}-1} x[2m] \, \zeta_{N/2}^{mk}
+  + \zeta_N^{k} \sum_{m=0}^{\frac{N}{2}-1} x[2m+1] \, \zeta_{N/2}^{mk} \nonumber\\
+&= E[k] + \zeta_N^{k} O[k],
+\qquad k = 0, \dots, \frac{N}{2}-1.\nonumber
+\end{align}
+
+Esta estrutura permite calcular dois valores de saída ($X[k]$ e $X[k+N/2]$) utilizando os mesmos resultados intermediários, através da denominada \textbf{operação borboleta} (\textit{butterfly operation}):
+
+\begin{enumerate}
+    \item $X[k] = E[k] + \zeta_N^k O[k]$
+    \item $X[k + N/2] = E[k] - \zeta_N^k O[k]$
+\end{enumerate}
+
+como pode ser visto na imagem 
+
+\begin{figure}[H]
+\includegraphics{images/butterfly4.pdf}
+\caption{butterfly radix-2}
+\label{fig:butterfly}
+\end{figure}
+o a implementacao em sage esta no codigo\ref{lst:FFT}
+
+\begin{lstlisting}[caption={Implementação do algoritmo FFT em SageMath},label={lst:FFT}]
+def fft(a, omega):
+    n = len(a)
+    if n == 1:
+        return a[:]  
+
+ 
+    a_par = fft(a[0::2], omega^2)
+    a_impar  = fft(a[1::2], omega^2)
+
+    A = [0] * n
+    w = 1
+    half = n // 2
+    for k in range(half):
+        t = w * a_impar[k]
+        A[k]          = a_par[k] + t
+        A[k + half]   = a_par[k] - t
+        w *= omega
+    return A
+\end{lstlisting}
+
+Desse modo, reduzimos a complexidade da transformada de $O(n^2) \text{ para } O(n\cdot \log n)$. Por causa disso, podemos utilizar a FFT, junto com o \textbf{teorema da convolucao}, para multiplicar polinomios em $O(n\cdot \log n)$
+
+
+\section{ Problemas da FFT}
+
+Uns dos problemas da FTT eh que ela trabalha com ponto flutuante, o que, para computadores, eh um grande problemas que pode causar erro de arredondamentos e, assim causar um falha nos esquemas criptograficos. Alem disso, o polinomio dobram de tamanho a cada concolucao o que rapidamente torna-se um problema tanto computacional quanto de armazenamento .
+
+
+
+Solucao: utilizar um transformada que utiliza apenas numeros exatos
+
+\section{ Number Theoretic Transform (NTT)}
+\subsection{Fundamentos}
+
+As propriedades que usamos na FFT — em especial a existência de uma raiz $N$-ésima da unidade $\zeta_N$ e o fato de que suas potências percorrem uniformemente o círculo — têm um análogo perfeito em teoria dos números, dentro de corpos (ou anéis) finitos. Isso não é coincidência: a FFT nada mais é do que a transformada de Fourier no grupo cíclico $\mathbb{Z}/N\mathbb{Z}$, e a mesma construção existe em outros contextos algébricos.
+
+Mais formalmente, se $\zeta_N$ é uma raiz $N$-ésima primitiva da unidade, então o conjunto de todas as $N$-ésimas raízes
+\[
+\mu_N=\{1,\zeta_N,\zeta_N^2,\dots,\zeta_N^{N-1}\}
+\]
+forma um grupo multiplicativo cíclico de ordem $N$. Existe um isomorfismo natural de grupos
+\[
+\varphi:\mathbb{Z}/N\mathbb{Z}\to \mu_N,\qquad \varphi([k])=\zeta_N^k,
+\]
+onde o lado esquerdo usa a soma módulo $N$ e o lado direito usa multiplicação:
+\[
+\varphi([k+\ell])=\zeta_N^{k+\ell}=\zeta_N^k\zeta_N^\ell=\varphi([k])\,\varphi([\ell]).
+\]
+
+\textbf{Raiz primitva}
+Diferente da DFT complexa, onde raízes da unidade sempre existem para qualquer $n$, a NTT exige que o corpo finito $\mathbb{Z}_p$ suporte a ordem da transformada. 
+
+Para que exista uma raiz primitiva $n$-ésima da unidade em $\mathbb{Z}_p$, o tamanho da sequência $n$ deve dividir a ordem do grupo multiplicativo do corpo:
+\[n \mid (p - 1)\]
+
+Agora, iremos tratar da estrutura aritimetica, na qual a NTT ocorre.
+
+Ela eh definida da seguinte forma:
+\[
+X[k] = \sum_{n=0}^{N-1}x[n]\omega^{nk} \pmod{p}
+\]
+Ela opera no anel quociente
+\[
+R= \mathbb{Z_p}[x]/(x^n-1)
+\]
+onde $\mathbb{Z_p}[x]$ representa o coeficientes do polinomio $mod\text{ } p$ e o $/(x^n-1)$ faz com que a cadeia longa de polinomio dobre em si mesma formando um ciclo.
+
+a imagem \ref{fig:torus} ilustra a sequencia das duas operacoes visualmente.
+
+\begin{figure}[H]
+\includegraphics{images/torus.pdf}
+\caption{representação das transformacoes}
+\label{fig:torus}
+\end{figure}
+
+
+Escolhemos modulo de um primo para que $Z_p$ seja um field, i.e, para que a aritimedica tenha propiedades agradaveis e escolhemos $(x^n-1)$ para que haja raizes distinta e se preserve as "informacoes" indepentes o que garante que ele possa ser decomposto completamente.
+
+\section{O Isomorfismo via Teorema Chinês dos Restos (CRT)}
+
+A fundamentação algébrica da NTT reside na decomposição do anel de polinômios. Se $\omega$ é uma raiz primitiva $n$-ésima da unidade no corpo finito $\mathbb{Z}_p$, o polinômio $x^n - 1$ pode ser fatorado completamente em binômios lineares distintos:
+
+\[x^n - 1 = \prod_{i=0}^{n-1} (x - \omega^i)\]
+
+Como cada termo $(x - \omega^i)$ é irredutível e todos são coprimos entre si, o \textbf{Teorema Chinês dos Restos (CRT)} garante a existência de um isomorfismo de anéis:
+
+\[\frac{\mathbb{Z}_p[x]}{(x^n - 1)} \cong \frac{\mathbb{Z}_p[x]}{(x - \omega^0)} \times \frac{\mathbb{Z}_p[x]}{(x - \omega^1)} \times \dots \times \frac{\mathbb{Z}_p[x]}{(x - \omega^{n-1})}\]
+
+Este isomorfismo é o que permite interpretar a NTT não apenas como uma transformação de vetores, mas como uma mudança de representação.
+
+fonte: https://github.com/SheafificationOfG/Fibsonisheaf
+
+\begin{center}
+\begin{tabular}{|l|r|}
+\hline
+Algorithm & Fibonacci index \\ \hline
+Algoritmo Naive & 44 \\ \hline
+Algoritmo Linear & 566'053 \\ \hline
+Algoritmo FFT & 3'145'816 \\ \hline
+Algoritmo NTT & 24'178'839 \\ \hline
+Algoritmo GMP & 238'961'323 \\ \hline
+\end{tabular}
+\end{center}
+
+\end{document}
