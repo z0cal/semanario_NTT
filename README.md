@@ -112,7 +112,8 @@ para plotar a animação é necessário algumas bibliotecas
 ```bash
 sudo pacman -S ffmpeg freeglut pkgconf pango scipy python-pip
 ```
-Além do latex.
+Mais o latex
+alem da principal biblioteca **Manim**
 o comando para executar a animação em alta qualidade é 
 ```bash
 manim -pqh convolution.py  CirculoCrescente
