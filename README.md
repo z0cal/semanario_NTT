@@ -1,6 +1,7 @@
-D
+
 # semanario_NTT
-arquivos usados do seminario NTT
+arquivos usados no seminario NTT
+
 veja o repositorio
  https://github.com/SheafificationOfG/Fibsonisheaf
 =======
