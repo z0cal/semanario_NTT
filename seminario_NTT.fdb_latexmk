@@ -1,6 +1,6 @@
 # Fdb version 4
-["pdflatex"] 1766690013.89069 "/home/zocal/text_mk/seminario_NTT.tex" "seminario_NTT.pdf" "seminario_NTT" 1766690014.37121 0
-  "/home/zocal/text_mk/seminario_NTT.tex" 1766690013.29324 17261 645c5417bf5043d2e89e14b582a760ed ""
+["pdflatex"] 1766690823.89225 "/home/zocal/text_mk/seminario_NTT.tex" "seminario_NTT.pdf" "seminario_NTT" 1766690824.44203 0
+  "/home/zocal/text_mk/seminario_NTT.tex" 1766690823.80568 17215 ae7a6beeff2b237a942606b8148354fc ""
   "/usr/share/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc" 1755987285 2971 def0b6c1f0b107b3b936def894055589 ""
   "/usr/share/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc" 1755987285 2900 1537cc8184ad1792082cd229ecc269f4 ""
   "/usr/share/texmf-dist/fonts/tfm/jknappen/ec/ecbx1200.tfm" 1755987285 3584 402da0b29eafbad07963b1224b222f18 ""
@@ -211,9 +211,9 @@
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1766168926 2008243 0d5c2460aae2e25545e1604e8d3a465b ""
   "images/butterfly4.pdf" 1766626901.85438 65831 02fc5b230a98b29258fbd114cb1ef6ca ""
   "images/torus.pdf" 1766191460.98024 58199 f40a17879ec8e6c96ef5b6a2055ddfcb ""
-  "seminario_NTT.aux" 1766690014.31494 3390 7a19c7681000f749492ef9e02509e1f5 "pdflatex"
-  "seminario_NTT.out" 1766690014.31594 2775 d64a3169e63567ddcd9ac34078b91fdd "pdflatex"
-  "seminario_NTT.tex" 1766690013.29324 17261 645c5417bf5043d2e89e14b582a760ed ""
+  "seminario_NTT.aux" 1766690824.37791 3390 7a19c7681000f749492ef9e02509e1f5 "pdflatex"
+  "seminario_NTT.out" 1766690824.37891 2775 d64a3169e63567ddcd9ac34078b91fdd "pdflatex"
+  "seminario_NTT.tex" 1766690823.80568 17215 ae7a6beeff2b237a942606b8148354fc ""
   (generated)
   "seminario_NTT.aux"
   "seminario_NTT.log"

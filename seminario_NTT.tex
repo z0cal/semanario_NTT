@@ -171,7 +171,7 @@ A conexão entre a multiplicação de polinômios e a análise de Fourier vem do
 se $h(x)=f(x)g(x)$, então os coeficientes $c_k$ de $h$ são dados pela \textbf{convolução linear}
 dos coeficientes de $f$ e $g$:
 \[
-c_k=\sum_{i=0}^{k} a_i\, b_{k-i}.
+c_k=\sum_{i+j=k} a_i\, b_{j}.
 \]
 
 Neste trabalho, devido ao foco na NTT e ao anel quociente $\mathbb{Z}_p[x]/(x^n-1)$,
@@ -186,10 +186,9 @@ c_k=\sum_{i=0}^{n-1} a_i\, b_{(k-i)\bmod n}, \qquad k=0,\dots,n-1.
 \mathcal{F}(f*g)=\mathcal{F}(f)\odot \mathcal{F}(g).
 \]
 
-Assim, o cálculo direto da convolução (uma soma “custosa”) é convertido em um produto ponto a ponto,
+Assim, o cálculo custoso da convolução  é convertido em um produto ponto a ponto,
 pois a base de Fourier diagonaliza o operador de convolução (circulante).
-Com a transformada direta ingênua o custo ainda é $O(n^2)$; o ganho aparece ao usar FFT/NTT rápidas,
-reduzindo o custo para $O(n\log n)$.
+Com a transformada direta ingênua o custo ainda é $O(n^2)$, não há ganho da multiplicação clássica de polinômios.
 
 \section{ A Fast Fourier Transform}
 
