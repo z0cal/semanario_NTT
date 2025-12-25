@@ -3,7 +3,9 @@
 *.log
 *.out
 *.synctex.gz
-
+*.fls
+*.synctex.gz
+*.fdb_latexmk
 
 
 # animações geradas
