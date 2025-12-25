@@ -165,22 +165,31 @@ onde $c_k = \sum_{i+j=k} a_i b_j$.
 Nesta metodologia, o cálculo de cada coeficiente $c_k$ exige múltiplas operações de produto e soma, resultando em uma complexidade assintótica $O(n^2)$. Para polinômios com grandes volumes de coeficientes, este custo computacional torna o metodo inviavel.
 
 
-\section{ O Teorema da Convolução}
+\section{O Teorema da Convolução}
 
-A conexão entre a multiplicacao de polinomio e a análise de Fourier reside na observação de que os coeficientes $c_k$ do produto $h(x)$ são, por definição, o resultado da \textbf{convolução linear} entre os vetores de coeficientes de $f$ e $g$:
+A conexão entre a multiplicação de polinômios e a análise de Fourier vem do fato de que,
+se $h(x)=f(x)g(x)$, então os coeficientes $c_k$ de $h$ são dados pela \textbf{convolução linear}
+dos coeficientes de $f$ e $g$:
+\[
+c_k=\sum_{i=0}^{k} a_i\, b_{k-i}.
+\]
 
-\[c_k = \sum_{i=0}^k a[i]\cdot b[k-i]\]
-Nesse trabalho em especifico, devido ao foco na NTT, trabalhemos com a \textbf{convolução circular} que é definida por:
-\[c_k = \sum_{i=0}^k a[i]\cdot b[(k-i)_3]\]
-\begin{quote}
+Neste trabalho, devido ao foco na NTT e ao anel quociente $\mathbb{Z}_p[x]/(x^n-1)$,
+trabalhamos com a \textbf{convolução circular} (de comprimento $n$), definida por
+\[
+c_k=\sum_{i=0}^{n-1} a_i\, b_{(k-i)\bmod n}, \qquad k=0,\dots,n-1.
+\]
 
-\textbf{Teorema da Convolução} : a transformada de uma convolução no domínio do tempo (ou espaço) é equivalente ao produto ponto a ponto (produto de Hadamard) das respectivas transformadas no domínio da frequência:
-\end{quote}
+\textbf{Teorema da Convolução:} a transformada de uma convolução no domínio do tempo (ou espaço)
+é o produto ponto a ponto (Hadamard) das transformadas no domínio da frequência:
+\[
+\mathcal{F}(f*g)=\mathcal{F}(f)\odot \mathcal{F}(g).
+\]
 
-\[\mathcal{F}(f * g) = \mathcal{F}(f) \cdot \mathcal{F}(g)\]
-
-Logo, a distributiva complicada e custosa se transformou em uma operacao ponto a ponto, isso ocorre devido a diagonalizacao do operador convolucao pelas raizes unitarias. Contudo, isso vem a custo do calculo da transformada, que tambem eh $O(n^2)$, por isso nao houve ganho de eficiencia algum. 
-
+Assim, o cálculo direto da convolução (uma soma “custosa”) é convertido em um produto ponto a ponto,
+pois a base de Fourier diagonaliza o operador de convolução (circulante).
+Com a transformada direta ingênua o custo ainda é $O(n^2)$; o ganho aparece ao usar FFT/NTT rápidas,
+reduzindo o custo para $O(n\log n)$.
 
 \section{ A Fast Fourier Transform}
 

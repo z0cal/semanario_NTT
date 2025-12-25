@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2026/dev/Arch Linux) (preloaded format=pdflatex 2025.12.19)  25 DEC 2025 16:08
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2026/dev/Arch Linux) (preloaded format=pdflatex 2025.12.19)  25 DEC 2025 16:13
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -678,26 +678,21 @@ Overfull \hbox (4.0676pt too wide) in paragraph at lines 92--93
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}{/usr/share/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc}{/usr/share/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc}]
 
 [2]
-Overfull \hbox (0.21312pt too wide) in paragraph at lines 177--178
-\T1/cmr/m/n/12 tempo (ou es-paço) é equiv-a-lente ao pro-duto ponto a ponto (pro-duto de Hadamard)
- []
-
-
 
 [3]
-Overfull \hbox (18.23085pt too wide) in paragraph at lines 287--288
+Overfull \hbox (18.23085pt too wide) in paragraph at lines 296--297
 []\T1/cmr/m/n/12 Voltandao a FFT, o al-go-ritmo de-com-põe uma DFT de tamanho $\OML/cmm/m/it/12 N$ \T1/cmr/m/n/12 em duas sub-transformadas
  []
 
 
 
 [4]
-<images/butterfly4.pdf, id=98, 300.76367pt x 177.36565pt>
+<images/butterfly4.pdf, id=99, 300.76367pt x 177.36565pt>
 File: images/butterfly4.pdf Graphic file (type pdf)
 <use images/butterfly4.pdf>
-Package pdftex.def Info: images/butterfly4.pdf  used on input line 309.
+Package pdftex.def Info: images/butterfly4.pdf  used on input line 318.
 (pdftex.def)             Requested size: 300.76292pt x 177.3652pt.
-Package hyperref Info: bookmark level for unknown lstlisting defaults to 0 on input line 315.
+Package hyperref Info: bookmark level for unknown lstlisting defaults to 0 on input line 324.
 
 
 [5 <./images/butterfly4.pdf>]
@@ -706,7 +701,7 @@ Package hyperref Info: bookmark level for unknown lstlisting defaults to 0 on in
 <images/torus.pdf, id=178, 333.97974pt x 605.86653pt>
 File: images/torus.pdf Graphic file (type pdf)
 <use images/torus.pdf>
-Package pdftex.def Info: images/torus.pdf  used on input line 386.
+Package pdftex.def Info: images/torus.pdf  used on input line 395.
 (pdftex.def)             Requested size: 333.97891pt x 605.86505pt.
 
 
@@ -720,7 +715,7 @@ LaTeX2e <2024-11-01> patch level 2
 L3 programming layer <2025-01-18>
  ***********
 Package rerunfilecheck Info: File `seminario_NTT.out' has not changed.
-(rerunfilecheck)             Checksum: 01EA87FBE3AC68ADD06FD6DE01567763;2783.
+(rerunfilecheck)             Checksum: D64A3169E63567DDCD9AC34078B91FDD;2775.
  ) 
 Here is how much of TeX's memory you used:
  26952 strings out of 475171
@@ -731,7 +726,7 @@ Here is how much of TeX's memory you used:
  14 hyphenation exceptions out of 8191
  84i,10n,91p,512b,2135s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr5.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfbx1200.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfbx1440.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfbx1728.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfrm0600.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfrm1095.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfrm1200.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfti1200.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sftt1095.pfb>
-Output written on seminario_NTT.pdf (9 pages, 391983 bytes).
+Output written on seminario_NTT.pdf (9 pages, 393590 bytes).
 PDF statistics:
  330 PDF objects out of 1000 (max. 8388607)
  253 compressed objects within 3 object streams
