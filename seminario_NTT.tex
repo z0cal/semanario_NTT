@@ -410,11 +410,39 @@ Ela eh definida da seguinte forma:
 \[
 X[k] = \sum_{n=0}^{N-1}x[n]\omega^{nk} \pmod{p}
 \]
+ou na forma matricial
+\[
+\mathbf{X}
+=
+\mathbf{W}_N \, \mathbf{x},
+\qquad
+\mathbf{x} =
+\begin{bmatrix}
+x_0 \\ x_1 \\ \vdots \\ x_{N-1}
+\end{bmatrix},
+\]
+
+\[
+\mathbf{W}_N =
+\begin{bmatrix}
+1        & 1        & 1        & \cdots & 1 \\
+1        & \omega   & \omega^2 & \cdots & \omega^{N-1} \\
+1        & \omega^2 & \omega^4 & \cdots & \omega^{2(N-1)} \\
+\vdots   & \vdots   & \vdots   & \ddots & \vdots \\
+1        & \omega^{N-1} & \omega^{2(N-1)} & \cdots & \omega^{(N-1)(N-1)}
+\end{bmatrix},
+\]
+
+\[
+(\mathbf{W}_N)_{k,n} = \omega^{kn},
+\qquad 0 \le k,n \le N-1,
+\]
+
 Ela opera no anel quociente
 \[
-R= \mathbb{Z_p}[x]/(x^n-1)
+R= \mathbb{Z}_p[x] /(x^n-1)
 \]
-onde $\mathbb{Z_p}[x]$ representa o coeficientes do polinomio $mod\text{ } p$ e o $/(x^n-1)$ faz com que a cadeia longa de polinomio dobre em si mesma formando um ciclo.
+onde $\mathbb{Z}_p[x]$ representa o coeficientes do polinomio $mod\text{ } p$ e o $/(x^n-1)$ faz com que a cadeia longa de polinomio dobre em si mesma formando um ciclo.
 
 a imagem \ref{fig:torus} ilustra a sequencia das duas operacoes visualmente.
 
