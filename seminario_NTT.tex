@@ -79,9 +79,9 @@ Esta ferramenta é um pilar fundamental em diversas áreas do conhecimento:
 
 
 \section{ Transformada de Fourier Contínua (CTFT)}
-Para uma função contínua $f(t)$, a transformada é definida pela integral:
+Para uma função contínua $g(t)$, a transformada é definida pela integral:
 
-\[F(f) = \int_{-\infty}^{\infty} g(t) e^{-2\pi if t} \, dt\]
+\[\mathcal{F}(f) = \int_{-\infty}^{\infty} g(t) e^{-2\pi if t} \, dt\]
 
 Ela pode ser entendida como um produto interno(uma projeção) do sinal com todos as frequencias da reta real $ \langle g, e^{-2\pi i ft} \rangle$, que, devido a ortoganalidade das frequências diferentes e que funcoes bem comportadas podem ser decompostas em series de autofuncoes $e^{-ift}$, consegue extrair extamente as frequências do sinal.
 Apesar de sua elegância teórica, a CTFT apresenta desafios para a aplicação prática em sistemas digitais:
@@ -150,16 +150,42 @@ X[0] \\ X[1] \\ X[2] \\ \vdots \\ X[N-1]
 \]
 Percebe-se que nesse caso discreto, a DFT e IDFT atuam como uma matriz mudanca de base, saindo da base do tempo e indo para base das raizes unitarias
 
+A DFT pde ser vista de outra óptica, como avalição de polinomios.
+Seja
+\[
+a(x)=\sum_{n=0}^{N-1} a_n x^n
+\]
+e tome $\zeta_N=e^{-\frac{2\pi i}{N}}$ seja uma $N$-ésima raiz primitiva da unidade. Define
+\[
+A_k := a(\zeta_N^k).
+\]
+Então 
+\[
+A_k
+= \sum_{n=0}^{N-1} a_n(\zeta_N^k)^n
+= \sum_{n=0}^{N-1} a_n\,\zeta_N^{kn},
+\]
+o que é exatamente a formulação da DFT, para $a_n \equiv x[n]$ e $A_n \equiv X[n]$, opostamente, a IDFT é interpretada como interpolção de polinômios:
+
+Dados os valores
+\(\{A_k\}_{k=0}^{N-1}\), ela reconstrói os coeficientes \(\{a_n\}_{n=0}^{N-1}\) do
+único polinômio de grau \(<N\) que satisfaz \(a(\zeta_N^k)=A_k\) para todo \(k\).
+Explicitamente,
+\[
+a_n=\frac{1}{N}\sum_{k=0}^{N-1} A_k\,\zeta_N^{-kn}.
+\]
+Assim, \(\mathrm{DFT}\) é \emph{avaliar} em raízes da unidade e \(\mathrm{IDFT}\) é
+\emph{interpolar} (recuperar os coeficientes) a partir dessas avaliações.
 
 \section{ A Multiplicação de Polinômios e a Complexidade Computacional}
 
 Um problema simplificado pela mudanca de domino eh a multiplicacao de polinomios. Tome os polinomios $f(x)$ e $g(x)$ de grau $n-1$: 
 
-\[f(x) = \sum_{i=0}^{n-1} a_i x^i, \quad g(x) = \sum_{j=0}^{n-1} b_j x^j\]
+\[f(x) = \sum_{i=0}^{N-1} a_i x^i, \quad g(x) = \sum_{j=0}^{N-1} b_j x^j\]
 
-Na abordagem clássica , o produto $h(x) = f(x) \cdot g(x)$ é obtido distribuindo-se cada termo de $f$ sobre todos os termos de $g$. Este processo resulta em um novo polinômio de grau $2n-2$:
+Na abordagem clássica , o produto $h(x) = f(x) \cdot g(x)$ é obtido distribuindo-se cada termo de $f$ sobre todos os termos de $g$. Este processo resulta em um novo polinômio de grau $2N-2$:
 
-\[h(x) = \sum_{k=0}^{2n-2} c_k x^k\]
+\[h(x) = \sum_{k=0}^{2N-2} c_k x^k\]
 onde $c_k = \sum_{i+j=k} a_i b_j$.
 
 Nesta metodologia, o cálculo de cada coeficiente $c_k$ exige múltiplas operações de produto e soma, resultando em uma complexidade assintótica $O(n^2)$. Para polinômios com grandes volumes de coeficientes, este custo computacional torna o metodo inviavel.
@@ -177,7 +203,7 @@ c_k=\sum_{i+j=k} a_i\, b_{j}.
 Neste trabalho, devido ao foco na NTT e ao anel quociente $\mathbb{Z}_p[x]/(x^n-1)$,
 trabalhamos com a \textbf{convolução circular} (de comprimento $n$), definida por
 \[
-c_k=\sum_{i=0}^{n-1} a_i\, b_{(k-i)\bmod n}, \qquad k=0,\dots,n-1.
+c_k=\sum_{i=0}^{N-1} a_i\, b_{(k-i)\bmod n}, \qquad k=0,\dots,N-1.
 \]
 
 \textbf{Teorema da Convolução:} a transformada de uma convolução no domínio do tempo (ou espaço)
@@ -297,7 +323,9 @@ Voltandao a FFT, o algoritmo decompõe uma DFT de tamanho $N$ em duas sub-transf
 \begin{align}
 X[k]
 &= \sum_{m=0}^{\frac{N}{2}-1} x[2m] \, \zeta_N^{2mk}
-  + \sum_{m=0}^{\frac{N}{2}-1} x[2m+1] \, \zeta_N^{(2m+1)k} \nonumber\\
+  + \sum_{m=0}^{\frac{N}{2}-1} x[2m+1] \, \zeta_N^{(2m+1)k} \nonumber\\[4pt]
+&\text{Usando } \zeta_N^{2}=\zeta_{N/2}:\qquad
+\zeta_N^{2mk}=(\zeta_N^{2})^{mk}=\zeta_{N/2}^{mk} \nonumber\\[4pt]
 &= \sum_{m=0}^{\frac{N}{2}-1} x[2m] \, \zeta_{N/2}^{mk}
   + \zeta_N^{k} \sum_{m=0}^{\frac{N}{2}-1} x[2m+1] \, \zeta_{N/2}^{mk} \nonumber\\
 &= E[k] + \zeta_N^{k} O[k],

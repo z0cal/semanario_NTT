@@ -92,7 +92,7 @@ class ConvolutionMatrixVsSum(Scene):
         full_matrix_scene = VGroup(matrix_group, res_matrix.get_brackets())
         
         # Label para identificar este método
-        lbl_method_1 = Text("Método 1: Matriz Circulante", font_size=24, color=BLUE)
+        lbl_method_1 = Text("Método 1: Operador", font_size=20, color=BLUE)
         lbl_method_1.next_to(full_matrix_scene, UP)
         
         group_method_1 = VGroup(lbl_method_1, full_matrix_scene)
