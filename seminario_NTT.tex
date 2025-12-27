@@ -1,74 +1,38 @@
 \documentclass[12pt]{article}
-\usepackage{float}
-\usepackage[utf8]{inputenc}
-\usepackage[T1]{fontenc}
-\usepackage[brazil]{babel}
-\usepackage{amsmath, amssymb}
-\usepackage{graphicx}
-\usepackage{subcaption}
-\usepackage{geometry}
-\usepackage{hyperref}
-\usepackage{tikz}
-\usetikzlibrary{positioning, arrows.meta, fit, backgrounds}
-\usepackage{amssymb}
-\usetikzlibrary{arrows.meta, bending, decorations.markings, calc, shapes.geometric}
-\tikzset{
-  glueArrow/.style={-{Stealth[length=3mm]}, very thick, shorten >=2pt, shorten <=2pt},
-  % estilo com argumento (permite usar pathArrow=0.55, etc.)
-  pathArrow/.style args={#1}{
-    postaction={decorate},
-    decoration={markings,
-      mark=at position #1 with {\arrow[scale=1.5]{Stealth}}
-    }
-  },
-  cycleLines/.style={very thick}
-}
-\usepackage{listings}
-\usepackage{xcolor}
+\usepackage{zocal}
 
-% Definição de cores para o tema
-\definecolor{codegreen}{rgb}{0,0.6,0}
-\definecolor{codegray}{rgb}{0.5,0.5,0.5}
-\definecolor{codepurple}{rgb}{0.58,0,0.82}
-\definecolor{backcolour}{rgb}{0.96,0.96,0.96}
-
-% Estilo personalizado para SageMath/Python
-\lstdefinestyle{sagemathstyle}{
-    backgroundcolor=\color{backcolour},   
-    commentstyle=\color{codegreen},
-    keywordstyle=\color{blue},
-    numberstyle=\tiny\color{codegray},
-    stringstyle=\color{codepurple},
-    basicstyle=\ttfamily\small,
-    breakatwhitespace=false,         
-    breaklines=true,                 
-    captionpos=b,                    
-    keepspaces=true,                 
-    numbers=left,                    
-    numbersep=5pt,                  
-    showspaces=false,                
-    showstringspaces=false,
-    showtabs=false,                  
-    tabsize=4,
-    language=Python,
-    frame=single, % Adiciona uma borda ao redor do código
-    rulecolor=\color{black!10}
-}
-
-\lstset{style=sagemathstyle}
-
-\geometry{margin=2.5cm}
 
 \begin{document}
 
-\section{semanario NTT}
+\begin{titlepage}
+    \begin{center}
+        \textbf{\textnormal{Escola Politécnica-USP}}\\
+        \textbf{\textnormal{LARC}}
+
+        \vspace{3cm}
+        
+         \includegraphics[width=0.5\textwidth]{images/Logo-Escola-Politécnica-Minerva.pdf}\\[1cm]
+        
+        {\Huge Seminário NTT}\\[1.5cm]
+        \vspace{2cm}
+        
+        \textbf{Resumo}\\[0.5cm]
+
+    \end{center}
+\end{titlepage}
+\thispagestyle{empty}
+
+% --- SUMÁRIO ---
+\tableofcontents
+\newpage
+
+
+
 
 \section{ A Dualidade entre Tempo e Frequência}
 A Transformada de Fourier é uma operação matemática que mapeia uma função do domínio do tempo (ou espaço) para o seu domínio dual: a frequência. Essa transição é extremamente útil, pois propriedades que são complexas de analisar no tempo tornam-se claras no espectro de frequências.
 
-Além da análise, essa mudança de espaço possibilita a simplificação de operações fundamentais.
 
-\section{ Aplicabilidade e Importância}
 Esta ferramenta é um pilar fundamental em diversas áreas do conhecimento:
 
 \begin{itemize}
@@ -169,13 +133,14 @@ o que é exatamente a formulação da DFT, para $a_n \equiv x[n]$ e $A_n \equiv 
 
 Dados os valores
 \(\{A_k\}_{k=0}^{N-1}\), ela reconstrói os coeficientes \(\{a_n\}_{n=0}^{N-1}\) do
-único polinômio de grau \(<N\) que satisfaz \(a(\zeta_N^k)=A_k\) para todo \(k\).
+único polinômio de grau \(N-1\) que satisfaz \(a(\zeta_N^k)=A_k\) para todo \(k\).
 Explicitamente,
 \[
 a_n=\frac{1}{N}\sum_{k=0}^{N-1} A_k\,\zeta_N^{-kn}.
 \]
 Assim, \(\mathrm{DFT}\) é \emph{avaliar} em raízes da unidade e \(\mathrm{IDFT}\) é
-\emph{interpolar} (recuperar os coeficientes) a partir dessas avaliações.
+\emph{interpolar} (recuperar os coeficientes) a partir dessas avaliações. (Essa perspectiva baseia-se na determinição unívoca do polinómio de grau $N-1$ por N pontos veja a seção~\ref{sec:Determinição unívoca do polinômio} para demonstração desse fato)
+
 
 \section{ A Multiplicação de Polinômios e a Complexidade Computacional}
 
@@ -191,7 +156,6 @@ onde $c_k = \sum_{i+j=k} a_i b_j$.
 Nesta metodologia, o cálculo de cada coeficiente $c_k$ exige múltiplas operações de produto e soma, resultando em uma complexidade assintótica $O(n^2)$. Para polinômios com grandes volumes de coeficientes, este custo computacional torna o metodo inviavel.
 
 
-\section{O Teorema da Convolução}
 
 A conexão entre a multiplicação de polinômios e a análise de Fourier vem do fato de que,
 se $h(x)=f(x)g(x)$, então os coeficientes $c_k$ de $h$ são dados pela \textbf{convolução linear}
@@ -216,6 +180,7 @@ Assim, o cálculo custoso da convolução  é convertido em um produto ponto a p
 pois a base de Fourier diagonaliza o operador de convolução (circulante).
 Com a transformada direta ingênua o custo ainda é $O(n^2)$, não há ganho da multiplicação clássica de polinômios.
 
+Uma exemplo para o convencimento do leitor foi disposto no apendice~\ref{sec:convolução}
 \section{ A Fast Fourier Transform}
 
 A FFT (Fast Fourier Transform) eh uma maneira de otimizar o calculo da DFT.
@@ -229,21 +194,21 @@ Relembrando
 \end{quote}
 
 As raízes unitárias possuem propriedades cíclicas e certas simetrias que permitem a economia nos cálculos, vejamos um exemplo.
-\[\zeta_4^1 = e^{i\frac{2\pi}{4}} = e^{i90^\circ} = i\]
+\[\zeta_4^1 = e^{-i\frac{2\pi}{4}} = e^{-i90^\circ} = -i\]
 
 \[
 \begin{aligned}
-\zeta^1 &= i \qquad\qquad
+\zeta^1 &= -i \qquad\qquad
 \zeta^2 = -1 \\[6pt]
-\zeta^3 &= -i \qquad\qquad
+\zeta^3 &=  i \qquad\qquad
 \zeta^4 = 1
 \end{aligned}
 \]
 por isso, percebe-se que, a cada 2 "deslocamentos", o valor se torna o oposto, como ilustrado na figura:
 
 %verificar se usar com duas raizes ou apenas a 4-esima raiz
-
-\begin{figure}
+%raizes
+\begin{figure}[H]
 \centering
 
 % --- Subfigura 1: 4-ésimas raízes ---
@@ -312,6 +277,7 @@ De forma mais geral:
 $ \zeta_N = e^{\frac{2\pi i}{N}} $, uma raiz $N$-ésima primitiva da unidade. Então para todo inteiro $a$, $ {\zeta_N^{a+\frac{N}{2}} = -\,\zeta_N^{a}}. $
 \end{quote}
 Alem de que, pela periodicidade $\zeta_N^{a+N}=\zeta_N^a$.
+
 Para esse caso a DFT eh representada desse modo:
 \[
  \begin{bmatrix} 1 & 1 & 1 & 1 \\ 1 & -i & -1 & i \\ 1 & -1 & 1 & -1 \\ 1 & i & -1 & -i \end{bmatrix}
@@ -447,6 +413,7 @@ onde $\mathbb{Z}_p[x]$ representa o coeficientes do polinomio $mod\text{ } p$ e 
 a imagem \ref{fig:torus} ilustra a sequencia das duas operacoes visualmente.
 
 \begin{figure}[H]
+    \centering
 \includegraphics{images/torus.pdf}
 \caption{representação das transformacoes}
 \label{fig:torus}
@@ -481,4 +448,239 @@ Algoritmo GMP & 238'961'323 \\ \hline
 \end{center}
 
 fonte: https://github.com/SheafificationOfG/Fibsonisheaf
+
+\section{Apendix}
+\subsection{Exemplo de convolução circular}
+\label{sec:convolução}
+Sejam dois sinais $x$ e $y$ de comprimento $N=3$:
+\[
+x = \begin{bmatrix} 1 \\ 2 \\ 0 \end{bmatrix}, \quad y = \begin{bmatrix} 1 \\ 0 \\ 1 \end{bmatrix}
+\]
+
+A frequência fundamental é a raiz da unidade $\zeta_3 = e^{-i \frac{2\pi}{3}}$. Usaremos a propriedade fundamental:
+\[
+1 + \zeta_3 + \zeta_3^2 = 0 \implies \zeta_3 + \zeta_3^2 = -1
+\]
+
+\subsection*{Método 1: Convolução no Tempo (Matriz Circulante)}
+
+A convolução circular $z = x \circledast y$ equivale à multiplicação de uma matriz circulante $C_x$ pelo vetor $y$:
+
+\[
+C_x = \begin{bmatrix} 
+x[0] & x[2] & x[1] \\ 
+x[1] & x[0] & x[2] \\ 
+x[2] & x[1] & x[0] 
+\end{bmatrix} 
+= \begin{bmatrix} 
+1 & 0 & 2 \\ 
+2 & 1 & 0 \\ 
+0 & 2 & 1 
+\end{bmatrix}
+\]
+
+Calculando $z = C_x y$:
+\[
+z = \begin{bmatrix} 1 & 0 & 2 \\ 2 & 1 & 0 \\ 0 & 2 & 1 \end{bmatrix} 
+\begin{bmatrix} 1 \\ 0 \\ 1 \end{bmatrix} 
+= \begin{bmatrix} 
+1(1) + 0 + 2(1) \\ 
+2(1) + 0 + 0 \\ 
+0 + 0 + 1(1) 
+\end{bmatrix} 
+= \begin{bmatrix} 3 \\ 2 \\ 1 \end{bmatrix}
+\]
+
+\subsection*{Método 2: Diagonalização (Domínio da Frequência)}
+
+Mostra-se que a mudança de base para a base de Fourier diagonaliza a matriz circulante $C_x$. Matematicamente, isso significa que $C_x$ pode ser decomposta como
+$$C_x = F^{-1} \Lambda_x F$$
+onde $\Lambda_x$ é uma matriz diagonal contendo os coeficientes da DFT de $x$.
+
+Substituindo essa decomposição na equação original da convolução $z = C_x y$, podemos rearranjar os termos para utilizar a multiplicação na frequência:
+\begin{equation}
+z = (F^{-1} \Lambda_x F) y = F^{-1} \Lambda_x (F y) = F^{-1} \Lambda_x Y
+\end{equation}
+
+Dessa forma, o cálculo se resume a obter $Y$ (DFT de $y$), multiplicar pela matriz diagonal $\Lambda_x$ e aplicar a inversa ($F^{-1}$).
+
+Para legitimar que os autovalores de $C_x$ são os coeficientes da DFT de $x$, resolvemos:
+\[
+\det(C_x - \lambda I) = 0 \implies 
+\det \begin{bmatrix} 
+1-\lambda & 0 & 2 \\ 
+2 & 1-\lambda & 0 \\ 
+0 & 2 & 1-\lambda 
+\end{bmatrix} = 0
+\]
+Expandindo o determinante:
+\[
+(1-\lambda)^3 + 8 = 0 \implies (1-\lambda)^3 = -8
+\]
+As raízes para $(1-\lambda)$ são as três raízes cúbicas de $-8$:
+\begin{align*}
+1 - \lambda_0 = -2 &\implies \lambda_0 = 3 \\
+1 - \lambda_1 = -2\zeta_3 &\implies \lambda_1 = 1 + 2\zeta_3 \\
+1 - \lambda_2 = -2\zeta_3^2 &\implies \lambda_2 = 1 + 2\zeta_3^2
+\end{align*}
+Estes valores coincidem exatamente com a DFT de $x$, provando a legitimidade da diagonalização.
+
+\subsection*{Verificação do Autovetor}
+Verificamos agora se o autovetor $v_1$ da base de Fourier (coluna de $F^{-1}$), dado por $v_1 = [1, \zeta_3^2, \zeta_3]^T$, satisfaz $C_x v_1 = \lambda_1 v_1$.
+\\
+Lado esquerdo ($C_x v_1$):
+\[
+\begin{bmatrix} 1 & 0 & 2 \\ 2 & 1 & 0 \\ 0 & 2 & 1 \end{bmatrix} 
+\begin{bmatrix} 1 \\ \zeta_3^2 \\ \zeta_3 \end{bmatrix} 
+= 
+\begin{bmatrix} 1 + 2\zeta_3 \\ 2 + \zeta_3^2 \\ 2\zeta_3^2 + \zeta_3 \end{bmatrix}
+\]
+Lado direito ($\lambda_1 v_1$):
+\[
+(1+2\zeta_3) 
+\begin{bmatrix} 1 \\ \zeta_3^2 \\ \zeta_3 \end{bmatrix} 
+=
+\begin{bmatrix} 
+1 + 2\zeta_3 \\ 
+\zeta_3^2 + 2\zeta_3^3 \\ 
+\zeta_3 + 2\zeta_3^2 
+\end{bmatrix} 
+=
+\begin{bmatrix} 
+1 + 2\zeta_3 \\ 
+2 + \zeta_3^2 \\ 
+\zeta_3 + 2\zeta_3^2 
+\end{bmatrix}
+\]
+A igualdade é satisfeita, pensamento analogo é utilizado para mostrar que o $v_0$ e $v_2$ e  tambem são autovetores, confirmando que a base de Fourier é a base natural de $C_x$.
+
+\subsection*{Representação Matricial da Diagonalização}
+
+Primeiro, calculamos os vetores transformados $X = Fx$ e $Y = Fy$:
+\[
+X = \begin{bmatrix} 3 \\ 1+2\zeta_3 \\ 1+2\zeta_3^2 \end{bmatrix}, \quad
+Y = \begin{bmatrix} 2 \\ 1+\zeta_3^2 \\ 1+\zeta_3 \end{bmatrix}
+\]
+
+Agora, construímos a matriz diagonal $\Lambda_x = \text{diag}(X)$. A operação de convolução no domínio da frequência ($Z = X \cdot Y$), visualizada matricialmente como $Z = \Lambda_x Y$, torna-se:
+
+\[
+\mathbf{Z} = 
+\underbrace{
+\begin{bmatrix} 
+3 & 0 & 0 \\ 
+0 & 1+2\zeta_3 & 0 \\ 
+0 & 0 & 1+2\zeta_3^2 
+\end{bmatrix}
+}_{\text{Matriz Diagonal } (\Lambda_x)}
+\begin{bmatrix} 
+2 \\ 
+1+\zeta_3^2 \\ 
+1+\zeta_3 
+\end{bmatrix}
+\]
+
+Executando o produto matricial (que equivale ao produto ponto a ponto):
+
+\[
+\mathbf{Z} = 
+\begin{bmatrix} 
+3 \cdot 2 \\ 
+(1+2\zeta_3)(1+\zeta_3^2) \\ 
+(1+2\zeta_3^2)(1+\zeta_3) 
+\end{bmatrix}
+=
+\begin{bmatrix} 
+6 \\ 
+2 + \zeta_3 \\ 
+2 + \zeta_3^2 
+\end{bmatrix}
+\]
+\small{\textit{*Nota: As simplificações algébricas utilizam $1+\zeta_3+\zeta_3^2=0$.}}
+
+\subsection*{Retorno ao Tempo (IDFT)}
+
+Finalmente, aplicamos a matriz inversa de Fourier ($F^{-1}$) para obter $z$:
+
+\[
+z = F^{-1} \mathbf{Z} = \frac{1}{3}
+\begin{bmatrix}
+1 & 1 & 1 \\
+1 & \zeta_3^{-1} & \zeta_3^{-2} \\
+1 & \zeta_3^{-2} & \zeta_3^{-4}
+\end{bmatrix}
+\begin{bmatrix} 
+6 \\ 
+2 + \zeta_3 \\ 
+2 + \zeta_3^2 
+\end{bmatrix}
+=
+\begin{bmatrix} 3 \\ 2 \\ 1 \end{bmatrix}
+\]
+
+Isso confirma numericamente que a base de Fourier diagonalizou a operação.
+
+\subsection{Determinição unívoca do polinomio}
+\label{sec:Determinição unívoca do polinômio}
+
+\begin{theorem}[Unicidade via matriz de Vandermonde]
+Sejam $x_0,\dots,x_{N-1}$ escalares dois a dois distintos em um corpo $\mathbb{K}$
+(e.g., $\mathbb{R}$, $\mathbb{C}$, $\mathbb{F}_p$), e sejam $y_0,\dots,y_{N-1}\in\mathbb{K}$.
+Existe um \textbf{único} polinômio
+$p(x)=a_0+a_1x+\cdots+a_{N-1}x^{N-1}\in\mathbb{K}[x]$
+tal que $p(x_i)=y_i$ para todo $i=0,\dots,N-1$.
+\end{theorem}
+
+\begin{proof}
+Escreva
+$p(x)=\sum_{k=0}^{N-1} a_k x^k$.
+Impor as condições $p(x_i)=y_i$ para $i=0,\dots,N-1$ gera o sistema linear
+
+$$
+\begin{bmatrix}
+1 & x_0 & x_0^2 & \cdots & x_0^{N-1}\\
+1 & x_1 & x_1^2 & \cdots & x_1^{N-1}\\
+\vdots & \vdots & \vdots & \ddots & \vdots\\
+1 & x_{N-1} & x_{N-1}^2 & \cdots & x_{N-1}^{N-1}
+\end{bmatrix}
+\begin{bmatrix}
+a_0\\
+a_1\\
+\vdots\\
+a_{N-1}
+\end{bmatrix}
+=
+\begin{bmatrix}
+y_0\\
+y_1\\
+\vdots\\
+y_{N-1}
+\end{bmatrix}.
+$$
+
+Denote essa matriz por $V$ (matriz de Vandermonde,i.e. $V_{i,j}=x_i^{j-1}$ para todo os índices i,j), o vetor de coeficientes por $a$
+e o vetor de valores por $y$; então o sistema é
+
+$$
+Va = y.
+$$
+
+O determinante de Vandermonde é dado por
+
+$$
+\det(V)=\prod_{0\le i<j\le N-1}(x_j-x_i).
+$$
+
+Como os $x_i$ são dois a dois distintos, temos $x_j-x_i\ne 0$ para $i\ne j$,
+logo $\det(V)\ne 0$. Portanto, $V$ é invertível e o sistema $Va=y$ tem
+\textbf{solução única}, dada por
+
+$$
+a = V^{-1}y.
+$$
+
+Concluímos que existe um único vetor de coeficientes $(a_0,\dots,a_{N-1})$,
+isto é, um \textbf{único} polinômio $p(x)$ de grau $\le N-1$ que interpola os $N$ pontos.
+\end{proof}
+
 \end{document}
