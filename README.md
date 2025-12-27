@@ -118,4 +118,7 @@ o comando para executar a animação em alta qualidade é
 ```bash
 manim -pqh convolution.py  CirculoCrescente
 ```
-
+Para a animação da FFT
+```bash
+manim -pqh FFT.py FFT
+```
