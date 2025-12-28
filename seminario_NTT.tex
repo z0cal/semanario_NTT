@@ -57,7 +57,9 @@ Apesar de sua elegância teórica, a CTFT apresenta desafios para a aplicação 
 
 
 \section{ Transformada Discreta de Fourier (DFT)}
-Para viabilizar o processamento em computadores, utilizamos a \textbf{DFT}. Ela opera sobre uma sequência finita de $N$ amostras, mapeando dados discretos no tempo para dados discretos na frequência:
+Para viabilizar o processamento em computadores, utilizamos a \textbf{DFT}. Ela opera sobre uma sequência finita de $N$ amostras, mapeando dados discretos no tempo para dados discretos na frequência, devido ao teorema de Teorema de amostragem de Nyquist-Shannon[1colocar uma referencia], um sinal de frequência $f$ precisa de $N \geq f/2$ para ser unicamente determinado.
+
+A DFT é definida da seguinte forma:
 
 \[X[k] = \sum_{n=0}^{N-1} x[n] e^{-i \frac{2\pi}{N} kn}\]
 
@@ -163,7 +165,7 @@ dos coeficientes de $f$ e $g$:
 c_k=\sum_{i+j=k} a_i\, b_{j}.
 \]
 
-Neste trabalho, devido ao foco na NTT e ao anel quociente $\mathbb{Z}_p[x]/(x^n-1)$,
+Neste trabalho, devido ao foco na NTT e ao anel quociente $\mathbb{Z}_p[x]/(x^N+1)$,
 trabalhamos com a \textbf{convolução circular} (de comprimento $n$), definida por
 \[
 c_k=\sum_{i=0}^{N-1} a_i\, b_{(k-i)\bmod n}, \qquad k=0,\dots,N-1.
@@ -273,7 +275,7 @@ por isso, percebe-se que, a cada 2 "deslocamentos", o valor se torna o oposto, c
 De forma mais geral:
 
 \begin{quote}
-$ \zeta_N = e^{\frac{2\pi i}{N}} $, uma raiz $N$-ésima primitiva da unidade. Então para todo inteiro $a$, $ {\zeta_N^{a+\frac{N}{2}} = -\,\zeta_N^{a}}. $
+$ \zeta_N = e^{\frac{-2\pi i}{N}} $, uma raiz $N$-ésima primitiva da unidade. Então para todo inteiro $a$, $ {\zeta_N^{a+\frac{N}{2}} = -\,\zeta_N^{a}}. $
 \end{quote}
 Alem de que, pela periodicidade $\zeta_N^{a+N}=\zeta_N^a$.
 
@@ -339,7 +341,7 @@ Desse modo, reduzimos a complexidade da transformada de $O(n^2) \text{ para } O(
 
 \section{ Problemas da FFT}
 
-Uns dos problemas da FTT eh que ela trabalha com ponto flutuante, o que, para computadores, eh um grande problemas que pode causar erro de arredondamentos e, assim causar um falha nos esquemas criptograficos. Alem disso, o polinomio dobram de tamanho a cada concolucao o que rapidamente torna-se um problema tanto computacional quanto de armazenamento .
+Uns dos problemas da FTT eh que ela trabalha com ponto flutuante, o que, para computadores, eh um grande problemas que pode causar erro de arredondamentos e, assim causar uma falha nos esquemas criptograficos. Alem disso, na convolução linear, o polinomio dobra de tamanho a cada concolucao o que rapidamente torna-se um problema tanto computacional quanto de armazenamento .
 
 
 
@@ -363,51 +365,59 @@ onde o lado esquerdo usa a soma módulo $N$ e o lado direito usa multiplicação
 \varphi([k+\ell])=\zeta_N^{k+\ell}=\zeta_N^k\zeta_N^\ell=\varphi([k])\,\varphi([\ell]).
 \]
 
-\textbf{Raiz primitva}
-Diferente da DFT complexa, onde raízes da unidade sempre existem para qualquer $n$, a NTT exige que o corpo finito $\mathbb{Z}_p$ suporte a ordem da transformada. 
+\subsection*{Raiz Primitiva e Estrutura Negacíclica}
+Diferente da DFT complexa, onde raízes da unidade sempre existem para qualquer $N$, a NTT exige que o corpo finito $\mathbb{Z}_p$ suporte a ordem da transformada.
 
-Para que exista uma raiz primitiva $n$-ésima da unidade em $\mathbb{Z}_p$, o tamanho da sequência $n$ deve dividir a ordem do grupo multiplicativo do corpo:
-\[n \mid (p - 1)\]
+Para a NTT Negacíclica, utilizada para realizar a multiplicação polinomial módulo $x^N + 1$, precisamos de uma raiz primitiva $2N$-ésima da unidade em $\mathbb{Z}_p$, que denotaremos por $\psi$. Isso implica que:
+\begin{enumerate}
+    \item $\psi^{2N} \equiv 1 \pmod{p}$;
+    \item $\psi^N \equiv -1 \pmod{p}$.
+\end{enumerate}
 
-Agora, iremos tratar da estrutura aritimetica, na qual a NTT ocorre.
+Para garantir a existência desse elemento, a ordem $2N$ deve dividir a ordem do grupo multiplicativo do corpo. Portanto, o primo $p$ deve satisfazer:
+\[ 2N \mid (p - 1) \]
+Ou seja, $p \equiv 1 \pmod{2N}$.
 
-Ela eh definida da seguinte forma:
+Agora, trataremos da estrutura aritmética. A NTT Negacíclica avalia o polinômio nas raízes da equação $x^N + 1 = 0$, que correspondem às potências ímpares de $\psi$. A transformada é definida por:
+
 \[
-X[k] = \sum_{n=0}^{N-1}x[n]\omega^{nk} \pmod{p}
+X[k] = \sum_{n=0}^{N-1} x[n] \psi^{(2k+1)n} \pmod{p}
 \]
-ou na forma matricial
+
+Na forma matricial:
+
 \[
-\mathbf{X}
-=
-\mathbf{W}_N \, \mathbf{x},
-\qquad
-\mathbf{x} =
+\mathbf{X} = \mathbf{W}_N \, \mathbf{x}, \qquad \mathbf{x} = 
+\begin{bmatrix} 
+x_0 \\ x_1 \\ \vdots \\ x_{N-1} 
+\end{bmatrix}
+\]
+
+Neste caso, a matriz de transformação $\mathbf{W}_N$ difere da versão cíclica padrão, pois seus coeficientes seguem a estrutura das raízes negacíclicas:
+
+\[
+\mathbf{W}_N = 
 \begin{bmatrix}
-x_0 \\ x_1 \\ \vdots \\ x_{N-1}
-\end{bmatrix},
+1 & 1 & 1 & \cdots & 1 \\
+1 & \psi^{3} & \psi^{6} & \cdots & \psi^{3(N-1)} \\
+1 & \psi^{5} & \psi^{10} & \cdots & \psi^{5(N-1)} \\
+\vdots & \vdots & \vdots & \ddots & \vdots \\
+1 & \psi^{(2k+1)} & \psi^{(2k+1)2} & \cdots & \psi^{(2k+1)(N-1)} \\
+\vdots & \vdots & \vdots & \ddots & \vdots \\
+1 & \psi^{(2N-1)} & \psi^{(2N-1)2} & \cdots & \psi^{(2N-1)(N-1)}
+\end{bmatrix}
 \]
 
+De forma geral, o termo na linha $k$ e coluna $n$ da matriz é dado por:
 \[
-\mathbf{W}_N =
-\begin{bmatrix}
-1        & 1        & 1        & \cdots & 1 \\
-1        & \omega   & \omega^2 & \cdots & \omega^{N-1} \\
-1        & \omega^2 & \omega^4 & \cdots & \omega^{2(N-1)} \\
-\vdots   & \vdots   & \vdots   & \ddots & \vdots \\
-1        & \omega^{N-1} & \omega^{2(N-1)} & \cdots & \omega^{(N-1)(N-1)}
-\end{bmatrix},
+(\mathbf{W}_N)_{k,n} = \psi^{(2k+1)n} \pmod{p}, \qquad 0 \le k,n \le N-1
 \]
 
+Essa transformação permite operar eficientemente no anel quociente utilizado em criptografia homomórfica (como no esquema CKKS):
 \[
-(\mathbf{W}_N)_{k,n} = \omega^{kn},
-\qquad 0 \le k,n \le N-1,
+R = \mathbb{Z}_p[x] / (x^N + 1)
 \]
-
-Ela opera no anel quociente
-\[
-R= \mathbb{Z}_p[x] /(x^n-1)
-\]
-onde $\mathbb{Z}_p[x]$ representa o coeficientes do polinomio $mod\text{ } p$ e o $/(x^n-1)$ faz com que a cadeia longa de polinomio dobre em si mesma formando um ciclo.
+onde $\mathbb{Z}_p[x]$ representa o coeficientes do polinomio $mod\text{ } p$ e o $/(x^N+1)$ faz com que a cadeia longa de polinomio dobre em si mesma formando um ciclo.
 
 a imagem \ref{fig:torus} ilustra a sequencia das duas operacoes visualmente.
 
@@ -419,7 +429,7 @@ a imagem \ref{fig:torus} ilustra a sequencia das duas operacoes visualmente.
 \end{figure}
 
 
-Escolhemos modulo de um primo para que $Z_p$ seja um field, i.e, para que a aritimedica tenha propiedades agradaveis e escolhemos $(x^n-1)$ para que haja raizes distinta e se preserve as "informacoes" indepentes o que garante que ele possa ser decomposto completamente.
+Escolhemos modulo de um primo para que $Z_p$ seja um field, i.e, para que a aritimedica tenha propiedades agradaveis e escolhemos $(x^N+1)$ para que haja raizes distinta e se preserve as "informacoes" indepentes o que garante que ele possa ser decomposto completamente.
 
 \section{O Isomorfismo via Teorema Chinês dos Restos (CRT)}
 
