@@ -413,10 +413,13 @@ De forma geral, o termo na linha $k$ e coluna $n$ da matriz é dado por:
 (\mathbf{W}_N)_{k,n} = \psi^{(2k+1)n} \pmod{p}, \qquad 0 \le k,n \le N-1
 \]
 
-Essa transformação permite operar eficientemente no anel quociente utilizado em criptografia homomórfica (como no esquema CKKS):
+O espaço em que a NTT ocorre é o anel quociente a seguir:
 \[
 R = \mathbb{Z}_p[x] / (x^N + 1)
 \]
+
+(explicacao muito ruim deixar ela mais formal)
+
 onde $\mathbb{Z}_p[x]$ representa o coeficientes do polinomio $mod\text{ } p$ e o $/(x^N+1)$ faz com que a cadeia longa de polinomio dobre em si mesma formando um ciclo.
 
 a imagem \ref{fig:torus} ilustra a sequencia das duas operacoes visualmente.
@@ -433,16 +436,83 @@ Escolhemos modulo de um primo para que $Z_p$ seja um field, i.e, para que a arit
 
 \section{O Isomorfismo via Teorema Chinês dos Restos (CRT)}
 
-A fundamentação algébrica da NTT reside na decomposição do anel de polinômios. Se $\omega$ é uma raiz primitiva $n$-ésima da unidade no corpo finito $\mathbb{Z}_p$, o polinômio $x^n - 1$ pode ser fatorado completamente em binômios lineares distintos:
+A fundamentação algébrica da NTT Negacíclica reside na decomposição do anel de polinômios módulo $x^N + 1$. Se $\psi$ é uma raiz primitiva $2N$-ésima da unidade no corpo finito $\mathbb{Z}_p$, sabemos que $\psi^N \equiv -1$. Consequentemente, as raízes da equação $x^N + 1 = 0$ correspondem às potências ímpares de $\psi$.
 
-\[x^n - 1 = \prod_{i=0}^{n-1} (x - \omega^i)\]
+Assim, o polinômio pode ser fatorado completamente em binômios lineares distintos:
 
-Como cada termo $(x - \omega^i)$ é irredutível e todos são coprimos entre si, o \textbf{Teorema Chinês dos Restos (CRT)} garante a existência de um isomorfismo de anéis:
+\[x^N + 1 = \prod_{k=0}^{N-1} (x - \psi^{2k+1})\]
 
-\[\frac{\mathbb{Z}_p[x]}{(x^n - 1)} \cong \frac{\mathbb{Z}_p[x]}{(x - \omega^0)} \times \frac{\mathbb{Z}_p[x]}{(x - \omega^1)} \times \dots \times \frac{\mathbb{Z}_p[x]}{(x - \omega^{n-1})}\]
+Como cada termo $(x - \psi^{2k+1})$ é irredutível e todos são coprimos entre si (pois as raízes são distintas), o \textbf{Teorema Chinês dos Restos (CRT)} garante a existência de um isomorfismo de anéis:
 
-Este isomorfismo é o que permite interpretar a NTT não apenas como uma transformação de vetores, mas como uma mudança de representação.
+\[
+\frac{\mathbb{Z}_p[x]}{(x^N + 1)} \cong \frac{\mathbb{Z}_p[x]}{(x - \psi^1)} \times \frac{\mathbb{Z}_p[x]}{(x - \psi^3)} \times \dots \times \frac{\mathbb{Z}_p[x]}{(x - \psi^{2N-1})}
+\]
 
+Este isomorfismo é o que permite interpretar a NTT Negacíclica não apenas como uma transformação de vetores, mas como uma mudança de representação para o domínio de avaliação (Evaluation Domain), onde a multiplicação polinomial se torna uma multiplicação ponto a ponto (Hadamard product).
+
+\begin{figure}[H]
+\centering
+\resizebox{\textwidth}{!}{%
+  \includegraphics{images/CRT_NTT.pdf}
+
+}
+\caption{CRT da NTT Negacíclica}
+\label{fig:NTT}
+\end{figure}
+\section{Transformada Numérica Inversa (INTT)}
+
+Como o Teorema Chinês dos Restos garante que a aplicação da NTT é um isomorfismo bijetor entre o anel de polinômios $\mathbb{Z}_p[x]/(x^N+1)$ e o domínio da frequência, existe uma transformação inversa única capaz de recuperar os coeficientes originais.
+
+Denotamos a inversa multiplicativa de $N$ no corpo $\mathbb{Z}_p$ por $N^{-1}$, tal que $N \cdot N^{-1} \equiv 1 \pmod{p}$. A **NTT Negacíclica Inversa (INTT)** é definida formalmente por:
+
+\[
+x[n] = N^{-1} \sum_{k=0}^{N-1} X[k] \psi^{-(2k+1)n} \pmod{p}
+\]
+
+Note que o termo $\psi^{-(2k+1)n}$ refere-se à potência do inverso multiplicativo da raiz, ou seja, $\psi^{-1} \equiv \psi^{2N-1} \pmod{p}$.
+
+\subsection*{Representação Matricial}
+Na forma matricial, a operação de inversão corresponde à resolução do sistema linear $\mathbf{X} = \mathbf{W}_N \mathbf{x}$. A solução é dada por:
+
+\[
+\mathbf{x} = \mathbf{W}_N^{-1} \mathbf{X}
+\]
+
+Onde a matriz inversa $\mathbf{W}_N^{-1}$ é definida como a conjugada transposta da matriz direta, escalada pelo fator $N^{-1}$:
+
+\[
+\mathbf{W}_N^{-1} = N^{-1}
+\begin{bmatrix}
+1 & 1 & 1 & \cdots & 1 \\
+1 & \psi^{-3} & \psi^{-5} & \cdots & \psi^{-(2N-1)} \\
+1 & \psi^{-6} & \psi^{-10} & \cdots & \psi^{-2(2N-1)} \\
+\vdots & \vdots & \vdots & \ddots & \vdots \\
+1 & \psi^{-(2k+1)} & \psi^{-2(2k+1)} & \cdots & \psi^{-(N-1)(2k+1)} \\
+\vdots & \vdots & \vdots & \ddots & \vdots \\
+1 & \psi^{-(2N-1)} & \psi^{-2(2N-1)} & \cdots & \psi^{-(N-1)(2N-1)}
+\end{bmatrix}
+\]
+
+De modo geral, o termo na linha $n$ e coluna $k$ da matriz inversa é:
+\[
+(\mathbf{W}_N^{-1})_{n,k} = N^{-1} \psi^{-(2k+1)n} \pmod{p}
+\]
+
+\subsection*{Ortogonalidade}
+A existência da inversa e a validade da fórmula acima decorrem da propriedade de ortogonalidade das raízes negacíclicas no corpo finito $\mathbb{Z}_p$. Para quaisquer $n, m \in \{0, \dots, N-1\}$, temos:
+
+\[
+\sum_{k=0}^{N-1} \psi^{(2k+1)(n-m)} = 
+\begin{cases} 
+N & \text{se } n = m \\
+0 & \text{se } n \neq m 
+\end{cases}
+\]
+
+Isso garante que o produto das matrizes resulta na identidade:
+\[
+\mathbf{W}_N^{-1} \mathbf{W}_N = \mathbf{I}
+\]
 A comporação computacional dessa ferramentas pode ser vista na tabela a seguir, onde calculou-se os números de Fibonacci.
 \begin{center}
 \begin{tabular}{|l|r|}
