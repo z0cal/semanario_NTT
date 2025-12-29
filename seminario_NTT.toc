@@ -9,6 +9,8 @@
 \contentsline {subsection}{\numberline {7.1}Fundamentos}{7}{subsection.7.1}%
 \contentsline {section}{\numberline {8}O Isomorfismo via Teorema Chinês dos Restos (CRT)}{11}{section.8}%
 \contentsline {section}{\numberline {9}Transformada Numérica Inversa (INTT)}{12}{section.9}%
-\contentsline {section}{\numberline {10}Apêndice}{13}{section.10}%
-\contentsline {subsection}{\numberline {10.1}Exemplo de convolução circular}{13}{subsection.10.1}%
-\contentsline {subsection}{\numberline {10.2}Determinição unívoca do polinomio}{15}{subsection.10.2}%
+\contentsline {subsection}{\numberline {9.1}A NTT como uma FFT: Decomposição Radix-2 via CRT}{13}{subsection.9.1}%
+\contentsline {subsection}{\numberline {9.2}A INTT via Gentleman-Sande (GS): Reconstrução via CRT}{15}{subsection.9.2}%
+\contentsline {section}{\numberline {10}Apêndice}{18}{section.10}%
+\contentsline {subsection}{\numberline {10.1}Exemplo de convolução circular}{18}{subsection.10.1}%
+\contentsline {subsection}{\numberline {10.2}Determinição unívoca do polinomio}{20}{subsection.10.2}%

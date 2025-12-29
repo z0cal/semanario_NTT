@@ -66,7 +66,7 @@ A DFT é definida da seguinte forma:
 Para $k = 0, 1, \dots, N-1$.
 
 Diferente da versão contínua, a DFT lida com somatórios e vetores numéricos, permitindo que a teoria de Fourier seja aplicada em qualquer dispositivo digital.
-Eh possivel provar que a DFT eh um transformacao linear, logo, pode ser representada matricialmente.
+é possivel provar que a DFT é um transformacao linear, logo, pode ser representada matricialmente.
 
 Seja $\zeta_N = e^{-i\frac{2\pi}{N}}$. A representação matricial da DFT para $n = 0, 1, \dots, N-1$ é:
 
@@ -145,7 +145,7 @@ Assim, \(\mathrm{DFT}\) é \emph{avaliar} em raízes da unidade e \(\mathrm{IDFT
 
 \section{ A Multiplicação de Polinômios e a Complexidade Computacional}
 
-Um problema simplificado pela mudanca de domino eh a multiplicacao de polinomios. Tome os polinomios $f(x)$ e $g(x)$ de grau $n-1$: 
+Um problema simplificado pela mudanca de domino é a multiplicacao de polinomios. Tome os polinomios $f(x)$ e $g(x)$ de grau $N-1$: 
 
 \[f(x) = \sum_{i=0}^{N-1} a_i x^i, \quad g(x) = \sum_{j=0}^{N-1} b_j x^j\]
 
@@ -184,7 +184,7 @@ Com a transformada direta ingênua o custo ainda é $O(n^2)$, não há ganho da 
 Uma exemplo para o convencimento do leitor foi disposto no apendice~\ref{sec:convolução}
 \section{ A Fast Fourier Transform}
 
-A FFT (Fast Fourier Transform) eh uma maneira de otimizar o calculo da DFT.
+A FFT (Fast Fourier Transform) é uma maneira de otimizar o calculo da DFT.
 
 O algoritmo da FFT foi redescoberta por Cooley e Tukey em 1965, uma vez que Gauss ja tinha utilzado um algoritmo semelhante para calcular a orbitas de asteroides em 1805. 
 
@@ -279,7 +279,7 @@ $ \zeta_N = e^{\frac{-2\pi i}{N}} $, uma raiz $N$-ésima primitiva da unidade. E
 \end{quote}
 Alem de que, pela periodicidade $\zeta_N^{a+N}=\zeta_N^a$.
 
-Para esse caso a DFT eh representada desse modo:
+Para esse caso a DFT é representada desse modo:
 \[
  \begin{bmatrix} 1 & 1 & 1 & 1 \\ 1 & -i & -1 & i \\ 1 & -1 & 1 & -1 \\ 1 & i & -1 & -i \end{bmatrix}
 \]
@@ -341,7 +341,7 @@ Desse modo, reduzimos a complexidade da transformada de $O(n^2) \text{ para } O(
 
 \section{ Problemas da FFT}
 
-Uns dos problemas da FTT eh que ela trabalha com ponto flutuante, o que, para computadores, eh um grande problemas que pode causar erro de arredondamentos e, assim causar uma falha nos esquemas criptograficos. Alem disso, na convolução linear, o polinomio dobra de tamanho a cada concolucao o que rapidamente torna-se um problema tanto computacional quanto de armazenamento .
+Uns dos problemas da FTT é que ela trabalha com ponto flutuante, o que, para computadores, é um grande problemas que pode causar erro de arredondamentos e, assim causar uma falha nos esquemas criptograficos. Alem disso, na convolução linear, o polinomio dobra de tamanho a cada concolucao o que rapidamente torna-se um problema tanto computacional quanto de armazenamento .
 
 
 
@@ -366,7 +366,7 @@ onde o lado esquerdo usa a soma módulo $N$ e o lado direito usa multiplicação
 \]
 
 \subsection*{Raiz Primitiva e Estrutura Negacíclica}
-Diferente da DFT complexa, onde raízes da unidade sempre existem para qualquer $N$, a NTT exige que o corpo finito $\mathbb{Z}_p$ suporte a ordem da transformada.
+Diferente da DFT complexa, onde raízes da unidade sempre existem para qualquer $N$, a NTT exige que o corpo finito $\mathbb{Z}_p$, isto é, os inteiros$\pmod p$, sendo $p$ um primo, suporte a ordem da transformada.
 
 Para a NTT Negacíclica, utilizada para realizar a multiplicação polinomial módulo $x^N + 1$, precisamos de uma raiz primitiva $2N$-ésima da unidade em $\mathbb{Z}_p$, que denotaremos por $\psi$. Isso implica que:
 \begin{enumerate}
@@ -375,10 +375,21 @@ Para a NTT Negacíclica, utilizada para realizar a multiplicação polinomial m�
 \end{enumerate}
 
 Para garantir a existência desse elemento, a ordem $2N$ deve dividir a ordem do grupo multiplicativo do corpo. Portanto, o primo $p$ deve satisfazer:
-\[ 2N \mid (p - 1) \]
+\[ 2N \mid (p - 1) \qquad \text{i.e. 2N divide (p-1)}\]
 Ou seja, $p \equiv 1 \pmod{2N}$.
 
-Agora, trataremos da estrutura aritmética. A NTT Negacíclica avalia o polinômio nas raízes da equação $x^N + 1 = 0$, que correspondem às potências ímpares de $\psi$. A transformada é definida por:
+Como $2N \mid (p-1)$, em particular temos $p \nmid N$ (i.e. $gcd(p,N)=1$); logo $N$ possui inverso em $\mathbb{Z}_p$. 
+
+
+
+Agora, trataremos da estrutura algébrica. A NTT Negacíclica é definida no anel quaociente 
+\[
+R = \frac{\mathbb{Z}_p[x]}{(x^N+1)}
+\]
+
+(a imagem \ref{fig:torus} ilustra a sequencia das duas operacoes visualmente.)
+
+ Ela pode ser vista como a avalição do polinômio nas raízes da equação $x^N + 1 = 0$, que correspondem às potências ímpares de $\psi$. A transformada é definida por:
 
 \[
 X[k] = \sum_{n=0}^{N-1} x[n] \psi^{(2k+1)n} \pmod{p}
@@ -413,16 +424,6 @@ De forma geral, o termo na linha $k$ e coluna $n$ da matriz é dado por:
 (\mathbf{W}_N)_{k,n} = \psi^{(2k+1)n} \pmod{p}, \qquad 0 \le k,n \le N-1
 \]
 
-O espaço em que a NTT ocorre é o anel quociente a seguir:
-\[
-R = \mathbb{Z}_p[x] / (x^N + 1)
-\]
-
-(explicacao muito ruim deixar ela mais formal)
-
-onde $\mathbb{Z}_p[x]$ representa o coeficientes do polinomio $mod\text{ } p$ e o $/(x^N+1)$ faz com que a cadeia longa de polinomio dobre em si mesma formando um ciclo.
-
-a imagem \ref{fig:torus} ilustra a sequencia das duas operacoes visualmente.
 
 \begin{figure}[H]
     \centering
@@ -432,23 +433,44 @@ a imagem \ref{fig:torus} ilustra a sequencia das duas operacoes visualmente.
 \end{figure}
 
 
-Escolhemos modulo de um primo para que $Z_p$ seja um field, i.e, para que a aritimedica tenha propiedades agradaveis e escolhemos $(x^N+1)$ para que haja raizes distinta e se preserve as "informacoes" indepentes o que garante que ele possa ser decomposto completamente.
-
 \section{O Isomorfismo via Teorema Chinês dos Restos (CRT)}
 
-A fundamentação algébrica da NTT Negacíclica reside na decomposição do anel de polinômios módulo $x^N + 1$. Se $\psi$ é uma raiz primitiva $2N$-ésima da unidade no corpo finito $\mathbb{Z}_p$, sabemos que $\psi^N \equiv -1$. Consequentemente, as raízes da equação $x^N + 1 = 0$ correspondem às potências ímpares de $\psi$.
+A fundamentação algébrica da NTT reside na estrutura do anel quociente $\mathbb{Z}_p[x] / \langle x^N + 1 \rangle$. Dado que $x^N + 1$ fatora-se em $N$ binômios lineares distintos $(x - \psi^{2k+1})$, o CRT estabelece uma equivalência entre o anel original e o produto de anéis menores.
 
-Assim, o polinômio pode ser fatorado completamente em binômios lineares distintos:
-
-\[x^N + 1 = \prod_{k=0}^{N-1} (x - \psi^{2k+1})\]
-
-Como cada termo $(x - \psi^{2k+1})$ é irredutível e todos são coprimos entre si (pois as raízes são distintas), o \textbf{Teorema Chinês dos Restos (CRT)} garante a existência de um isomorfismo de anéis:
-
+Para compreender a natureza desses anéis menores, invocamos o conceito de \textit{homomorfismo  }. Considere o anel quociente genérico $\mathbb{Z}_p[x] / \langle x - \alpha \rangle$. Pela Divisão Euclidiana, qualquer polinômio $a(x) \in \mathbb{Z}_p[x]$ pode ser escrito unicamente como:
 \[
-\frac{\mathbb{Z}_p[x]}{(x^N + 1)} \cong \frac{\mathbb{Z}_p[x]}{(x - \psi^1)} \times \frac{\mathbb{Z}_p[x]}{(x - \psi^3)} \times \dots \times \frac{\mathbb{Z}_p[x]}{(x - \psi^{2N-1})}
+a(x) = q(x) \cdot (x - \alpha) + r
+\]
+onde o grau de $r$ deve ser estritamente menor que o grau do divisor $(x - \alpha)$. Como o divisor tem grau 1, o resto $r$ é necessariamente um escalar constante ($r \in \mathbb{Z}_p$).
+
+No anel quociente, impomos que $x - \alpha \equiv 0$, ou seja, $x \equiv \alpha$. Ao aplicarmos essa equivalência (ou avaliarmos a equação em $x = \alpha$), o termo que contém o divisor se anula:
+\[
+a(\alpha) = q(\alpha) \cdot (\underbrace{\alpha - \alpha}_{0}) + r \implies a(\alpha) = r
+\]
+Portanto, a classe de equivalência de $a(x)$ módulo $(x - \alpha)$ é univocamente representada pelo escalar $a(\alpha)$. Isso estabelece o isomorfismo local:
+\[
+\frac{\mathbb{Z}_p[x]}{\langle x - \alpha \rangle} \cong \mathbb{Z}_p \quad \text{via o mapa} \quad [a(x)] \mapsto a(\alpha)
 \]
 
-Este isomorfismo é o que permite interpretar a NTT Negacíclica não apenas como uma transformação de vetores, mas como uma mudança de representação para o domínio de avaliação (Evaluation Domain), onde a multiplicação polinomial se torna uma multiplicação ponto a ponto (Hadamard product).
+Com essa intuição firmada, podemos expandir explicitamente o isomorfismo global $\Phi$ garantido pelo CRT. A transformação mapeia o polinômio $a(x)$ diretamente para o vetor de suas avaliações nas raízes de $x^N + 1$:
+
+\[
+\begin{aligned}
+\Phi : \frac{\mathbb{Z}_p[x]}{\langle x^N + 1 \rangle} &\xrightarrow{\cong} \bigotimes_{k=0}^{N-1} \frac{\mathbb{Z}_p[x]}{\langle x - \psi^{2k+1} \rangle} \\
+&\cong \underbrace{\mathbb{Z}_p \times \mathbb{Z}_p \times \dots \times \mathbb{Z}_p}_{N \text{ vezes}}
+\end{aligned}
+\]
+
+A ação de $\Phi$ sobre um elemento $a(x)$ é dada explicitamente por:
+\[
+\Phi(a(x)) = \left( a(\psi^1), a(\psi^3), \dots, a(\psi^{2N-1}) \right) \in \mathbb{Z}_p^N
+\]
+
+Neste domínio transformado, a operação de multiplicação de dois polinômios $a(x)$ e $b(x)$ ocorre componente a componente. Se $C = \Phi(a(x) \cdot b(x))$, então a $k$-ésima componente do vetor resultante é:
+\[
+C_k = (a \cdot b)(\psi^{2k+1}) = a(\psi^{2k+1}) \cdot b(\psi^{2k+1})
+\]
+Isso demonstra formalmente por que a convolução cíclica (ou negacíclica) no domínio do tempo se traduz em um produto de Hadamard (ponto a ponto) no domínio da frequência.
 
 \begin{figure}[H]
 \centering
@@ -459,6 +481,7 @@ Este isomorfismo é o que permite interpretar a NTT Negacíclica não apenas com
 \caption{CRT da NTT Negacíclica}
 \label{fig:NTT}
 \end{figure}
+
 \section{Transformada Numérica Inversa (INTT)}
 
 Como o Teorema Chinês dos Restos garante que a aplicação da NTT é um isomorfismo bijetor entre o anel de polinômios $\mathbb{Z}_p[x]/(x^N+1)$ e o domínio da frequência, existe uma transformação inversa única capaz de recuperar os coeficientes originais.
@@ -484,7 +507,7 @@ Onde a matriz inversa $\mathbf{W}_N^{-1}$ é definida como a conjugada transpost
 \mathbf{W}_N^{-1} = N^{-1}
 \begin{bmatrix}
 1 & 1 & 1 & \cdots & 1 \\
-1 & \psi^{-3} & \psi^{-5} & \cdots & \psi^{-(2N-1)} \\
+1 & \psi^{-3} & \psi^{-6} & \cdots & \psi^{-(2N-1)} \\
 1 & \psi^{-6} & \psi^{-10} & \cdots & \psi^{-2(2N-1)} \\
 \vdots & \vdots & \vdots & \ddots & \vdots \\
 1 & \psi^{-(2k+1)} & \psi^{-2(2k+1)} & \cdots & \psi^{-(N-1)(2k+1)} \\
@@ -513,6 +536,170 @@ Isso garante que o produto das matrizes resulta na identidade:
 \[
 \mathbf{W}_N^{-1} \mathbf{W}_N = \mathbf{I}
 \]
+
+\subsection{A NTT como uma FFT: Decomposição Radix-2 via CRT}
+
+A eficiência da NTT reside na estratégia ``dividir para conquistar''. Em vez de avaliar um polinômio de grau $N-1$ de uma só vez, utilizamos a estrutura algébrica do anel para decompor o problema em dois problemas independentes de tamanho $N/2$.
+
+\subsubsection*{1. A Fatoração do Módulo}
+O ponto de partida é a decomposição do polinômio $X^N + 1$.
+Como $\psi$ é uma raiz primitiva $2N$-ésima, temos que $\psi^N \equiv -1$. Isso implica que o termo $\psi^{N/2}$ atua como uma ``raiz quadrada de -1'' no corpo finito.
+
+Podemos então ver $X^N + 1$ como uma diferença de quadrados:
+\[
+X^N + 1 = X^N - (\psi^{N/2})^2 = (X^{N/2} - \psi^{N/2}) \cdot (X^{N/2} + \psi^{N/2})
+\]
+O Teorema Chinês dos Restos (CRT) garante que resolver o problema no anel original é equivalente a resolvê-lo simultaneamente nestes dois sub-anéis menores.
+
+\subsubsection*{2. O Colapso da Variável}
+Considere o polinômio de entrada $A(X)$ dividido em sua metade inferior ($A_{lo}$) e superior ($A_{hi}$):
+\[
+A(X) = \sum_{n=0}^{N/2-1} x[n]X^n + X^{N/2} \sum_{n=0}^{N/2-1} x[n+N/2]X^n
+\]
+A intuição chave da NTT é que, ao projetarmos $A(X)$ nos sub-anéis definidos pelos fatores acima, a potência $X^{N/2}$ deixa de ser uma variável e colapsa em uma constante:
+
+\begin{itemize}
+    \item \textbf{No ramo esquerdo} (módulo $X^{N/2} - \psi^{N/2}$): Temos a equivalência $X^{N/2} \equiv \psi^{N/2}$.
+    \item \textbf{No ramo direito} (módulo $X^{N/2} + \psi^{N/2}$): Temos a equivalência $X^{N/2} \equiv -\psi^{N/2}$.
+\end{itemize}
+
+Isso simplifica drasticamente o cálculo, pois reduz a multiplicação polinomial a somas ponderadas.
+
+\subsubsection*{3. A Operação Borboleta (Butterfly)}
+Substituindo as equivalências acima na expressão de $A(X)$, obtemos as fórmulas para os novos polinômios $A_L(X)$ e $A_R(X)$ de grau $N/2 - 1$. Em termos dos coeficientes, para cada $0 \le i < N/2$:
+
+\[
+\boxed{
+\begin{aligned}
+    x_L[i] &= x[i] + \psi^{N/2} \cdot x[i+N/2] \pmod p \\
+    x_R[i] &= x[i] - \psi^{N/2} \cdot x[i+N/2] \pmod p
+\end{aligned}
+}
+\]
+
+Esta é a clássica operação ``borboleta''. Observe a simetria: os mesmos valores de entrada ($x[i]$ e $x[i+N/2]$) são usados para calcular ambas as saídas, diferenciando-se apenas pelo sinal da operação.
+
+O processo é então aplicado recursivamente: $x_L$ torna-se a entrada para uma NTT de tamanho $N/2$, e $x_R$ para outra, até que o tamanho do problema seja trivial (1).
+
+\begin{figure}[H]
+    \centering
+    \includegraphics{images/butterflyNTT.pdf}
+    \caption{Butterfly NTT}
+    \label{fig:bntt}
+\end{figure}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics{images/butterflyNTT_4.pdf}
+    \caption{Butterfly NTT}
+    \label{fig:b4ntt}
+\end{figure}
+
+\subsection{A INTT via Gentleman-Sande (GS): Reconstrução via CRT}
+
+Enquanto a transformação direta (Forward NTT) utiliza a estratégia de decomposição para reduzir o grau do polinômio, a transformação inversa (INTT) realiza o caminho oposto: ela combina pares de polinômios menores para reconstruir o polinômio original modulo $X^N + 1$. O algoritmo de Gentleman-Sande implementa essa reconstrução de forma eficiente.
+
+\subsubsection*{1. O Problema da Interpolação}
+Na etapa inversa, começamos com dois polinômios "metade" recuperados dos sub-anéis:
+\begin{itemize}
+    \item $A_L(X)$: O resultado associado ao ramo $X^{N/2} - \psi^{N/2}$.
+    \item $A_R(X)$: O resultado associado ao ramo $X^{N/2} + \psi^{N/2}$.
+\end{itemize}
+Nosso objetivo é encontrar o polinômio único $A(X) = A_{lo}(X) + X^{N/2}A_{hi}(X)$ que satisfaz:
+\[
+\begin{cases}
+    A(X) \equiv A_L(X) \pmod{X^{N/2} - \psi^{N/2}} \\
+    A(X) \equiv A_R(X) \pmod{X^{N/2} + \psi^{N/2}}
+\end{cases}
+\]
+
+\subsubsection*{2. A Lógica da Recuperação}
+Lembrando que no sub-anel esquerdo $X^{N/2} \equiv \psi^{N/2}$ e no direito $X^{N/2} \equiv -\psi^{N/2}$, podemos escrever o sistema linear para os componentes $A_{lo}$ e $A_{hi}$:
+
+\[
+\begin{aligned}
+    A_L &= A_{lo} + \psi^{N/2} A_{hi} \\
+    A_R &= A_{lo} - \psi^{N/2} A_{hi}
+\end{aligned}
+\]
+
+Para isolar $A_{lo}$ e $A_{hi}$, basta somar e subtrair as equações:
+\begin{itemize}
+    \item \textbf{Soma:} $A_L + A_R = 2A_{lo} \implies A_{lo} = \frac{1}{2}(A_L + A_R)$
+    \item \textbf{Subtração:} $A_L - A_R = 2\psi^{N/2} A_{hi} \implies A_{hi} = \frac{1}{2}\psi^{-N/2}(A_L - A_R)$
+\end{itemize}
+
+Esta estrutura algébrica revela a diferença fundamental entre a borboleta da ida (Cooley-Tukey) e a da volta (Gentleman-Sande).
+
+\subsubsection*{3. A Borboleta GS (Inverse Butterfly)}
+Diferente da NTT direta, onde a multiplicação pelo fator de rotação ocorre \textit{antes} da borboleta (ou no ramo inferior da entrada), na INTT via Gentleman-Sande a multiplicação ocorre \textit{após} a subtração.
+
+Para coeficientes de entrada $y_L$ e $y_R$ correspondentes à mesma posição nos vetores dos sub-blocos, a operação de fusão é:
+
+\[
+\boxed{
+\begin{aligned}
+    x[i] &= \frac{1}{2} (y_L[i] + y_R[i]) \pmod p \\
+    x[i+N/2] &= \frac{1}{2} (y_L[i] - y_R[i]) \cdot \psi^{-N/2} \pmod p
+\end{aligned}
+}
+\]
+\textit{Nota: Em implementações eficientes, o fator escalar $1/2$ (inverso modular de 2) é frequentemente acumulado e aplicado apenas uma vez no final como $1/N$, para evitar multiplicações excessivas a cada estágio.}
+
+\subsubsection*{4. Fluxo de Dados}
+O algoritmo Gentleman-Sande é a "transposta" do Cooley-Tukey.
+Se a NTT direta recebe os dados em ordem natural e os devolve em ordem \textit{bit-reversed} (embaralhada), a INTT via GS aceita os dados em ordem \textit{bit-reversed} e os reconstrói para a ordem natural. Isso elimina a necessidade de reordenamentos custosos de memória entre a transformação direta e a inversa durante operações de convolução.
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics{images/INTT_butterfly.pdf}
+    \caption{Butterfly INTT}
+    \label{fig:bINNT}
+\end{figure}
+A implementa da NTT negacíclica ésta a seguir \ref{lst:NTT}
+
+\begin{lstlisting}[caption=codigo em SageMath,label={lst:NTT}]
+def NTT_Negacyclic(A, R, psi):
+    
+    n = len(A)
+    if n == 1:
+        return [A[0]]
+
+    A_even = A[0::2]
+    A_odd  = A[1::2]
+
+    psi_sq = psi^2
+    Y_even = NTT_Negacyclic(A_even, R, psi_sq)
+    Y_odd  = NTT_Negacyclic(A_odd,  R, psi_sq)
+
+    Y = [R(0)] * n
+    
+    w = psi 
+    
+    half = n // 2
+    for k in range(half):
+        t = w * Y_odd[k]
+        
+        Y[k]        = Y_even[k] + t
+        Y[k + half] = Y_even[k] - t
+        
+        w *= psi_sq 
+
+    return Y
+
+def INTT_Negacyclic(A, R, psi):
+    n = len(A)
+    # A inversa usa psi^-1
+    psi_inv = psi^(-1)
+    
+    Y = NTT_Negacyclic(A, R, psi_inv)
+    
+    n_inv = R(n)^(-1)
+    return [y * n_inv for y in Y]
+\end{lstlisting}
+
 A comporação computacional dessa ferramentas pode ser vista na tabela a seguir, onde calculou-se os números de Fibonacci.
 \begin{center}
 \begin{tabular}{|l|r|}
