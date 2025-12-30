@@ -64,8 +64,7 @@ Apesar de sua elegância teórica, a CTFT apresenta desafios para a aplicação 
 
 
 \section{ Transformada Discreta de Fourier (DFT)}
-Para viabilizar o processamento em computadores, utilizamos a \textbf{DFT}. Ela opera sobre uma sequência finita de $N$ amostras, mapeando dados discretos no tempo para dados discretos na frequência, devido ao teorema de Teorema de amostragem de Nyquist-Shannon[1colocar uma referencia], um sinal de frequência $f$ precisa de $N \geq f/2$ para ser unicamente determinado.
-
+Para viabilizar o processamento em computadores, utilizamos a \textbf{DFT} (\textit{Discrete Fourier Transform}). Ela opera sobre uma sequência finita de $N$ amostras, mapeando dados discretos no tempo para o domínio da frequência. Segundo o Teorema de Amostragem de Nyquist-Shannon \cite{oppenheim2009}, para que um sinal contínuo possa ser unicamente determinado a partir de suas amostras, a frequência de amostragem $f_s$ deve ser superior ao dobro da maior frequência $f_{max}$ contida no sinal. $   f_s > 2 f_{max}$
 A DFT é definida da seguinte forma:
 
 \[X[k] = \sum_{n=0}^{N-1} x[n] e^{-i \frac{2\pi}{N} kn}\]
