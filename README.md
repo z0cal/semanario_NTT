@@ -116,7 +116,7 @@ Mais o latex
 alem da principal biblioteca **Manim**
 o comando para executar a animação em alta qualidade é 
 ```bash
-manim -pqh convolution.py  CirculoCrescente
+ manim -pqh convolution.py NegacyclicConvolution
 ```
 Para a animação da FFT
 ```bash
