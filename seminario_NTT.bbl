@@ -1,0 +1,70 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 3.3 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+
+\refsection{0}
+  \datalist[entry]{nty/global//global/global/global}
+    \entry{paiva_incomplete_ntt}{misc}{}{}
+      \name{author}{5}{}{%
+        {{hash=272fc27020d31ac2413cb8eb79d55904}{%
+           family={Paiva},
+           familyi={P\bibinitperiod},
+           given={Thales\bibnamedelima B.},
+           giveni={T\bibinitperiod\bibinitdelim B\bibinitperiod}}}%
+        {{hash=40209e7bf6de5d18d3dbc3c7829a53e5}{%
+           family={De\bibnamedelima Micheli},
+           familyi={D\bibinitperiod\bibinitdelim M\bibinitperiod},
+           given={Gabrielle},
+           giveni={G\bibinitperiod}}}%
+        {{hash=2a25db4740570cc45161137d4281ea17}{%
+           family={Hafiz},
+           familyi={H\bibinitperiod},
+           given={Syed\bibnamedelima Mahbub},
+           giveni={S\bibinitperiod\bibinitdelim M\bibinitperiod}}}%
+        {{hash=c4cab6170012c62bfb868911a2f5202e}{%
+           family={Simplicio\bibnamedelima Jr.},
+           familyi={S\bibinitperiod\bibinitdelim J\bibinitperiod},
+           given={Marcos\bibnamedelima A.},
+           giveni={M\bibinitperiod\bibinitdelim A\bibinitperiod}}}%
+        {{hash=c078d64334437d98f0fb918b9b8a52eb}{%
+           family={Yildiz},
+           familyi={Y\bibinitperiod},
+           given={Bahattin},
+           giveni={B\bibinitperiod}}}%
+      }
+      \strng{namehash}{171558ded596a777fbb8b41eb20934ef}
+      \strng{fullhash}{bd909870a5a30976b6e0eec0f07e8323}
+      \strng{fullhashraw}{bd909870a5a30976b6e0eec0f07e8323}
+      \strng{bibnamehash}{171558ded596a777fbb8b41eb20934ef}
+      \strng{authorbibnamehash}{171558ded596a777fbb8b41eb20934ef}
+      \strng{authornamehash}{171558ded596a777fbb8b41eb20934ef}
+      \strng{authorfullhash}{bd909870a5a30976b6e0eec0f07e8323}
+      \strng{authorfullhashraw}{bd909870a5a30976b6e0eec0f07e8323}
+      \field{sortinit}{P}
+      \field{sortinithash}{ff3bcf24f47321b42cb156c2cc8a8422}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{howpublished}{\url{https://eprint.iacr.org/2025/696.pdf}}
+      \field{note}{IACR Cryptology ePrint Archive}
+      \field{title}{Faster amortized bootstrapping using the incomplete NTT for free}
+      \field{year}{2025}
+    \endentry
+  \enddatalist
+\endrefsection
+\endinput
+

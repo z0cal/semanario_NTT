@@ -1,6 +1,7 @@
 \documentclass[12pt]{article}
 \usepackage{zocal}
-
+\usepackage{biblatex}
+\addbibresource{referencias.bib} % Certifique-se que o nome do arquivo .bib está correto
 \begin{document}
 
 \begin{titlepage}
@@ -16,6 +17,12 @@
         \vspace{2cm}
         
         \textbf{Resumo}\\[0.5cm]
+            \begin{minipage}{0.5\textwidth}
+            \small
+            O objetivo do semanário é apresentar a NTT e suas vantagens, para isso, parti-se da transformada de Fourier, apos, para a sua forma discreta (DFT) e chega-se na NTT propriamente dita.
+            O que almejo com esse semanário é passar a intuição por trás das ferramentas matemática utilizadas e beleza inerentes delas.
+            \end{minipage}
+
 
     \end{center}
 \end{titlepage}
@@ -539,47 +546,51 @@ Isso garante que o produto das matrizes resulta na identidade:
 
 \subsection{A NTT como uma FFT: Decomposição Radix-2 via CRT}
 
-A eficiência da NTT reside na estratégia ``dividir para conquistar''. Em vez de avaliar um polinômio de grau $N-1$ de uma só vez, utilizamos a estrutura algébrica do anel para decompor o problema em dois problemas independentes de tamanho $N/2$.
+A eficiência da NTT reside na estratégia ``dividir para conquistar''. Em vez de avaliar um polinômio $A(x)$ de grau $N-1$ de uma só vez, utilizamos a estrutura algébrica do anel para decompor o problema em dois problemas independentes de tamanho $N/2$.
 
 \subsubsection*{1. A Fatoração do Módulo}
-O ponto de partida é a decomposição do polinômio $X^N + 1$.
-Como $\psi$ é uma raiz primitiva $2N$-ésima, temos que $\psi^N \equiv -1$. Isso implica que o termo $\psi^{N/2}$ atua como uma ``raiz quadrada de -1'' no corpo finito.
+O ponto de partida é a decomposição do polinômio $x^N + 1$.
+Como $\psi$ é uma raiz primitiva $2N$-ésima da unidade, temos que $\psi^N \equiv -1 \pmod p$, o que implica $(\psi^{N/2})^2 \equiv -1$.
 
-Podemos então ver $X^N + 1$ como uma diferença de quadrados:
+Pelo Teorema Chinês dos Restos (CRT), podemos fatorar o módulo original em dois sub-anéis:
 \[
-X^N + 1 = X^N - (\psi^{N/2})^2 = (X^{N/2} - \psi^{N/2}) \cdot (X^{N/2} + \psi^{N/2})
+x^N + 1 = x^N - (\psi^{N/2})^2 = \underbrace{(x^{N/2} - \psi^{N/2})}_{\text{Módulo Esquerdo}} \cdot \underbrace{(x^{N/2} + \psi^{N/2})}_{\text{Módulo Direito}}
 \]
-O Teorema Chinês dos Restos (CRT) garante que resolver o problema no anel original é equivalente a resolvê-lo simultaneamente nestes dois sub-anéis menores.
+
+\textit{Nota: Essa fatoração particiona o conjunto das raízes de $x^N+1$ (que são as potências ímpares $\psi^{2k+1}$). As raízes que satisfazem o lado esquerdo continuam na recursão $L$, e as que satisfazem o lado direito seguem na recursão $R$.}
 
 \subsubsection*{2. O Colapso da Variável}
-Considere o polinômio de entrada $A(X)$ dividido em sua metade inferior ($A_{lo}$) e superior ($A_{hi}$):
+Considere o polinômio de entrada $A(x)$ com coeficientes $a[i]$. Podemos dividir seu somatório em duas partes: os primeiros $N/2$ termos e os últimos $N/2$ termos.
+
 \[
-A(X) = \sum_{n=0}^{N/2-1} x[n]X^n + X^{N/2} \sum_{n=0}^{N/2-1} x[n+N/2]X^n
+A(x) = \sum_{i=0}^{N/2-1} a[i]x^i + \sum_{i=0}^{N/2-1} a[i+N/2]x^{i+N/2}
 \]
-A intuição chave da NTT é que, ao projetarmos $A(X)$ nos sub-anéis definidos pelos fatores acima, a potência $X^{N/2}$ deixa de ser uma variável e colapsa em uma constante:
+
+Colocando $x^{N/2}$ em evidência na segunda metade, obtemos uma estrutura que revela a simetria do problema:
+\[
+A(x) = \sum_{i=0}^{N/2-1} \left( a[i] + x^{N/2} \cdot a[i+N/2] \right) x^i
+\]
+
+A intuição chave da NTT é projetar essa equação nos sub-anéis definidos no passo 1. Ao fazer isso, a potência $x^{N/2}$ deixa de ser uma variável e torna-se uma constante escalar:
 
 \begin{itemize}
-    \item \textbf{No ramo esquerdo} (módulo $X^{N/2} - \psi^{N/2}$): Temos a equivalência $X^{N/2} \equiv \psi^{N/2}$.
-    \item \textbf{No ramo direito} (módulo $X^{N/2} + \psi^{N/2}$): Temos a equivalência $X^{N/2} \equiv -\psi^{N/2}$.
+    \item \textbf{Ramo Esquerdo} ($x^{N/2} \equiv \psi^{N/2}$): Substituímos $x^{N/2}$ por $+\psi^{N/2}$.
+    \item \textbf{Ramo Direito} ($x^{N/2} \equiv -\psi^{N/2}$): Substituímos $x^{N/2}$ por $-\psi^{N/2}$.
 \end{itemize}
 
-Isso simplifica drasticamente o cálculo, pois reduz a multiplicação polinomial a somas ponderadas.
-
 \subsubsection*{3. A Operação Borboleta (Butterfly)}
-Substituindo as equivalências acima na expressão de $A(X)$, obtemos as fórmulas para os novos polinômios $A_L(X)$ e $A_R(X)$ de grau $N/2 - 1$. Em termos dos coeficientes, para cada $0 \le i < N/2$:
+Ao realizar as substituições acima diretamente no somatório, os coeficientes dos novos polinômios reduzidos ($a_L$ e $a_R$) surgem imediatamente. Para cada posição $0 \le i < N/2$:
 
 \[
 \boxed{
 \begin{aligned}
-    x_L[i] &= x[i] + \psi^{N/2} \cdot x[i+N/2] \pmod p \\
-    x_R[i] &= x[i] - \psi^{N/2} \cdot x[i+N/2] \pmod p
+    a_L[i] &= a[i] + \psi^{N/2} \cdot a[i+N/2] \pmod p \\
+    a_R[i] &= a[i] - \psi^{N/2} \cdot a[i+N/2] \pmod p
 \end{aligned}
 }
 \]
 
-Esta é a clássica operação ``borboleta''. Observe a simetria: os mesmos valores de entrada ($x[i]$ e $x[i+N/2]$) são usados para calcular ambas as saídas, diferenciando-se apenas pelo sinal da operação.
-
-O processo é então aplicado recursivamente: $x_L$ torna-se a entrada para uma NTT de tamanho $N/2$, e $x_R$ para outra, até que o tamanho do problema seja trivial (1).
+Note que não precisamos calcular polinômios inteiros; a operação acontece pontualmente nos coeficientes. Os valores $a_L$ tornam-se a entrada para a recursão da esquerda, e $a_R$ para a recursão da direita.
 
 \begin{figure}[H]
     \centering
@@ -598,59 +609,68 @@ O processo é então aplicado recursivamente: $x_L$ torna-se a entrada para uma 
 
 \subsection{A INTT via Gentleman-Sande (GS): Reconstrução via CRT}
 
-Enquanto a transformação direta (Forward NTT) utiliza a estratégia de decomposição para reduzir o grau do polinômio, a transformação inversa (INTT) realiza o caminho oposto: ela combina pares de polinômios menores para reconstruir o polinômio original modulo $X^N + 1$. O algoritmo de Gentleman-Sande implementa essa reconstrução de forma eficiente.
+Enquanto a transformação direta (NTT) utiliza a decomposição para reduzir o problema, a transformação inversa (INTT) realiza o caminho oposto: ela combina os resultados dos sub-problemas menores para reconstruir o vetor original. O algoritmo de Gentleman-Sande implementa essa reconstrução de forma eficiente.
 
-\subsubsection*{1. O Problema da Interpolação}
-Na etapa inversa, começamos com dois polinômios "metade" recuperados dos sub-anéis:
-\begin{itemize}
-    \item $A_L(X)$: O resultado associado ao ramo $X^{N/2} - \psi^{N/2}$.
-    \item $A_R(X)$: O resultado associado ao ramo $X^{N/2} + \psi^{N/2}$.
-\end{itemize}
-Nosso objetivo é encontrar o polinômio único $A(X) = A_{lo}(X) + X^{N/2}A_{hi}(X)$ que satisfaz:
+\subsubsection*{1. A Inversão do Sistema Linear}
+Na etapa da transformação direta, definimos os valores dos sub-ramos ($a_L$ e $a_R$) através das equações:
 \[
 \begin{cases}
-    A(X) \equiv A_L(X) \pmod{X^{N/2} - \psi^{N/2}} \\
-    A(X) \equiv A_R(X) \pmod{X^{N/2} + \psi^{N/2}}
+    a_L[i] = a[i] + \psi^{N/2} \cdot a[i+N/2] \\
+    a_R[i] = a[i] - \psi^{N/2} \cdot a[i+N/2]
 \end{cases}
 \]
+Na etapa inversa, conhecemos $a_L$ e $a_R$ (retornados pela recursão) e nosso objetivo é recuperar os coeficientes originais $a[i]$ e $a[i+N/2]$. Trata-se apenas de resolver este sistema linear de duas variáveis.
 
 \subsubsection*{2. A Lógica da Recuperação}
-Lembrando que no sub-anel esquerdo $X^{N/2} \equiv \psi^{N/2}$ e no direito $X^{N/2} \equiv -\psi^{N/2}$, podemos escrever o sistema linear para os componentes $A_{lo}$ e $A_{hi}$:
+Somando e subtraindo as duas equações do sistema acima, podemos isolar os termos desejados:
 
-\[
-\begin{aligned}
-    A_L &= A_{lo} + \psi^{N/2} A_{hi} \\
-    A_R &= A_{lo} - \psi^{N/2} A_{hi}
-\end{aligned}
-\]
-
-Para isolar $A_{lo}$ e $A_{hi}$, basta somar e subtrair as equações:
 \begin{itemize}
-    \item \textbf{Soma:} $A_L + A_R = 2A_{lo} \implies A_{lo} = \frac{1}{2}(A_L + A_R)$
-    \item \textbf{Subtração:} $A_L - A_R = 2\psi^{N/2} A_{hi} \implies A_{hi} = \frac{1}{2}\psi^{-N/2}(A_L - A_R)$
+    \item \textbf{Recuperando a metade inferior ($a[i]$):}
+    Somamos as equações:
+    \[
+    a_L[i] + a_R[i] = 2a[i] \implies a[i] = \frac{a_L[i] + a_R[i]}{2}
+    \]
+    
+    \item \textbf{Recuperando a metade superior ($a[i+N/2]$):}
+    Subtraímos a segunda da primeira:
+    \[
+    a_L[i] - a_R[i] = 2\psi^{N/2} \cdot a[i+N/2]
+    \]
+    Para isolar $a[i+N/2]$, multiplicamos pelo inverso de $2\psi^{N/2}$:
+    \[
+    a[i+N/2] = \frac{a_L[i] - a_R[i]}{2} \cdot \psi^{-N/2}
+    \]
 \end{itemize}
 
-Esta estrutura algébrica revela a diferença fundamental entre a borboleta da ida (Cooley-Tukey) e a da volta (Gentleman-Sande).
+Esta manipulação algébrica revela a diferença fundamental na ordem das operações entre a ida (Cooley-Tukey) e a volta (Gentleman-Sande).
 
 \subsubsection*{3. A Borboleta GS (Inverse Butterfly)}
-Diferente da NTT direta, onde a multiplicação pelo fator de rotação ocorre \textit{antes} da borboleta (ou no ramo inferior da entrada), na INTT via Gentleman-Sande a multiplicação ocorre \textit{após} a subtração.
-
-Para coeficientes de entrada $y_L$ e $y_R$ correspondentes à mesma posição nos vetores dos sub-blocos, a operação de fusão é:
+Baseado nas isolações acima, definimos a operação borboleta inversa. Para cada par de entradas $a_L[i]$ e $a_R[i]$ provenientes dos sub-blocos, calculamos:
 
 \[
 \boxed{
 \begin{aligned}
-    x[i] &= \frac{1}{2} (y_L[i] + y_R[i]) \pmod p \\
-    x[i+N/2] &= \frac{1}{2} (y_L[i] - y_R[i]) \cdot \psi^{-N/2} \pmod p
+    a[i] &= \frac{1}{2} (a_L[i] + a_R[i]) \pmod p \\
+    a[i+N/2] &= \frac{1}{2} (a_L[i] - a_R[i]) \cdot \psi^{-N/2} \pmod p
 \end{aligned}
 }
 \]
-\textit{Nota: Em implementações eficientes, o fator escalar $1/2$ (inverso modular de 2) é frequentemente acumulado e aplicado apenas uma vez no final como $1/N$, para evitar multiplicações excessivas a cada estágio.}
 
-\subsubsection*{4. Fluxo de Dados}
+Observe a mudança estrutural:
+\begin{enumerate}
+    \item Na \textbf{Ida (CT)}, multiplicamos pelo fator de rotação \textit{antes} de somar/subtrair.
+    \item Na \textbf{Volta (GS)}, subtraímos primeiro e multiplicamos pelo fator de rotação inverso \textit{depois}.
+\end{enumerate}
+
+\textit{Nota de Implementação: O fator escalar $1/2$ (inverso modular de 2) geralmente não é aplicado a cada camada. Para eficiência, acumula-se o fator total $1/N$ e aplica-se uma única multiplicação escalar ao final de toda a transformação.}
+
+\subsubsection*{4. Fluxo de Dados e Bit-Reversal}
 O algoritmo Gentleman-Sande é a "transposta" do Cooley-Tukey.
-Se a NTT direta recebe os dados em ordem natural e os devolve em ordem \textit{bit-reversed} (embaralhada), a INTT via GS aceita os dados em ordem \textit{bit-reversed} e os reconstrói para a ordem natural. Isso elimina a necessidade de reordenamentos custosos de memória entre a transformação direta e a inversa durante operações de convolução.
+Se a NTT direta recebe os dados em ordem natural e os devolve em ordem \textit{bit-reversed} (permutada), a INTT via GS aceita os dados em ordem \textit{bit-reversed} e os reconstrói naturalmente para a ordem linear.
 
+Isso cria um par perfeito:
+\[ \text{Input Natural} \xrightarrow{\text{CT}} \text{Bit-Reversed} \xrightarrow{\text{Operação Pontual}} \text{Bit-Reversed} \xrightarrow{\text{GS}} \text{Output Natural} \]
+Essa simetria elimina a necessidade de reordenamentos de memória (bit-reversal) custosos entre as transformações.
 
 \begin{figure}[H]
     \centering
@@ -714,6 +734,67 @@ Algoritmo GMP & 238'961'323 \\ \hline
 \end{center}
 
 fonte: https://github.com/SheafificationOfG/Fibsonisheaf
+
+\subsection{Extra: NTT incompleta e a restrição de parâmetros no caso negacíclico}
+
+Na multiplicação negacíclica de polinômios no anel
+\[
+\mathbb{Z}_p[x]/(x^N + 1),
+\]
+com $N$ potência de dois, a utilização de uma \textbf{NTT completa} exige a existência
+de uma raiz primitiva de ordem $2N$ módulo $p$. Quando $p$ é primo, essa condição é
+equivalente a
+\[
+p \equiv 1 \pmod{2N}.
+\]
+Em aplicações criptográficas baseadas em reticulados, em especial em esquemas de Fully Homomorphic Encryption
+o valor de $N$ é tipicamente muito grande. Como consequência, a condição acima impõe
+fortes restrições sobre a escolha do primo $p$, frequentemente forçando o uso de
+módulos grandes ou pouco flexíveis, o que impacta tanto a eficiência quanto o ajuste
+fino de parâmetros de segurança.
+
+Uma forma natural de relaxar essa restrição é empregar a chamada \textbf{NTT
+$\ell$-incompleta}. A ideia consiste em interromper o algoritmo da NTT antes de
+executar todos os $\log_2 N$ estágios do esquema radix-2. Mais precisamente, ao parar
+após $\log_2 N - \ell$ estágios, a existência da transformada passa a requerer apenas
+uma raiz da unidade de ordem $2N/2^{\ell}$ em $\mathbb{Z}_p$, o que resulta na condição
+mais fraca
+\[
+p \equiv 1 \pmod{2N/2^{\ell}}.
+\]
+Dessa forma, o conjunto de primos admissíveis torna-se significativamente maior,
+permitindo escolhas de parâmetros mais flexíveis.
+
+Do ponto de vista algébrico, a NTT $\ell$-incompleta não avalia o polinômio em todas as
+$N$ raízes da unidade, mas o mapeia para um vetor de $N/2^{\ell}$ polinômios de menor
+grau, cada um pertencente a um quociente do tipo
+\[
+\mathbb{Z}_p[x]/(x^{2^{\ell}} - \psi_i),
+\]
+onde $\psi_i$ são potências apropriadas da raiz disponível. A multiplicação passa então
+a ser realizada componente a componente nesses anéis menores, seguida de uma
+transformada inversa incompleta.
+
+O principal custo adicional desse método está na \emph{multiplicação de base} dentro
+dos anéis $\mathbb{Z}_p[x]/(x^{2^{\ell}} - \psi_i)$, que, para valores maiores de
+$\ell$, tende a ser implementada por algoritmos quadráticos. No entanto, o trabalho
+de \textcite{paiva_incomplete_ntt}  mostra que, no contexto de bootstrapping amortizado para esquemas
+do tipo FHEW/TFHE, esse custo pode sera eliminado. Os autores reformulam a NTT inversa
+como o produto de duas matrizes de borboleta (controladas por um parâmetro de divisão
+$\alpha$) e demonstram que a multiplicação de base da NTT incompleta pode ser
+\emph{incorporada} ao primeiro estágio dessa decomposição matricial, sem aumento no
+número assintótico de operações.
+
+Como resultado, obtém-se o que os autores denominam \emph{``NTT incompleta gratuita''}:
+para valores moderados de $\ell$, é possível relaxar substancialmente a condição sobre
+o primo $p$ sem penalidade computacional relevante, ao mesmo tempo em que se ampliam
+as opções de parâmetros e se melhora o compromisso entre desempenho e taxa de falha
+(decryption failure rate).
+
+\section{Agradecimentos}
+Gostaria de agradecer ao professor doutor \emph{Thales Paiva} pela chance de apresentar o semanário e pelos ensinamentos,
+gostaria de agradecer tambem o professor doutor \emph{João Fernando da Cunha Nariyoshi} por esclarecer algumas dúvidas sobre a parte da matemática pura.
+Foi realmente divertido pesquisar, escrever, desenhar e animar para esse semanário.
 
 \section{Apêndice}
 \subsection{Exemplo de convolução circular}
@@ -950,3 +1031,5 @@ isto é, um \textbf{único} polinômio $p(x)$ de grau $\le N-1$ que interpola os
 \end{proof}
 
 \end{document}
+\bibliographystyle{plain}
+\bibliography{referencias}

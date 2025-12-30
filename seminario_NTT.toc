@@ -11,6 +11,8 @@
 \contentsline {section}{\numberline {9}Transformada Numérica Inversa (INTT)}{12}{section.9}%
 \contentsline {subsection}{\numberline {9.1}A NTT como uma FFT: Decomposição Radix-2 via CRT}{13}{subsection.9.1}%
 \contentsline {subsection}{\numberline {9.2}A INTT via Gentleman-Sande (GS): Reconstrução via CRT}{15}{subsection.9.2}%
-\contentsline {section}{\numberline {10}Apêndice}{18}{section.10}%
-\contentsline {subsection}{\numberline {10.1}Exemplo de convolução circular}{18}{subsection.10.1}%
-\contentsline {subsection}{\numberline {10.2}Determinição unívoca do polinomio}{20}{subsection.10.2}%
+\contentsline {subsection}{\numberline {9.3}Extra: NTT incompleta e a restrição de parâmetros no caso negacíclico}{18}{subsection.9.3}%
+\contentsline {section}{\numberline {10}Agradecimentos}{19}{section.10}%
+\contentsline {section}{\numberline {11}Apêndice}{19}{section.11}%
+\contentsline {subsection}{\numberline {11.1}Exemplo de convolução circular}{19}{subsection.11.1}%
+\contentsline {subsection}{\numberline {11.2}Determinição unívoca do polinomio}{21}{subsection.11.2}%
