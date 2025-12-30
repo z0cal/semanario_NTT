@@ -669,7 +669,7 @@ Somando e subtraindo as duas equações do sistema acima, podemos isolar os term
     \item \textbf{Recuperando a metade inferior ($a[i]$):}
     Somamos as equações:
     \[
-    a_L[i] + a_R[i] = 2a[i] \implies a[i] = \frac{a_L[i] + a_R[i]}{2}
+    a_L[i] + a_R[i] = 2a[i] \implies a[i] = 2^{-1}(a_L[i] + a_R[i])
     \]
     
     \item \textbf{Recuperando a metade superior ($a[i+N/2]$):}
@@ -679,7 +679,7 @@ Somando e subtraindo as duas equações do sistema acima, podemos isolar os term
     \]
     Para isolar $a[i+N/2]$, multiplicamos pelo inverso de $2\psi^{N/2}$:
     \[
-    a[i+N/2] = \frac{a_L[i] - a_R[i]}{2} \cdot \psi^{-N/2}
+    a[i+N/2] = 2^{-1}(a_L[i] - a_R[i]) \cdot \psi^{-N/2}
     \]
 \end{itemize}
 
@@ -691,8 +691,8 @@ Baseado nas isolações acima, definimos a operação borboleta inversa. Para ca
 \[
 \boxed{
 \begin{aligned}
-    a[i] &= \frac{1}{2} (a_L[i] + a_R[i]) \pmod p \\
-    a[i+N/2] &= \frac{1}{2} (a_L[i] - a_R[i]) \cdot \psi^{-N/2} \pmod p
+    a[i] &= 2^{-1} (a_L[i] + a_R[i]) \pmod p \\
+    a[i+N/2] &= 2^{-1} (a_L[i] - a_R[i]) \cdot \psi^{-N/2} \pmod p
 \end{aligned}
 }
 \]
@@ -719,7 +719,7 @@ Essa simetria elimina a necessidade de reordenamentos de memória (bit-reversal)
     \caption{Butterfly INTT}
     \label{fig:bINNT}
 \end{figure}
-A implementa da NTT negacíclica ésta a seguir \ref{lst:NTT}
+A implementa da NTT negacíclica está a seguir \ref{lst:NTT}
 
 \begin{lstlisting}[caption=codigo em SageMath,label={lst:NTT}]
 def NTT_Negacyclic(A, R, psi):
@@ -1098,6 +1098,6 @@ Concluímos que existe um único vetor de coeficientes $(a_0,\dots,a_{N-1})$,
 isto é, um \textbf{único} polinômio $p(x)$ de grau $\le N-1$ que interpola os $N$ pontos.
 \end{proof}
 
+\printbibliography
+
 \end{document}
-\bibliographystyle{plain}
-\bibliography{referencias}
