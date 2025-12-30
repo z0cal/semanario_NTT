@@ -19,8 +19,8 @@
         \textbf{Resumo}\\[0.5cm]
             \begin{minipage}{0.5\textwidth}
             \small
-            O objetivo do semanário é apresentar a NTT e suas vantagens, para isso, parti-se da transformada de Fourier, apos, para a sua forma discreta (DFT) e chega-se na NTT propriamente dita.
-            O que almejo com esse semanário é passar a intuição por trás das ferramentas matemática utilizadas e beleza inerentes delas.
+            O objetivo do semanário é apresentar a NTT e suas vantagens, para isso, parte-se da transformada de Fourier, em seguida, para a sua forma discreta (DFT) e chega-se na NTT propriamente dita.
+            O que almejo com esse trabalho é passar a intuição por trás das ferramentas matemática utilizadas e beleza inerentes a elas.
             \end{minipage}
 
 
@@ -53,7 +53,7 @@ Para uma função contínua $g(t)$, a transformada é definida pela integral:
 
 \[\mathcal{F}(f) = \int_{-\infty}^{\infty} g(t) e^{-2\pi if t} \, dt\]
 
-Ela pode ser entendida como um produto interno(uma projeção) do sinal com todos as frequencias da reta real $ \langle g, e^{-2\pi i ft} \rangle$, que, devido a ortoganalidade das frequências diferentes e que funcoes bem comportadas podem ser decompostas em series de autofuncoes $e^{-ift}$, consegue extrair extamente as frequências do sinal.
+Ela pode ser entendida como um produto interno(uma projeção) do sinal com todos as frequencias da reta real $ \langle g, e^{-2\pi i ft} \rangle$, que, devido a ortoganalidade das frequências diferentes e que funcoes bem comportadas podem ser decompostas em series de autofuncoes $e^{-2\pi ift}$, consegue extrair extamente as frequências do sinal.
 Apesar de sua elegância teórica, a CTFT apresenta desafios para a aplicação prática em sistemas digitais:
 
 \begin{enumerate}
@@ -65,14 +65,14 @@ Apesar de sua elegância teórica, a CTFT apresenta desafios para a aplicação 
 
 \section{ Transformada Discreta de Fourier (DFT)}
 Para viabilizar o processamento em computadores, utilizamos a \textbf{DFT} (\textit{Discrete Fourier Transform}). Ela opera sobre uma sequência finita de $N$ amostras, mapeando dados discretos no tempo para o domínio da frequência. Segundo o Teorema de Amostragem de Nyquist-Shannon \cite{oppenheim2009}, para que um sinal contínuo possa ser unicamente determinado a partir de suas amostras, a frequência de amostragem $f_s$ deve ser superior ao dobro da maior frequência $f_{max}$ contida no sinal. $   f_s > 2 f_{max}$
-A DFT é definida da seguinte forma:
+. Com essa restrição para a quantidade de amostras N em mente, a DFT é definida da seguinte forma:
 
 \[X[k] = \sum_{n=0}^{N-1} x[n] e^{-i \frac{2\pi}{N} kn}\]
 
 Para $k = 0, 1, \dots, N-1$.
 
 Diferente da versão contínua, a DFT lida com somatórios e vetores numéricos, permitindo que a teoria de Fourier seja aplicada em qualquer dispositivo digital.
-é possivel provar que a DFT é um transformacao linear, logo, pode ser representada matricialmente.
+É possivel provar que a DFT é um transformacao linear \ref{sec:linear}, logo, pode ser representada matricialmente.
 
 Seja $\zeta_N = e^{-i\frac{2\pi}{N}}$. A representação matricial da DFT para $n = 0, 1, \dots, N-1$ é:
 
@@ -119,10 +119,11 @@ x[0] \\ x[1] \\ x[2] \\ \vdots \\ x[N-1]
 X[0] \\ X[1] \\ X[2] \\ \vdots \\ X[N-1] 
 \end{bmatrix}
 \]
-Percebe-se que nesse caso discreto, a DFT e IDFT atuam como uma matriz mudanca de base, saindo da base do tempo e indo para base das raizes unitarias
+Percebe-se que nesse caso discreto, a DFT e IDFT atuam como uma matriz mudança de base, saindo da base do tempo e indo para base das raizes unitarias
 
-A DFT pde ser vista de outra óptica, como avalição de polinomios.
-Seja
+Além disso, a DFT pode ser vista de outra óptica, como avalição de polinomios.
+
+Seja:
 \[
 a(x)=\sum_{n=0}^{N-1} a_n x^n
 \]
@@ -160,7 +161,7 @@ Na abordagem clássica , o produto $h(x) = f(x) \cdot g(x)$ é obtido distribuin
 \[h(x) = \sum_{k=0}^{2N-2} c_k x^k\]
 onde $c_k = \sum_{i+j=k} a_i b_j$.
 
-Nesta metodologia, o cálculo de cada coeficiente $c_k$ exige múltiplas operações de produto e soma, resultando em uma complexidade assintótica $O(n^2)$. Para polinômios com grandes volumes de coeficientes, este custo computacional torna o metodo inviavel.
+Nesta metodologia, o cálculo de cada coeficiente $c_k$ exige múltiplas operações de produto e soma, resultando em uma complexidade assintótica $O(n^2)$. Para polinômios com grandes volumes de coeficientes, este custo computacional torna o método inviavel.
 
 
 
@@ -172,22 +173,23 @@ c_k=\sum_{i+j=k} a_i\, b_{j}.
 \]
 
 Neste trabalho, devido ao foco na NTT e ao anel quociente $\mathbb{Z}_p[x]/(x^N+1)$,
-trabalhamos com a \textbf{convolução circular} (de comprimento $n$), definida por
+trabalhamos com a \textbf{convolução negacíclica} (de comprimento $N$), definida por:
 \[
-c_k=\sum_{i=0}^{N-1} a_i\, b_{(k-i)\bmod n}, \qquad k=0,\dots,N-1.
+c_k = \sum_{i=0}^{k} a_i\, b_{k-i} - \sum_{i=k+1}^{N-1} a_i\, b_{N+k-i}, \qquad k=0,\dots,N-1.
 \]
+Diferente da circular, aqui os termos que ``ultrapassam'' o comprimento $N$ retornam com sinal invertido.
 
 \textbf{Teorema da Convolução:} a transformada de uma convolução no domínio do tempo (ou espaço)
 é o produto ponto a ponto (Hadamard) das transformadas no domínio da frequência:
 \[
-\mathcal{F}(f*g)=\mathcal{F}(f)\odot \mathcal{F}(g).
+\mathcal{F}(f *_{\text{neg}} g) = \mathcal{F}(f) \odot \mathcal{F}(g).
 \]
 
-Assim, o cálculo custoso da convolução  é convertido em um produto ponto a ponto,
-pois a base de Fourier diagonaliza o operador de convolução (circulante).
-Com a transformada direta ingênua o custo ainda é $O(n^2)$, não há ganho da multiplicação clássica de polinômios.
+Assim, o cálculo custoso da convolução é convertido em um produto ponto a ponto,
+pois a base de Fourier apropriada (utilizando raízes de $x^N+1$) diagonaliza o operador de convolução negacíclica (matriz negacirculante).
+Com a transformada direta ingênua o custo ainda seria $O(N^2)$, portanto, não há ganho computacional em realizar essa transformação.
 
-Uma exemplo para o convencimento do leitor foi disposto no apendice~\ref{sec:convolução}
+Um exemplo para o convencimento do leitor foi disposto no apêndice~\ref{sec:convolucao}.
 \section{ A Fast Fourier Transform}
 
 A FFT (Fast Fourier Transform) é uma maneira de otimizar o calculo da DFT.
@@ -196,9 +198,7 @@ O algoritmo da FFT foi redescoberta por Cooley e Tukey em 1965, uma vez que Gaus
 
 O algoritmo se baseia em \textbf{dividir para conquistar}.
 
-\begin{quote}
-Relembrando
-\end{quote}
+\subsection*{Relembrando}
 
 As raízes unitárias possuem propriedades cíclicas e certas simetrias que permitem a economia nos cálculos, vejamos um exemplo.
 \[\zeta_4^1 = e^{-i\frac{2\pi}{4}} = e^{-i90^\circ} = -i\]
@@ -283,7 +283,7 @@ De forma mais geral:
 \begin{quote}
 $ \zeta_N = e^{\frac{-2\pi i}{N}} $, uma raiz $N$-ésima primitiva da unidade. Então para todo inteiro $a$, $ {\zeta_N^{a+\frac{N}{2}} = -\,\zeta_N^{a}}. $
 \end{quote}
-Alem de que, pela periodicidade $\zeta_N^{a+N}=\zeta_N^a$.
+Alem de que, pela periodicidade $\zeta_N^{a+N}=\zeta_N^a$ e $\zeta_N^{2}=\zeta_{N/2}$, esta última pode ser vista na figura \ref{fig:comparacao_raizes}
 
 Para esse caso a DFT é representada desse modo:
 \[
@@ -347,16 +347,16 @@ Desse modo, reduzimos a complexidade da transformada de $O(n^2) \text{ para } O(
 
 \section{ Problemas da FFT}
 
-Uns dos problemas da FTT é que ela trabalha com ponto flutuante, o que, para computadores, é um grande problemas que pode causar erro de arredondamentos e, assim causar uma falha nos esquemas criptograficos. Alem disso, na convolução linear, o polinomio dobra de tamanho a cada concolucao o que rapidamente torna-se um problema tanto computacional quanto de armazenamento .
+Uns dos problemas da FTT é que ela trabalha com ponto flutuante, o que, para computadores, é um grande problemas que pode causar erro de arredondamentos e, assim causar uma falha nos esquemas criptograficos. Alem disso, na convolução linear, o polinomio dobra de tamanho a cada convolução o que rapidamente torna-se um problema tanto computacional quanto de armazenamento .
 
 
 
-Solucao: utilizar um transformada que utiliza apenas numeros exatos
+Solucao: utilizar um transformada que utiliza apenas números exatos
 
 \section{ Number Theoretic Transform (NTT)}
 \subsection{Fundamentos}
 
-As propriedades que usamos na FFT — em especial a existência de uma raiz $N$-ésima da unidade $\zeta_N$ e o fato de que suas potências percorrem uniformemente o círculo — têm um análogo perfeito em teoria dos números, dentro de corpos (ou anéis) finitos. Isso não é coincidência: a FFT nada mais é do que a transformada de Fourier no grupo cíclico $\mathbb{Z}/N\mathbb{Z}$, e a mesma construção existe em outros contextos algébricos.
+As propriedades que usamos na FFT — em especial a existência de uma raiz $N$-ésima da unidade $\zeta_N$ e o fato de que suas potências percorrem uniformemente o círculo — têm um análogo perfeito em teoria dos números, dentro de corpos (ou anéis) finitos. Isso não é coincidência: a DFT nada mais é do que a transformada de Fourier no grupo cíclico $\mathbb{Z}/N\mathbb{Z}$, e a mesma construção existe em outros contextos algébricos.
 
 Mais formalmente, se $\zeta_N$ é uma raiz $N$-ésima primitiva da unidade, então o conjunto de todas as $N$-ésimas raízes
 \[
@@ -412,10 +412,10 @@ x_0 \\ x_1 \\ \vdots \\ x_{N-1}
 
 Neste caso, a matriz de transformação $\mathbf{W}_N$ difere da versão cíclica padrão, pois seus coeficientes seguem a estrutura das raízes negacíclicas:
 
-\[
+\[  
 \mathbf{W}_N = 
 \begin{bmatrix}
-1 & 1 & 1 & \cdots & 1 \\
+1 & \psi^2 & \psi^3 & \cdots & \psi^{(N-1)} \\
 1 & \psi^{3} & \psi^{6} & \cdots & \psi^{3(N-1)} \\
 1 & \psi^{5} & \psi^{10} & \cdots & \psi^{5(N-1)} \\
 \vdots & \vdots & \vdots & \ddots & \vdots \\
@@ -439,44 +439,86 @@ De forma geral, o termo na linha $k$ e coluna $n$ da matriz é dado por:
 \end{figure}
 
 
-\section{O Isomorfismo via Teorema Chinês dos Restos (CRT)}
+\section{O Isomorfismo via Teorema Chinês dos Restos (CRT)\cite{nussbaumer1982fft}}
 
-A fundamentação algébrica da NTT reside na estrutura do anel quociente $\mathbb{Z}_p[x] / \langle x^N + 1 \rangle$. Dado que $x^N + 1$ fatora-se em $N$ binômios lineares distintos $(x - \psi^{2k+1})$, o CRT estabelece uma equivalência entre o anel original e o produto de anéis menores.
-
-Para compreender a natureza desses anéis menores, invocamos o conceito de \textit{homomorfismo  }. Considere o anel quociente genérico $\mathbb{Z}_p[x] / \langle x - \alpha \rangle$. Pela Divisão Euclidiana, qualquer polinômio $a(x) \in \mathbb{Z}_p[x]$ pode ser escrito unicamente como:
+A fundamentação algébrica da NTT reside na estrutura do anel quociente
+$\mathbb{Z}_p[x]/(x^N+1)$.
+Já que $x^N+1$ fatora-se em $N$ fatores lineares distintos e coprimos,
 \[
-a(x) = q(x) \cdot (x - \alpha) + r
-\]
-onde o grau de $r$ deve ser estritamente menor que o grau do divisor $(x - \alpha)$. Como o divisor tem grau 1, o resto $r$ é necessariamente um escalar constante ($r \in \mathbb{Z}_p$).
-
-No anel quociente, impomos que $x - \alpha \equiv 0$, ou seja, $x \equiv \alpha$. Ao aplicarmos essa equivalência (ou avaliarmos a equação em $x = \alpha$), o termo que contém o divisor se anula:
-\[
-a(\alpha) = q(\alpha) \cdot (\underbrace{\alpha - \alpha}_{0}) + r \implies a(\alpha) = r
-\]
-Portanto, a classe de equivalência de $a(x)$ módulo $(x - \alpha)$ é univocamente representada pelo escalar $a(\alpha)$. Isso estabelece o isomorfismo local:
-\[
-\frac{\mathbb{Z}_p[x]}{\langle x - \alpha \rangle} \cong \mathbb{Z}_p \quad \text{via o mapa} \quad [a(x)] \mapsto a(\alpha)
+x^N+1=\prod_{k=0}^{N-1}\bigl(x-\psi^{2k+1}\bigr),
 \]
 
-Com essa intuição firmada, podemos expandir explicitamente o isomorfismo global $\Phi$ garantido pelo CRT. A transformação mapeia o polinômio $a(x)$ diretamente para o vetor de suas avaliações nas raízes de $x^N + 1$:
-
+\medskip
+\noindent
+\textbf{Homomorfismo de avaliação e o isomorfismo local.}
+Para cada $\alpha\in\mathbb{Z}_p$, considere o mapa de avaliação
 \[
-\begin{aligned}
-\Phi : \frac{\mathbb{Z}_p[x]}{\langle x^N + 1 \rangle} &\xrightarrow{\cong} \bigotimes_{k=0}^{N-1} \frac{\mathbb{Z}_p[x]}{\langle x - \psi^{2k+1} \rangle} \\
-&\cong \underbrace{\mathbb{Z}_p \times \mathbb{Z}_p \times \dots \times \mathbb{Z}_p}_{N \text{ vezes}}
-\end{aligned}
+\mathrm{ev}_\alpha:\mathbb{Z}_p[x]\to \mathbb{Z}_p,
+\qquad
+\mathrm{ev}_\alpha(a(x))=a(\alpha).
+\]
+Esse mapa é um \emph{homomorfismo de anéis} (preserva soma e produto):
+\[
+\mathrm{ev}_\alpha(a+b)=\mathrm{ev}_\alpha(a)+\mathrm{ev}_\alpha(b),
+\qquad
+\mathrm{ev}_\alpha(ab)=\mathrm{ev}_\alpha(a)\,\mathrm{ev}_\alpha(b).
+\]
+Além disso, seu núcleo é exatamente o ideal gerado por $(x-\alpha)$:
+\[
+\ker(\mathrm{ev}_\alpha)=(x-\alpha).
+\]
+De fato, pela Divisão Euclidiana, qualquer $a(x)$ pode ser escrito como
+\[
+a(x)=q(x)(x-\alpha)+r
+\]
+com $r\in\mathbb{Z}_p$, e avaliando em $x=\alpha$ obtemos $a(\alpha)=r$.
+Logo $a(\alpha)=0$ se e somente se $(x-\alpha)\mid a(x)$.
+Pelo \textbf{Primeiro Teorema do Isomorfismo} para anéis,
+\[
+\frac{\mathbb{Z}_p[x]}{(x-\alpha)}\;\cong\;\mathrm{Im}(\mathrm{ev}_\alpha)=\mathbb{Z}_p,
+\qquad
+[a(x)]\longmapsto a(\alpha).
 \]
 
-A ação de $\Phi$ sobre um elemento $a(x)$ é dada explicitamente por:
+\medskip
+\noindent
+\textbf{O isomorfismo global do CRT como produto de avaliações.}
+Como os fatores $(x-\psi^{2k+1})$ são coprimos dois a dois, o CRT fornece um
+isomorfismo de anéis
 \[
-\Phi(a(x)) = \left( a(\psi^1), a(\psi^3), \dots, a(\psi^{2N-1}) \right) \in \mathbb{Z}_p^N
+\Phi:\frac{\mathbb{Z}_p[x]}{(x^N+1)}
+\;\xrightarrow{\cong}\;
+\prod_{k=0}^{N-1}\frac{\mathbb{Z}_p[x]}{\bigl(x-\psi^{2k+1}\bigr)}
+\;\cong\;
+\underbrace{\mathbb{Z}_p\times\cdots\times\mathbb{Z}_p}_{N\ \text{vezes}}.
+\]
+E, crucialmente, $\Phi$ é construído a partir dos homomorfismos de avaliação:
+a $k$-ésima componente é exatamente o homomorfismo
+$\mathrm{ev}_{\psi^{2k+1}}$ (passando ao quociente).
+Assim, para $[a(x)]\in\mathbb{Z}_p[x]/(x^N+1)$,
+\[
+\Phi([a(x)])=
+\bigl(
+a(\psi^{1}),\, a(\psi^{3}),\,\dots,\, a(\psi^{2N-1})
+\bigr)\in\mathbb{Z}_p^N.
 \]
 
-Neste domínio transformado, a operação de multiplicação de dois polinômios $a(x)$ e $b(x)$ ocorre componente a componente. Se $C = \Phi(a(x) \cdot b(x))$, então a $k$-ésima componente do vetor resultante é:
+\medskip
+\noindent
+\textbf{Multiplicação vira produto ponto a ponto.}
+Como cada $\mathrm{ev}_{\psi^{2k+1}}$ é homomorfismo e $\Phi$ é isomorfismo de anéis,
 \[
-C_k = (a \cdot b)(\psi^{2k+1}) = a(\psi^{2k+1}) \cdot b(\psi^{2k+1})
+\Phi([a(x)]\,[b(x)])=\Phi([a(x)])\cdot \Phi([b(x)])
 \]
-Isso demonstra formalmente por que a convolução cíclica (ou negacíclica) no domínio do tempo se traduz em um produto de Hadamard (ponto a ponto) no domínio da frequência.
+onde o produto do lado direito é componente a componente. Em particular, se
+$C=\Phi([a(x)b(x)])$, então
+\[
+C_k=(ab)(\psi^{2k+1})=a(\psi^{2k+1})\,b(\psi^{2k+1}).
+\]
+Isso explica formalmente por que a multiplicação no quociente
+$\mathbb{Z}_p[x]/(x^N+1)$ (convolução negacíclica dos coeficientes)
+se traduz em um produto de Hadamard no domínio transformado.
+
 
 \begin{figure}[H]
 \centering
@@ -796,176 +838,203 @@ gostaria de agradecer tambem o professor doutor \emph{João Fernando da Cunha Na
 Foi realmente divertido pesquisar, escrever, desenhar e animar para esse semanário.
 
 \section{Apêndice}
-\subsection{Exemplo de convolução circular}
-\label{sec:convolução}
+\subsection{DFT como transformação linear}
+\label{sec:linear}
+Seja $\zeta$ uma raiz primitiva $N$-ésima da unidade, por exemplo
+$$
+\zeta = e^{-2\pi i/N}.
+$$
+
+Dado um sinal discreto de comprimento $N$, com amostras
+$x[0],x[1],\dots,x[N-1]$ (no domínio do tempo), definimos a DFT como a sequência
+$X[0],X[1],\dots,X[N-1]$ (no domínio da frequência), onde
+$$
+X[k] = \sum_{n=0}^{N-1} x[n]\;\zeta^{kn},
+\qquad k=0,1,\dots,N-1.
+$$
+
+\subsection*{Prova de linearidade}
+Sejam dois sinais $x[n]$ e $y[n]$ e escalares $a,b\in\mathbb{C}$.
+Considere a combinação linear
+$$
+z[n] = a\,x[n] + b\,y[n].
+$$
+Seja $Z[k]$ a DFT de $z[n]$. Então
+$$
+Z[k]
+= \sum_{n=0}^{N-1} z[n]\;\zeta^{kn}
+= \sum_{n=0}^{N-1} (a\,x[n] + b\,y[n])\;\zeta^{kn}
+$$
+$$
+= a\sum_{n=0}^{N-1} x[n]\;\zeta^{kn}
++ b\sum_{n=0}^{N-1} y[n]\;\zeta^{kn}
+= a\,X[k] + b\,Y[k].
+$$
+
+Logo,
+$$
+\mathrm{DFT}(a x + b y) = a\,\mathrm{DFT}(x) + b\,\mathrm{DFT}(y),
+$$
+o que mostra que a DFT é uma \textbf{transformação linear}.
+
+\subsection{Exemplo de convolução negacíclica}
+\label{sec:convolucao}
 Sejam dois sinais $x$ e $y$ de comprimento $N=3$:
 \[
 x = \begin{bmatrix} 1 \\ 2 \\ 0 \end{bmatrix}, \quad y = \begin{bmatrix} 1 \\ 0 \\ 1 \end{bmatrix}
 \]
 
-A frequência fundamental é a raiz da unidade $\zeta_3 = e^{-i \frac{2\pi}{3}}$. Usaremos a propriedade fundamental:
-\[
-1 + \zeta_3 + \zeta_3^2 = 0 \implies \zeta_3 + \zeta_3^2 = -1
-\]
+Neste contexto, a frequência fundamental não é a raiz da unidade, mas sim a raiz de $x^N + 1 = 0$. Seja $\psi$ tal que $\psi^N = -1$. Para $N=3$, temos $\psi^3 = -1$.
 
-\subsection*{Método 1: Convolução no Tempo (Matriz Circulante)}
+\subsection*{Método 1: Convolução no Tempo (Matriz Negacirculante)}
 
-A convolução circular $z = x \circledast y$ equivale à multiplicação de uma matriz circulante $C_x$ pelo vetor $y$:
+A convolução negacíclica $z = x *_{neg} y$ equivale à multiplicação de uma matriz negacirculante $H_x$ pelo vetor $y$. Note que os elementos que ``dão a volta'' (acima da diagonal principal) têm sinal invertido:
 
 \[
-C_x = \begin{bmatrix} 
-x[0] & x[2] & x[1] \\ 
-x[1] & x[0] & x[2] \\ 
+H_x = \begin{bmatrix} 
+x[0] & -x[2] & -x[1] \\ 
+x[1] & x[0] & -x[2] \\ 
 x[2] & x[1] & x[0] 
 \end{bmatrix} 
 = \begin{bmatrix} 
-1 & 0 & 2 \\ 
+1 & 0 & -2 \\ 
 2 & 1 & 0 \\ 
 0 & 2 & 1 
 \end{bmatrix}
 \]
 
-Calculando $z = C_x y$:
+Calculando $z = H_x y$:
 \[
-z = \begin{bmatrix} 1 & 0 & 2 \\ 2 & 1 & 0 \\ 0 & 2 & 1 \end{bmatrix} 
+z = \begin{bmatrix} 1 & 0 & -2 \\ 2 & 1 & 0 \\ 0 & 2 & 1 \end{bmatrix} 
 \begin{bmatrix} 1 \\ 0 \\ 1 \end{bmatrix} 
 = \begin{bmatrix} 
-1(1) + 0 + 2(1) \\ 
+1(1) + 0 - 2(1) \\ 
 2(1) + 0 + 0 \\ 
 0 + 0 + 1(1) 
 \end{bmatrix} 
-= \begin{bmatrix} 3 \\ 2 \\ 1 \end{bmatrix}
+= \begin{bmatrix} -1 \\ 2 \\ 1 \end{bmatrix}
 \]
 
 \subsection*{Método 2: Diagonalização (Domínio da Frequência)}
 
-Mostra-se que a mudança de base para a base de Fourier diagonaliza a matriz circulante $C_x$. Matematicamente, isso significa que $C_x$ pode ser decomposta como
-$$C_x = F^{-1} \Lambda_x F$$
-onde $\Lambda_x$ é uma matriz diagonal contendo os coeficientes da DFT de $x$.
+A matriz negacirculante $H_x$ é diagonalizada por uma variante da DFT que utiliza potências ímpares de $\psi$ (raízes de $x^N+1$). Matematicamente:
+$$H_x = \mathcal{F}^{-1} \Lambda_x \mathcal{F}$$
+onde $\Lambda_x$ contém os autovalores de $H_x$, que correspondem à avaliação do polinômio $x(z)$ nas raízes de $z^N = -1$.
 
-Substituindo essa decomposição na equação original da convolução $z = C_x y$, podemos rearranjar os termos para utilizar a multiplicação na frequência:
-\begin{equation}
-z = (F^{-1} \Lambda_x F) y = F^{-1} \Lambda_x (F y) = F^{-1} \Lambda_x Y
-\end{equation}
-
-Dessa forma, o cálculo se resume a obter $Y$ (DFT de $y$), multiplicar pela matriz diagonal $\Lambda_x$ e aplicar a inversa ($F^{-1}$).
-
-Para legitimar que os autovalores de $C_x$ são os coeficientes da DFT de $x$, resolvemos:
+Para verificar os autovalores (o espectro de $x$), calculamos o polinômio característico de $H_x$:
 \[
-\det(C_x - \lambda I) = 0 \implies 
+\det(H_x - \lambda I) = 0 \implies 
 \det \begin{bmatrix} 
-1-\lambda & 0 & 2 \\ 
+1-\lambda & 0 & -2 \\ 
 2 & 1-\lambda & 0 \\ 
 0 & 2 & 1-\lambda 
 \end{bmatrix} = 0
 \]
-Expandindo o determinante:
+Expandindo o determinante (regra de Sarrus):
 \[
-(1-\lambda)^3 + 8 = 0 \implies (1-\lambda)^3 = -8
+(1-\lambda)^3 - (2)(2)(2) = 0 \implies (1-\lambda)^3 = 8
 \]
-As raízes para $(1-\lambda)$ são as três raízes cúbicas de $-8$:
+As raízes para $(1-\lambda)$ são as raízes cúbicas de $8$. Sabemos que $8 = 8 \cdot 1$, mas no contexto complexo as raízes são $2$, $2\zeta_3$ e $2\zeta_3^2$. Logo:
 \begin{align*}
-1 - \lambda_0 = -2 &\implies \lambda_0 = 3 \\
-1 - \lambda_1 = -2\zeta_3 &\implies \lambda_1 = 1 + 2\zeta_3 \\
-1 - \lambda_2 = -2\zeta_3^2 &\implies \lambda_2 = 1 + 2\zeta_3^2
+1 - \lambda_0 = 2 &\implies \lambda_0 = -1 \\
+1 - \lambda_1 = 2\zeta_3 &\implies \lambda_1 = 1 - 2\zeta_3 \\
+1 - \lambda_2 = 2\zeta_3^2 &\implies \lambda_2 = 1 - 2\zeta_3^2
 \end{align*}
-Estes valores coincidem exatamente com a DFT de $x$, provando a legitimidade da diagonalização.
+Estes valores $\lambda_k$ correspondem à Transformada Negacíclica (NTT sobre $x^N+1$) do vetor $x$, permitindo calcular a convolução via produto ponto a ponto.
 
 \subsection*{Verificação do Autovetor}
-Verificamos agora se o autovetor $v_1$ da base de Fourier (coluna de $F^{-1}$), dado por $v_1 = [1, \zeta_3^2, \zeta_3]^T$, satisfaz $C_x v_1 = \lambda_1 v_1$.
+Verificamos agora se o autovetor $v_1$ da base Negacíclica (coluna de $\mathcal{F}^{-1}$ associada à raiz $\psi$), dado por $v_1 = [1, \psi^{-1}, \psi^{-2}]^T = [1, -\psi^2, -\psi]^T$, satisfaz $H_x v_1 = \lambda_1 v_1$.
 \\
-Lado esquerdo ($C_x v_1$):
+Lado esquerdo ($H_x v_1$):
 \[
-\begin{bmatrix} 1 & 0 & 2 \\ 2 & 1 & 0 \\ 0 & 2 & 1 \end{bmatrix} 
-\begin{bmatrix} 1 \\ \zeta_3^2 \\ \zeta_3 \end{bmatrix} 
+\begin{bmatrix} 1 & 0 & -2 \\ 2 & 1 & 0 \\ 0 & 2 & 1 \end{bmatrix} 
+\begin{bmatrix} 1 \\ -\psi^2 \\ -\psi \end{bmatrix} 
 = 
-\begin{bmatrix} 1 + 2\zeta_3 \\ 2 + \zeta_3^2 \\ 2\zeta_3^2 + \zeta_3 \end{bmatrix}
-\]
-Lado direito ($\lambda_1 v_1$):
-\[
-(1+2\zeta_3) 
-\begin{bmatrix} 1 \\ \zeta_3^2 \\ \zeta_3 \end{bmatrix} 
-=
 \begin{bmatrix} 
-1 + 2\zeta_3 \\ 
-\zeta_3^2 + 2\zeta_3^3 \\ 
-\zeta_3 + 2\zeta_3^2 
-\end{bmatrix} 
-=
-\begin{bmatrix} 
-1 + 2\zeta_3 \\ 
-2 + \zeta_3^2 \\ 
-\zeta_3 + 2\zeta_3^2 
+1 + 2\psi \\ 
+2 - \psi^2 \\ 
+-2\psi^2 - \psi 
 \end{bmatrix}
 \]
-A igualdade é satisfeita, pensamento analogo é utilizado para mostrar que o $v_0$ e $v_2$ e  tambem são autovetores, confirmando que a base de Fourier é a base natural de $C_x$.
+Lado direito ($\lambda_1 v_1$), onde o autovalor é $\lambda_1 = x(\psi) = 1+2\psi$:
+\[
+(1+2\psi) 
+\begin{bmatrix} 1 \\ -\psi^2 \\ -\psi \end{bmatrix} 
+=
+\begin{bmatrix} 
+1 + 2\psi \\ 
+-\psi^2 - 2\psi^3 \\ 
+-\psi - 2\psi^2 
+\end{bmatrix}
+\]
+Utilizando a propriedade $\psi^3 = -1$, simplificamos o termo do meio: $-\psi^2 - 2(-1) = 2 - \psi^2$. A igualdade é satisfeita, confirmando que as raízes de $x^N+1$ geram a base natural de $H_x$.
 
 \subsection*{Representação Matricial da Diagonalização}
 
-Primeiro, calculamos os vetores transformados $X = Fx$ e $Y = Fy$:
+Primeiro, calculamos os vetores transformados $X = \text{NTT}(x)$ e $Y = \text{NTT}(y)$ avaliando os polinômios nas raízes de $z^3=-1$:
 \[
-X = \begin{bmatrix} 3 \\ 1+2\zeta_3 \\ 1+2\zeta_3^2 \end{bmatrix}, \quad
-Y = \begin{bmatrix} 2 \\ 1+\zeta_3^2 \\ 1+\zeta_3 \end{bmatrix}
+X = \begin{bmatrix} x(-1) \\ x(\psi) \\ x(\psi^2) \end{bmatrix} 
+= \begin{bmatrix} -1 \\ 1+2\psi \\ 1+2\psi^2 \end{bmatrix}, \quad
+Y = \begin{bmatrix} y(-1) \\ y(\psi) \\ y(\psi^2) \end{bmatrix} 
+= \begin{bmatrix} 2 \\ 1+\psi^2 \\ 1+\psi^4 \end{bmatrix}
 \]
+\small{\textit{*Nota: $y(\psi) = 1 + 0\psi + 1\psi^2$. Para o terceiro termo, usamos $\psi^4 = -\psi$, logo $1-\psi$.}}
 
-Agora, construímos a matriz diagonal $\Lambda_x = \text{diag}(X)$. A operação de convolução no domínio da frequência ($Z = X \cdot Y$), visualizada matricialmente como $Z = \Lambda_x Y$, torna-se:
+Agora, construímos a matriz diagonal $\Lambda_x = \text{diag}(X)$. A operação de convolução no domínio da frequência ($Z = \Lambda_x Y$) torna-se:
 
 \[
 \mathbf{Z} = 
 \underbrace{
 \begin{bmatrix} 
-3 & 0 & 0 \\ 
-0 & 1+2\zeta_3 & 0 \\ 
-0 & 0 & 1+2\zeta_3^2 
+-1 & 0 & 0 \\ 
+0 & 1+2\psi & 0 \\ 
+0 & 0 & 1+2\psi^2 
 \end{bmatrix}
 }_{\text{Matriz Diagonal } (\Lambda_x)}
 \begin{bmatrix} 
 2 \\ 
-1+\zeta_3^2 \\ 
-1+\zeta_3 
+1+\psi^2 \\ 
+1-\psi 
 \end{bmatrix}
 \]
 
-Executando o produto matricial (que equivale ao produto ponto a ponto):
-
+Executando o produto ponto a ponto:
 \[
 \mathbf{Z} = 
 \begin{bmatrix} 
-3 \cdot 2 \\ 
-(1+2\zeta_3)(1+\zeta_3^2) \\ 
-(1+2\zeta_3^2)(1+\zeta_3) 
+-2 \\ 
+(1+2\psi)(1+\psi^2) \\ 
+(1+2\psi^2)(1-\psi) 
 \end{bmatrix}
 =
 \begin{bmatrix} 
-6 \\ 
-2 + \zeta_3 \\ 
-2 + \zeta_3^2 
+-2 \\ 
+1 + \psi^2 + 2\psi + 2\psi^3 \\ 
+1 - \psi + 2\psi^2 - 2\psi^3 
+\end{bmatrix}
+=
+\begin{bmatrix} 
+-2 \\ 
+-1 + 2\psi + \psi^2 \\ 
+3 - \psi + 2\psi^2 
 \end{bmatrix}
 \]
-\small{\textit{*Nota: As simplificações algébricas utilizam $1+\zeta_3+\zeta_3^2=0$.}}
+\small{\textit{*Simplificações usando $\psi^3 = -1$.}}
 
-\subsection*{Retorno ao Tempo (IDFT)}
+\subsection*{Retorno ao Tempo (INTT)}
 
-Finalmente, aplicamos a matriz inversa de Fourier ($F^{-1}$) para obter $z$:
+Finalmente, aplicamos a transformada inversa. O vetor resultante $z$ deve coincidir com o cálculo temporal $[-1, 2, 1]^T$.
+Ao reconstruir o polinômio $z(\omega)$ a partir dos valores em $\mathbf{Z}$, obtemos os coeficientes:
 
 \[
-z = F^{-1} \mathbf{Z} = \frac{1}{3}
-\begin{bmatrix}
-1 & 1 & 1 \\
-1 & \zeta_3^{-1} & \zeta_3^{-2} \\
-1 & \zeta_3^{-2} & \zeta_3^{-4}
-\end{bmatrix}
-\begin{bmatrix} 
-6 \\ 
-2 + \zeta_3 \\ 
-2 + \zeta_3^2 
-\end{bmatrix}
-=
-\begin{bmatrix} 3 \\ 2 \\ 1 \end{bmatrix}
+z = \text{INTT}(\mathbf{Z}) = \begin{bmatrix} -1 \\ 2 \\ 1 \end{bmatrix}
 \]
 
-Isso confirma numericamente que a base de Fourier diagonalizou a operação.
-
+Isso verifica que:
+\[
+z(\psi) = -1 + 2\psi + \psi^2
+\]
+O que coincide exatamente com o segundo elemento do vetor $\mathbf{Z}$ calculado acima, fechando o ciclo da prova numérica.
 \subsection{Determinição unívoca do polinomio}
 \label{sec:Determinição unívoca do polinômio}
 

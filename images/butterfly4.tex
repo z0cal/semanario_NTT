@@ -1,105 +1,138 @@
-\documentclass[tikz, border=10px]{standalone}
-\usepackage{physics}
-\usetikzlibrary{automata, positioning, arrows.meta, calc}
+\documentclass[tikz,border=10pt]{standalone}
+\usepackage{amsmath,amssymb}
+\usetikzlibrary{positioning,arrows.meta,calc}
 
 \begin{document}
-\begin{tikzpicture}[>=Stealth, node distance=1.5cm, thick]
+\begin{tikzpicture}[
+  >=Stealth,
+  thick,
+  op/.style={circle, draw, minimum size=0.6cm, inner sep=0pt, font=\large}
+]
 
-  % --- CONFIGURAÇÕES GERAIS ---
-  \def\dy{1.5} 
-  
-  % Estilo para nós de junção (soma)
-  \tikzstyle{junction}=[circle, fill=black, inner sep=1.5pt, outer sep=0pt]
+% -----------------------
+% Layout parameters
+% -----------------------
+\def\dy{1.6}
 
-  % --- ENTRADA (Bit-Reversal) ---
-  % Pares (Evens)
-  \node (x0) at (0, 0) {$x[0]$};
-  \node (x2) at (0, -\dy) {$x[2]$};
-  % Ímpares (Odds)
-  \node (x1) at (0, -2*\dy) {$x[1]$};
-  \node (x3) at (0, -3*\dy) {$x[3]$};
+\def\xin{0}
+\def\xmulA{2.6}
+\def\xopA{5.6}
+\def\xmid{8.6}
+\def\xmulB{11.2}
+\def\xopB{14.2}
+\def\xout{17.2}
 
-  % Círculos nos inputs
-  \foreach \n in {x0, x2, x1, x3} {
-    \draw [fill=white, thin] (\n.east) circle (0.05);
-  }
+% y-levels (top to bottom)
+\def\yA{ { 1.5*\dy} }   % line 0
+\def\yB{ { 0.5*\dy} }   % line 1
+\def\yC{ {-0.5*\dy} }   % line 2
+\def\yD{ {-1.5*\dy} }   % line 3
 
-  % --- SAÍDAS INTERMEDIÁRIAS (E e O) ---
-  % Definindo a posição dos nós intermediários
-  \node (E0) at (4.5, 0) {$E[0]$};
-  \node (E1) at (4.5, -\dy) {$E[1]$};
-  \node (O0) at (4.5, -2*\dy) {$O[0]$};
-  \node (O1) at (4.5, -3*\dy) {$O[1]$};
+% -----------------------
+% Inputs
+% -----------------------
+\node (x0) at (\xin,\yA) {\Large $x[0]$};
+\node (x2) at (\xin,\yB) {\Large $x[2]$};
+\node (x1) at (\xin,\yC) {\Large $x[1]$};
+\node (x3) at (\xin,\yD) {\Large $x[3]$};
 
-  % --- ESTÁGIO 1: BUTTERFLIES (Substituindo os blocos) ---
-  
-  % -- Butterfly Superior (Entradas x0, x2) --
-  % Pontos de junção antes das saídas E
-  \node[junction] (jE0) at ($(E0.west) + (-0.5, 0)$) {};
-  \node[junction] (jE1) at ($(E1.west) + (-0.5, 0)$) {};
+% -----------------------
+% Stage 1 (size-2 FFTs): (x0,x2)->(E0,E1) and (x1,x3)->(O0,O1)
+% -----------------------
 
-  % Caminhos de x0 (Pares superiores)
-  \draw [->] (x0.east) -- (jE0);
-  \draw [->] (x0.east) -- (jE1);
+% Top butterfly: x0 (top), x2 (bottom)
+\node[op] (tE) at (\xmulA,\yB) {$\times$};
+\node[op] (pE) at (\xopA,\yA)  {$+$};
+\node[op] (mE) at (\xopA,\yB)  {$-$};
 
-  % Caminhos de x2 (Pares inferiores - com Twiddle e -1)
-  % Nota: zeta_2^0 é numericamente 1, mas mantido para clareza estrutural.
-  \draw [->] (x2.east) -- node[pos=0.3, above, font=\scriptsize] {$\zeta_2^0$} (jE0);
-  \draw [->] (x2.east) -- node[pos=0.3, above, font=\scriptsize] {$\zeta_2^0$} node[pos=0.85, below, font=\scriptsize] {$-1$} (jE1);
+\node[below=0.3cm of tE] (wE) {\Large $\zeta_2^{0}$};
+\draw[->] (wE) -- (tE);
 
-  % Conectar junções às saídas E
-  \draw [->] (jE0) -- (E0);
-  \draw [->] (jE1) -- (E1);
+\draw[->] (x0) -- (pE);
+\draw[->] (x0) -- (mE);
 
-  % -- Butterfly Inferior (Entradas x1, x3) --
-  % Pontos de junção antes das saídas O
-  \node[junction] (jO0) at ($(O0.west) + (-0.5, 0)$) {};
-  \node[junction] (jO1) at ($(O1.west) + (-0.5, 0)$) {};
+\draw[->] (x2) -- (tE);
+\draw[->] (tE) -- (pE);
+\draw[->] (tE) -- (mE);
 
-  % Caminhos de x1 (Ímpares superiores)
-  \draw [->] (x1.east) -- (jO0);
-  \draw [->] (x1.east) -- (jO1);
+\node[right=0.9cm of pE] (E0) {\Large $E[0]$};
+\node[right=0.9cm of mE] (E1) {\Large $E[1]$};
+\draw[->] (pE) -- (E0);
+\draw[->] (mE) -- (E1);
 
-  % Caminhos de x3 (Ímpares inferiores - com Twiddle e -1)
-  \draw [->] (x3.east) -- node[pos=0.3, above, font=\scriptsize] {$\zeta_2^0$} (jO0);
-  \draw [->] (x3.east) -- node[pos=0.3, above, font=\scriptsize] {$\zeta_2^0$} node[pos=0.85, below, font=\scriptsize] {$-1$} (jO1);
+% Bottom butterfly: x1 (top), x3 (bottom)
+\node[op] (tO) at (\xmulA,\yD) {$\times$};
+\node[op] (pO) at (\xopA,\yC)  {$+$};
+\node[op] (mO) at (\xopA,\yD)  {$-$};
 
-  % Conectar junções às saídas O
-  \draw [->] (jO0) -- (O0);
-  \draw [->] (jO1) -- (O1);
+\node[below=0.3cm of tO] (wO) {\Large $\zeta_2^{0}$};
+\draw[->] (wO) -- (tO);
 
+\draw[->] (x1) -- (pO);
+\draw[->] (x1) -- (mO);
 
-  % --- ESTÁGIO 2: COMBINAÇÃO FINAL (Mantido do original) ---
-   
-  % Nós de Saída Final (X)
-  \node (X0) at (9, 0) {$X[0]$};
-  \node (X1) at (9, -\dy) {$X[1]$};
-  \node (X2) at (9, -2*\dy) {$X[2]$};
-  \node (X3) at (9, -3*\dy) {$X[3]$};
+\draw[->] (x3) -- (tO);
+\draw[->] (tO) -- (pO);
+\draw[->] (tO) -- (mO);
 
-  % Pontos de junção para o estágio final
-  \node[junction] (jX0) at ($(X0.west) + (-0.5, 0)$) {};
-  \node[junction] (jX1) at ($(X1.west) + (-0.5, 0)$) {};
-  \node[junction] (jX2) at ($(X2.west) + (-0.5, 0)$) {};
-  \node[junction] (jX3) at ($(X3.west) + (-0.5, 0)$) {};
+\node[right=0.9cm of pO] (O0) {\Large $O[0]$};
+\node[right=0.9cm of mO] (O1) {\Large $O[1]$};
+\draw[->] (pO) -- (O0);
+\draw[->] (mO) -- (O1);
 
-  % Conectar junções às saídas finais
-  \foreach \n in {0,1,2,3} { \draw[->] (jX\n) -- (X\n); }
+% -----------------------
+% Stage 2 (final butterflies):
+% (E0,O0)->(X0,X2) and (E1,O1)->(X1,X3)
+% -----------------------
 
-  % Linhas retas (Pares vêm de E)
-  \draw [->] (E0) -- (jX0); % E[0] -> X[0]
-  \draw [->] (E1) -- (jX1); % E[1] -> X[1]
-  \draw [->] (E0) -- (jX2); % E[0] -> X[2]
-  \draw [->] (E1) -- (jX3); % E[1] -> X[3]
+% Butterfly for (E0,O0) -> (X0,X2)
+\begin{scope}[shift={(-1.4,0.)}]
+  \node[op] (tX0) at (\xmulB,\yC) {$\times$};
+\end{scope}
+\node[op] (pX0) at (\xopB,\yA)  {$+$};
+\node[op] (mX2) at (\xopB,\yC)  {$-$};
 
-  % Linhas cruzadas (Ímpares vêm de O com Twiddle Factors)
-  % O[0] caminhos
-  \draw [->] (O0) -- node[above, pos=0.2, font=\scriptsize] {$\zeta_4^0$} (jX0); 
-  \draw [->] (O0) -- node[above, pos=0.2, font=\scriptsize] {$\zeta_4^0$} node[below, pos=0.8, font=\scriptsize] {$-1$} (jX2);
+\node[below=0.3cm of tX0] (wX0) {\Large $\zeta_4^{0}$};
+\draw[->] (wX0) -- (tX0);
 
-  % O[1] caminhos
-  \draw [->] (O1) -- node[above, pos=0.2, font=\scriptsize] {$\zeta_4^1$} (jX1); 
-  \draw [->] (O1) -- node[above, pos=0.2, font=\scriptsize] {$\zeta_4^1$} node[below, pos=0.8, font=\scriptsize] {$-1$} (jX3);
+\draw[->] (E0) -- (pX0);
+\draw[->] (E0) -- (mX2);
+
+\draw[->] (O0) -- (tX0);
+\draw[->] (tX0) -- (pX0);
+\draw[->] (tX0) -- (mX2);
+
+\node[right=0.9cm of pX0] (X0) {\Large $X[0]$};
+\node[right=0.9cm of mX2] (X2) {\Large $X[2]$};
+\draw[->] (pX0) -- (X0);
+\draw[->] (mX2) -- (X2);
+
+\begin{scope}[shift={(-1.4,0.)}]
+
+\node[op] (tX1) at (\xmulB,\yD) {$\times$};
+\end{scope}
+% Butterfly for (E1,O1) -> (X1,X3)
+\node[op] (pX1) at (\xopB,\yB)  {$+$};
+\node[op] (mX3) at (\xopB,\yD)  {$-$};
+
+\node[below=0.3cm of tX1] (wX1) {\Large $\zeta_4^{1}$};
+\draw[->] (wX1) -- (tX1);
+
+\draw[->] (E1) -- (pX1);
+\draw[->] (E1) -- (mX3);
+
+\draw[->] (O1) -- (tX1);
+\draw[->] (tX1) -- (pX1);
+\draw[->] (tX1) -- (mX3);
+
+\node[right=0.9cm of pX1] (X1) {\Large $X[1]$};
+\node[right=0.9cm of mX3] (X3) {\Large $X[3]$};
+\draw[->] (pX1) -- (X1);
+\draw[->] (mX3) -- (X3);
+
+% Optional: stage labels
+\node[font=\large] at (\xopA, {2.3*\dy}) {Stage 1};
+\node[font=\large] at (\xopB, {2.3*\dy}) {Stage 2};
 
 \end{tikzpicture}
 \end{document}

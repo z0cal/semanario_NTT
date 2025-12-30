@@ -19,36 +19,6 @@
 
 \refsection{0}
   \datalist[entry]{nty/global//global/global/global}
-    \entry{nussbaumer1982fft}{book}{}{}
-      \name{author}{1}{}{%
-        {{hash=cfcab2df4e8c6a328bf7440a74bbc2fd}{%
-           family={Nussbaumer},
-           familyi={N\bibinitperiod},
-           given={Henri\bibnamedelima J.},
-           giveni={H\bibinitperiod\bibinitdelim J\bibinitperiod}}}%
-      }
-      \list{publisher}{1}{%
-        {Springer Berlin, Heidelberg}%
-      }
-      \strng{namehash}{cfcab2df4e8c6a328bf7440a74bbc2fd}
-      \strng{fullhash}{cfcab2df4e8c6a328bf7440a74bbc2fd}
-      \strng{fullhashraw}{cfcab2df4e8c6a328bf7440a74bbc2fd}
-      \strng{bibnamehash}{cfcab2df4e8c6a328bf7440a74bbc2fd}
-      \strng{authorbibnamehash}{cfcab2df4e8c6a328bf7440a74bbc2fd}
-      \strng{authornamehash}{cfcab2df4e8c6a328bf7440a74bbc2fd}
-      \strng{authorfullhash}{cfcab2df4e8c6a328bf7440a74bbc2fd}
-      \strng{authorfullhashraw}{cfcab2df4e8c6a328bf7440a74bbc2fd}
-      \field{sortinit}{N}
-      \field{sortinithash}{22369a73d5f88983a108b63f07f37084}
-      \field{labelnamesource}{author}
-      \field{labeltitlesource}{title}
-      \field{edition}{2}
-      \field{title}{Fast Fourier Transform and Convolution Algorithms}
-      \field{year}{1982}
-      \verb{doi}
-      \verb 10.1007/978-3-642-81897-4
-      \endverb
-    \endentry
     \entry{oppenheim2009}{book}{}{}
       \name{author}{2}{}{%
         {{hash=3d2d1d8687de3baa625d3d62a7e0e464}{%
@@ -130,6 +100,7 @@
       \field{year}{2025}
     \endentry
   \enddatalist
+  \missing{\@@par}
 \endrefsection
 \endinput
 

@@ -4,15 +4,16 @@
 \contentsline {subsection}{\numberline {3.1}Definição da IDFT}{3}{subsection.3.1}%
 \contentsline {section}{\numberline {4} A Multiplicação de Polinômios e a Complexidade Computacional}{4}{section.4}%
 \contentsline {section}{\numberline {5} A Fast Fourier Transform}{5}{section.5}%
-\contentsline {section}{\numberline {6} Problemas da FFT}{7}{section.6}%
-\contentsline {section}{\numberline {7} Number Theoretic Transform (NTT)}{7}{section.7}%
-\contentsline {subsection}{\numberline {7.1}Fundamentos}{7}{subsection.7.1}%
-\contentsline {section}{\numberline {8}O Isomorfismo via Teorema Chinês dos Restos (CRT)}{11}{section.8}%
+\contentsline {section}{\numberline {6} Problemas da FFT}{8}{section.6}%
+\contentsline {section}{\numberline {7} Number Theoretic Transform (NTT)}{8}{section.7}%
+\contentsline {subsection}{\numberline {7.1}Fundamentos}{8}{subsection.7.1}%
+\contentsline {section}{\numberline {8}O Isomorfismo via Teorema Chinês dos Restos (CRT)\blx@tocontentsinit {0}\cite {nussbaumer1982fft}}{11}{section.8}%
 \contentsline {section}{\numberline {9}Transformada Numérica Inversa (INTT)}{12}{section.9}%
 \contentsline {subsection}{\numberline {9.1}A NTT como uma FFT: Decomposição Radix-2 via CRT}{13}{subsection.9.1}%
 \contentsline {subsection}{\numberline {9.2}A INTT via Gentleman-Sande (GS): Reconstrução via CRT}{15}{subsection.9.2}%
 \contentsline {subsection}{\numberline {9.3}Extra: NTT incompleta e a restrição de parâmetros no caso negacíclico}{18}{subsection.9.3}%
 \contentsline {section}{\numberline {10}Agradecimentos}{19}{section.10}%
 \contentsline {section}{\numberline {11}Apêndice}{19}{section.11}%
-\contentsline {subsection}{\numberline {11.1}Exemplo de convolução circular}{19}{subsection.11.1}%
-\contentsline {subsection}{\numberline {11.2}Determinição unívoca do polinomio}{21}{subsection.11.2}%
+\contentsline {subsection}{\numberline {11.1}DFT como transformação linear}{19}{subsection.11.1}%
+\contentsline {subsection}{\numberline {11.2}Exemplo de convolução negacíclica}{20}{subsection.11.2}%
+\contentsline {subsection}{\numberline {11.3}Determinição unívoca do polinomio}{22}{subsection.11.3}%
