@@ -1,7 +1,10 @@
 \documentclass[12pt]{article}
 \usepackage{zocal}
 \usepackage{biblatex}
-\addbibresource{referencias.bib} % Certifique-se que o nome do arquivo .bib está correto
+\newtheorem{teorema}{Teorema}
+\newtheorem{proposicao}{Proposição}
+\renewcommand{\proofname}{Demonstração}
+\addbibresource{referencias.bib} %
 \begin{document}
 
 \begin{titlepage}
@@ -53,7 +56,7 @@ Para uma função contínua $g(t)$, a transformada é definida pela integral:
 
 \[\mathcal{F}(f) = \int_{-\infty}^{\infty} g(t) e^{-2\pi if t} \, dt\]
 
-Ela pode ser entendida como um produto interno(uma projeção) do sinal com todos as frequencias da reta real $ \langle g, e^{-2\pi i ft} \rangle$, que, devido a ortoganalidade das frequências diferentes e que funcoes bem comportadas podem ser decompostas em series de autofuncoes $e^{-2\pi ift}$, consegue extrair extamente as frequências do sinal.
+Ela pode ser entendida como um produto interno(uma projeção) do sinal com todos as frequências da reta real $ \langle g, e^{-2\pi i ft} \rangle$, que, devido a ortoganalidade das frequências diferentes e que funcoes bem comportadas podem ser decompostas em series de autofuncoes $e^{-2\pi ift}$, consegue extrair extamente as frequências do sinal.
 Apesar de sua elegância teórica, a CTFT apresenta desafios para a aplicação prática em sistemas digitais:
 
 \begin{enumerate}
@@ -72,7 +75,7 @@ Para viabilizar o processamento em computadores, utilizamos a \textbf{DFT} (\tex
 Para $k = 0, 1, \dots, N-1$.
 
 Diferente da versão contínua, a DFT lida com somatórios e vetores numéricos, permitindo que a teoria de Fourier seja aplicada em qualquer dispositivo digital.
-É possivel provar que a DFT é um transformacao linear \ref{sec:linear}, logo, pode ser representada matricialmente.
+É possivel provar que a DFT é um transformação linear \ref{sec:linear}, logo, pode ser representada matricialmente.
 
 Seja $\zeta_N = e^{-i\frac{2\pi}{N}}$. A representação matricial da DFT para $n = 0, 1, \dots, N-1$ é:
 
@@ -121,13 +124,13 @@ X[0] \\ X[1] \\ X[2] \\ \vdots \\ X[N-1]
 \]
 Percebe-se que nesse caso discreto, a DFT e IDFT atuam como uma matriz mudança de base, saindo da base do tempo e indo para base das raizes unitarias
 
-Além disso, a DFT pode ser vista de outra óptica, como avalição de polinomios.
+Além disso, a DFT pode ser vista de outra óptica, como avalição de polinômios.
 
 Seja:
 \[
 a(x)=\sum_{n=0}^{N-1} a_n x^n
 \]
-e tome $\zeta_N=e^{-\frac{2\pi i}{N}}$ seja uma $N$-ésima raiz primitiva da unidade. Define
+e  $\zeta_N=e^{-\frac{2\pi i}{N}}$ seja uma $N$-ésima raiz primitiva da unidade. Define
 \[
 A_k := a(\zeta_N^k).
 \]
@@ -152,7 +155,7 @@ Assim, \(\mathrm{DFT}\) é \emph{avaliar} em raízes da unidade e \(\mathrm{IDFT
 
 \section{ A Multiplicação de Polinômios e a Complexidade Computacional}
 
-Um problema simplificado pela mudanca de domino é a multiplicacao de polinomios. Tome os polinomios $f(x)$ e $g(x)$ de grau $N-1$: 
+Um problema simplificado pela mudança de domino é a multiplicação de polinômios. Tome os polinômios $f(x)$ e $g(x)$ de grau $N-1$: 
 
 \[f(x) = \sum_{i=0}^{N-1} a_i x^i, \quad g(x) = \sum_{j=0}^{N-1} b_j x^j\]
 
@@ -187,10 +190,10 @@ Diferente da circular, aqui os termos que ``ultrapassam'' o comprimento $N$ reto
 
 Assim, o cálculo custoso da convolução é convertido em um produto ponto a ponto,
 pois a base de Fourier apropriada (utilizando raízes de $x^N+1$) diagonaliza o operador de convolução negacíclica (matriz negacirculante).
-Com a transformada direta ingênua o custo ainda seria $O(N^2)$, portanto, não há ganho computacional em realizar essa transformação.
+Com a transformada direta ingênua, o custo ainda seria $O(N^2)$, portanto, não há ganho computacional em realizar essa transformação.
 
-Um exemplo para o convencimento do leitor foi disposto no apêndice~\ref{sec:convolucao}.
-\section{ A Fast Fourier Transform}
+Um exemplo para o convencimento do leitor foi disposto no apêndice~\ref{sec:convolução}.
+\section{ A "Fast Fourier Transform"}
 
 A FFT (Fast Fourier Transform) é uma maneira de otimizar o calculo da DFT.
 
@@ -198,6 +201,7 @@ O algoritmo da FFT foi redescoberta por Cooley e Tukey em 1965, uma vez que Gaus
 
 O algoritmo se baseia em \textbf{dividir para conquistar}.
 
+\hrulefill
 \subsection*{Relembrando}
 
 As raízes unitárias possuem propriedades cíclicas e certas simetrias que permitem a economia nos cálculos, vejamos um exemplo.
@@ -283,13 +287,14 @@ De forma mais geral:
 \begin{quote}
 $ \zeta_N = e^{\frac{-2\pi i}{N}} $, uma raiz $N$-ésima primitiva da unidade. Então para todo inteiro $a$, $ {\zeta_N^{a+\frac{N}{2}} = -\,\zeta_N^{a}}. $
 \end{quote}
-Alem de que, pela periodicidade $\zeta_N^{a+N}=\zeta_N^a$ e $\zeta_N^{2}=\zeta_{N/2}$, esta última pode ser vista na figura \ref{fig:comparacao_raizes}
+Alem de que, pela periodicidade $\zeta_N^{a+N}=\zeta_N^a$ e $\zeta_N^{2}=\zeta_{N/2}$, esta última pode ser vista na figura \ref{fig:comparacao_raizes}, onde $\zeta_8^2=\zeta_4$ 
 
 Para esse caso a DFT é representada desse modo:
 \[
  \begin{bmatrix} 1 & 1 & 1 & 1 \\ 1 & -i & -1 & i \\ 1 & -1 & 1 & -1 \\ 1 & i & -1 & -i \end{bmatrix}
 \]
 
+\hrulefill
 
 Voltandao a FFT, o algoritmo decompõe uma DFT de tamanho $N$ em duas sub-transformadas de tamanho $N/2$, separando os índices pares e ímpares da sequência original:
 
@@ -319,7 +324,7 @@ como pode ser visto na imagem
 \caption{butterfly radix-2}
 \label{fig:butterfly}
 \end{figure}
-o a implementacao em sage esta no codigo\ref{lst:FFT}
+ a implementacao em SageMath esta no código\ref{lst:FFT}
 
 \begin{lstlisting}[caption={Implementação do algoritmo FFT em SageMath},label={lst:FFT}]
 def fft(a, omega):
@@ -342,19 +347,20 @@ def fft(a, omega):
     return A
 \end{lstlisting}
 
-Desse modo, reduzimos a complexidade da transformada de $O(n^2) \text{ para } O(n\cdot \log n)$. Por causa disso, podemos utilizar a FFT, junto com o \textbf{teorema da convolucao}, para multiplicar polinomios em $O(n\cdot \log n)$
+Desse modo, reduzimos a complexidade da transformada de $O(n^2) \text{ para } O(n\cdot \log n)$. Por causa disso, podemos utilizar a FFT, junto com o \textbf{Teorema da convolução}, para multiplicar polinômios em $O(n\cdot \log n)$
 
 
 \section{ Problemas da FFT}
 
-Uns dos problemas da FTT é que ela trabalha com ponto flutuante, o que, para computadores, é um grande problemas que pode causar erro de arredondamentos e, assim causar uma falha nos esquemas criptograficos. Alem disso, na convolução linear, o polinomio dobra de tamanho a cada convolução o que rapidamente torna-se um problema tanto computacional quanto de armazenamento .
+Uns dos problemas da FTT é que ela trabalha com ponto flutuante, o que, para computadores, é um grande problemas que pode causar erro de arredondamentos ou limitação nos cálculos. Além disso, na convolução linear, o polinômio dobra de tamanho a cada convolução o que rapidamente torna-se um problema tanto computacional quanto de armazenamento .
 
 
 
-Solucao: utilizar um transformada que utiliza apenas números exatos
-
+Solução: utilizar uma transformada que utiliza apenas números exatos e realiza uma convolução cíclica
 \section{ Number Theoretic Transform (NTT)}
+
 \subsection{Fundamentos}
+\hrulefill
 
 As propriedades que usamos na FFT — em especial a existência de uma raiz $N$-ésima da unidade $\zeta_N$ e o fato de que suas potências percorrem uniformemente o círculo — têm um análogo perfeito em teoria dos números, dentro de corpos (ou anéis) finitos. Isso não é coincidência: a DFT nada mais é do que a transformada de Fourier no grupo cíclico $\mathbb{Z}/N\mathbb{Z}$, e a mesma construção existe em outros contextos algébricos.
 
@@ -370,30 +376,38 @@ onde o lado esquerdo usa a soma módulo $N$ e o lado direito usa multiplicação
 \[
 \varphi([k+\ell])=\zeta_N^{k+\ell}=\zeta_N^k\zeta_N^\ell=\varphi([k])\,\varphi([\ell]).
 \]
+Assim, o grupo $\mu_N$, gerado pelas potências de $\zeta_N$, é uma realização ``multiplicativa'' do grupo cíclico $\mathbb{Z}/N\mathbb{Z}$: o isomorfismo $[k]\mapsto \zeta_N^k$ mostra que somar módulo $N$ corresponde exatamente a multiplicar raízes $N$-ésimas da unidade. Portanto, estamos apenas vendo o mesmo grupo abstrato em duas roupagens diferentes, uma aditiva e outra multiplicativa.
+
+
 
 \subsection*{Raiz Primitiva e Estrutura Negacíclica}
 Diferente da DFT complexa, onde raízes da unidade sempre existem para qualquer $N$, a NTT exige que o corpo finito $\mathbb{Z}_p$, isto é, os inteiros$\pmod p$, sendo $p$ um primo, suporte a ordem da transformada.
 
-Para a NTT Negacíclica, utilizada para realizar a multiplicação polinomial módulo $x^N + 1$, precisamos de uma raiz primitiva $2N$-ésima da unidade em $\mathbb{Z}_p$, que denotaremos por $\psi$. Isso implica que:
-\begin{enumerate}
-    \item $\psi^{2N} \equiv 1 \pmod{p}$;
-    \item $\psi^N \equiv -1 \pmod{p}$.
-\end{enumerate}
 
-Para garantir a existência desse elemento, a ordem $2N$ deve dividir a ordem do grupo multiplicativo do corpo. Portanto, o primo $p$ deve satisfazer:
-\[ 2N \mid (p - 1) \qquad \text{i.e. 2N divide (p-1)}\]
-Ou seja, $p \equiv 1 \pmod{2N}$.
+Como $p$ é primo, o conjunto $\mathbb{Z}/p\mathbb{Z}$ forma um corpo, e portanto seus elementos não nulos formam um grupo multiplicativo
+\[
+(\mathbb{Z}/p\mathbb{Z})^\times
+\]
+de cardinalidade $p-1$. Além disso, esse grupo é cíclico (ver Apêndice~\ref{ap:fp-ciclico}), isto é, existe um gerador $g$ tal que todo elemento não nulo pode ser escrito como uma potência de $g$.
 
-Como $2N \mid (p-1)$, em particular temos $p \nmid N$ (i.e. $gcd(p,N)=1$); logo $N$ possui inverso em $\mathbb{Z}_p$. 
+Nesse contexto, dizer que existe uma raiz $2N$-ésima primitiva da unidade em $\mathbb{Z}/p\mathbb{Z}$ significa exatamente dizer que existe um elemento $\psi\in(\mathbb{Z}/p\mathbb{Z})^\times$ com ordem $\operatorname{ord}(\psi)=2N$ tal que $\psi^{2N}\equiv 1\pmod p$ e nenhuma potência menor vale $1$.
 
+Como em qualquer grupo finito a ordem de um elemento divide a ordem do grupo, necessariamente deve valer
+\[
+2N \mid |(\mathbb{Z}/p\mathbb{Z})^\times| = p-1.
+\]
+Reciprocamente, como $(\mathbb{Z}/p\mathbb{Z})^\times$ é cíclico, para todo divisor $d$ de $p-1$ existe um elemento de ordem exatamente $d$; em particular, se $2N\mid(p-1)$ então existe $\psi$ com $\operatorname{ord}(\psi)=2N$.
 
+Concluímos, portanto, que existe uma raiz primitiva $2N$-ésima da unidade em $\mathbb{Z}/p\mathbb{Z}$ se, e somente se, $2N\mid(p-1)$ (equivalentemente, $p\equiv 1 \pmod{2N}$).
 
-Agora, trataremos da estrutura algébrica. A NTT Negacíclica é definida no anel quaociente 
+\hrulefill
+
+Dados esses critérios de de existência, trataremos da estrutura algébrica da transformada. A NTT Negacíclica é definida no anel quaociente 
 \[
 R = \frac{\mathbb{Z}_p[x]}{(x^N+1)}
 \]
 
-(a imagem \ref{fig:torus} ilustra a sequencia das duas operacoes visualmente.)
+ou seja, há uma composição de operações modulares.(a imagem \ref{fig:torus} ilustra a sequencia das duas operacoes visualmente.)
 
  Ela pode ser vista como a avalição do polinômio nas raízes da equação $x^N + 1 = 0$, que correspondem às potências ímpares de $\psi$. A transformada é definida por:
 
@@ -434,7 +448,7 @@ De forma geral, o termo na linha $k$ e coluna $n$ da matriz é dado por:
 \begin{figure}[H]
     \centering
 \includegraphics{images/torus.pdf}
-\caption{representação das transformacoes}
+\caption{representação das transformações}
 \label{fig:torus}
 \end{figure}
 
@@ -451,6 +465,7 @@ x^N+1=\prod_{k=0}^{N-1}\bigl(x-\psi^{2k+1}\bigr),
 \medskip
 \noindent
 \textbf{Homomorfismo de avaliação e o isomorfismo local.}
+
 Para cada $\alpha\in\mathbb{Z}_p$, considere o mapa de avaliação
 \[
 \mathrm{ev}_\alpha:\mathbb{Z}_p[x]\to \mathbb{Z}_p,
@@ -471,7 +486,7 @@ De fato, pela Divisão Euclidiana, qualquer $a(x)$ pode ser escrito como
 \[
 a(x)=q(x)(x-\alpha)+r
 \]
-com $r\in\mathbb{Z}_p$, e avaliando em $x=\alpha$ obtemos $a(\alpha)=r$.
+com $r\in\mathbb{Z}_p$, e avaliando em $x=\alpha$ obtemos $a(\alpha)=r$, uma vez que $(x-\alpha)$ zera.
 Logo $a(\alpha)=0$ se e somente se $(x-\alpha)\mid a(x)$.
 Pelo \textbf{Primeiro Teorema do Isomorfismo} para anéis,
 \[
@@ -483,6 +498,7 @@ Pelo \textbf{Primeiro Teorema do Isomorfismo} para anéis,
 \medskip
 \noindent
 \textbf{O isomorfismo global do CRT como produto de avaliações.}
+
 Como os fatores $(x-\psi^{2k+1})$ são coprimos dois a dois, o CRT fornece um
 isomorfismo de anéis
 \[
@@ -534,14 +550,13 @@ se traduz em um produto de Hadamard no domínio transformado.
 
 Como o Teorema Chinês dos Restos garante que a aplicação da NTT é um isomorfismo bijetor entre o anel de polinômios $\mathbb{Z}_p[x]/(x^N+1)$ e o domínio da frequência, existe uma transformação inversa única capaz de recuperar os coeficientes originais.
 
-Denotamos a inversa multiplicativa de $N$ no corpo $\mathbb{Z}_p$ por $N^{-1}$, tal que $N \cdot N^{-1} \equiv 1 \pmod{p}$. A **NTT Negacíclica Inversa (INTT)** é definida formalmente por:
+Denotamos a inversa multiplicativa de $N$ no corpo $\mathbb{Z}_p$ por $N^{-1}$, tal que $N \cdot N^{-1} \equiv 1 \pmod{p}$. A NTT Negacíclica Inversa (INTT) é definida formalmente por:
 
 \[
 x[n] = N^{-1} \sum_{k=0}^{N-1} X[k] \psi^{-(2k+1)n} \pmod{p}
 \]
 
-Note que o termo $\psi^{-(2k+1)n}$ refere-se à potência do inverso multiplicativo da raiz, ou seja, $\psi^{-1} \equiv \psi^{2N-1} \pmod{p}$.
-
+Note que o termo $\psi^{-(2k+1)n}$ refere-se à potência do inverso multiplicativo da raiz.
 \subsection*{Representação Matricial}
 Na forma matricial, a operação de inversão corresponde à resolução do sistema linear $\mathbf{X} = \mathbf{W}_N \mathbf{x}$. A solução é dada por:
 
@@ -569,21 +584,6 @@ De modo geral, o termo na linha $n$ e coluna $k$ da matriz inversa é:
 (\mathbf{W}_N^{-1})_{n,k} = N^{-1} \psi^{-(2k+1)n} \pmod{p}
 \]
 
-\subsection*{Ortogonalidade}
-A existência da inversa e a validade da fórmula acima decorrem da propriedade de ortogonalidade das raízes negacíclicas no corpo finito $\mathbb{Z}_p$. Para quaisquer $n, m \in \{0, \dots, N-1\}$, temos:
-
-\[
-\sum_{k=0}^{N-1} \psi^{(2k+1)(n-m)} = 
-\begin{cases} 
-N & \text{se } n = m \\
-0 & \text{se } n \neq m 
-\end{cases}
-\]
-
-Isso garante que o produto das matrizes resulta na identidade:
-\[
-\mathbf{W}_N^{-1} \mathbf{W}_N = \mathbf{I}
-\]
 
 \subsection{A NTT como uma FFT: Decomposição Radix-2 via CRT}
 
@@ -721,7 +721,7 @@ Essa simetria elimina a necessidade de reordenamentos de memória (bit-reversal)
 \end{figure}
 A implementa da NTT negacíclica está a seguir \ref{lst:NTT}
 
-\begin{lstlisting}[caption=codigo em SageMath,label={lst:NTT}]
+\begin{lstlisting}[caption=código em SageMath,label={lst:NTT}]
 def NTT_Negacyclic(A, R, psi):
     
     n = len(A)
@@ -853,7 +853,7 @@ X[k] = \sum_{n=0}^{N-1} x[n]\;\zeta^{kn},
 \qquad k=0,1,\dots,N-1.
 $$
 
-\subsection*{Prova de linearidade}
+\subsubsection*{Prova de linearidade}
 Sejam dois sinais $x[n]$ e $y[n]$ e escalares $a,b\in\mathbb{C}$.
 Considere a combinação linear
 $$
@@ -878,7 +878,7 @@ $$
 o que mostra que a DFT é uma \textbf{transformação linear}.
 
 \subsection{Exemplo de convolução negacíclica}
-\label{sec:convolucao}
+\label{sec:convolução}
 Sejam dois sinais $x$ e $y$ de comprimento $N=3$:
 \[
 x = \begin{bmatrix} 1 \\ 2 \\ 0 \end{bmatrix}, \quad y = \begin{bmatrix} 1 \\ 0 \\ 1 \end{bmatrix}
@@ -886,7 +886,7 @@ x = \begin{bmatrix} 1 \\ 2 \\ 0 \end{bmatrix}, \quad y = \begin{bmatrix} 1 \\ 0 
 
 Neste contexto, a frequência fundamental não é a raiz da unidade, mas sim a raiz de $x^N + 1 = 0$. Seja $\psi$ tal que $\psi^N = -1$. Para $N=3$, temos $\psi^3 = -1$.
 
-\subsection*{Método 1: Convolução no Tempo (Matriz Negacirculante)}
+\subsubsection*{Método 1: Convolução no Tempo (Matriz Negacirculante)}
 
 A convolução negacíclica $z = x *_{neg} y$ equivale à multiplicação de uma matriz negacirculante $H_x$ pelo vetor $y$. Note que os elementos que ``dão a volta'' (acima da diagonal principal) têm sinal invertido:
 
@@ -915,7 +915,7 @@ z = \begin{bmatrix} 1 & 0 & -2 \\ 2 & 1 & 0 \\ 0 & 2 & 1 \end{bmatrix}
 = \begin{bmatrix} -1 \\ 2 \\ 1 \end{bmatrix}
 \]
 
-\subsection*{Método 2: Diagonalização (Domínio da Frequência)}
+\subsubsection*{Método 2: Diagonalização (Domínio da Frequência)}
 
 A matriz negacirculante $H_x$ é diagonalizada por uma variante da DFT que utiliza potências ímpares de $\psi$ (raízes de $x^N+1$). Matematicamente:
 $$H_x = \mathcal{F}^{-1} \Lambda_x \mathcal{F}$$
@@ -942,7 +942,7 @@ As raízes para $(1-\lambda)$ são as raízes cúbicas de $8$. Sabemos que $8 = 
 \end{align*}
 Estes valores $\lambda_k$ correspondem à Transformada Negacíclica (NTT sobre $x^N+1$) do vetor $x$, permitindo calcular a convolução via produto ponto a ponto.
 
-\subsection*{Verificação do Autovetor}
+\subsubsection*{Verificação do Autovetor}
 Verificamos agora se o autovetor $v_1$ da base Negacíclica (coluna de $\mathcal{F}^{-1}$ associada à raiz $\psi$), dado por $v_1 = [1, \psi^{-1}, \psi^{-2}]^T = [1, -\psi^2, -\psi]^T$, satisfaz $H_x v_1 = \lambda_1 v_1$.
 \\
 Lado esquerdo ($H_x v_1$):
@@ -969,7 +969,7 @@ Lado direito ($\lambda_1 v_1$), onde o autovalor é $\lambda_1 = x(\psi) = 1+2\p
 \]
 Utilizando a propriedade $\psi^3 = -1$, simplificamos o termo do meio: $-\psi^2 - 2(-1) = 2 - \psi^2$. A igualdade é satisfeita, confirmando que as raízes de $x^N+1$ geram a base natural de $H_x$.
 
-\subsection*{Representação Matricial da Diagonalização}
+\subsubsection*{Representação Matricial da Diagonalização}
 
 Primeiro, calculamos os vetores transformados $X = \text{NTT}(x)$ e $Y = \text{NTT}(y)$ avaliando os polinômios nas raízes de $z^3=-1$:
 \[
@@ -1021,7 +1021,7 @@ Executando o produto ponto a ponto:
 \]
 \small{\textit{*Simplificações usando $\psi^3 = -1$.}}
 
-\subsection*{Retorno ao Tempo (INTT)}
+\subsubsection*{Retorno ao Tempo (INTT)}
 
 Finalmente, aplicamos a transformada inversa. O vetor resultante $z$ deve coincidir com o cálculo temporal $[-1, 2, 1]^T$.
 Ao reconstruir o polinômio $z(\omega)$ a partir dos valores em $\mathbf{Z}$, obtemos os coeficientes:
@@ -1035,7 +1035,7 @@ Isso verifica que:
 z(\psi) = -1 + 2\psi + \psi^2
 \]
 O que coincide exatamente com o segundo elemento do vetor $\mathbf{Z}$ calculado acima, fechando o ciclo da prova numérica.
-\subsection{Determinição unívoca do polinomio}
+\subsection{Determinição unívoca do polinômio}
 \label{sec:Determinição unívoca do polinômio}
 
 \begin{theorem}[Unicidade via matriz de Vandermonde]
@@ -1097,6 +1097,62 @@ $$
 Concluímos que existe um único vetor de coeficientes $(a_0,\dots,a_{N-1})$,
 isto é, um \textbf{único} polinômio $p(x)$ de grau $\le N-1$ que interpola os $N$ pontos.
 \end{proof}
+\subsection{Estrutura Cíclica de Grupos Multiplicativos de Corpos Finitos}
+\label{ap:fp-ciclico}
+
+Neste apêndice, justificamos a afirmação de que o grupo multiplicativo $(\mathbb{Z}/p\mathbb{Z})^\times$ é cíclico e analisamos a existência de elementos com ordens específicas, fundamentando a existência de raízes primitivas da unidade necessárias para a definição da Transformada.
+
+\subsubsection*{Ciclicidade de $(\mathbb{Z}/p\mathbb{Z})^\times$}
+
+Seja $\mathbb{K}$ um corpo finito. O teorema a seguir estabelece que seu grupo multiplicativo é cíclico. No contexto do trabalho, aplicamos isso para $\mathbb{K} = \mathbb{Z}/p\mathbb{Z}$.
+
+\begin{teorema}
+    Seja $\mathbb{K}$ um corpo finito. Então o grupo multiplicativo $\mathbb{K}^\times = \mathbb{K} \setminus \{0\}$ é um grupo cíclico.
+\end{teorema}
+
+\begin{proof}
+    Seja $n = |\mathbb{K}^\times|$ a ordem do grupo. Sendo $\mathbb{K}^\times$ um grupo abeliano finito, seja $m$ a ordem máxima dentre os elementos de $\mathbb{K}^\times$. Uma propriedade fundamental de grupos abelianos finitos garante que a ordem de qualquer elemento do grupo divide a ordem máxima $m$.
+    
+    Portanto, para todo $x \in \mathbb{K}^\times$, temos que:
+    \[
+        x^m = 1.
+    \]
+    
+    Considere agora o polinômio $f(x) = x^m - 1$ com coeficientes no corpo $\mathbb{K}$. Sabemos que um polinômio de grau $m$ sobre um corpo possui, no máximo, $m$ raízes distintas.
+    
+    No entanto, acabamos de ver que todos os $n$ elementos de $\mathbb{K}^\times$ satisfazem a equação $x^m - 1 = 0$. Logo, o polinômio tem $n$ raízes. Para que isso não viole o limite de raízes, devemos ter necessariamente:
+    \[
+        n \le m.
+    \]
+    
+    Por outro lado, pelo Teorema de Lagrange, a ordem de qualquer elemento (incluindo o elemento de ordem máxima $m$) deve dividir a ordem do grupo ($n$). Logo, $m \le n$.
+    
+    Concluímos que $m = n$. Isso significa que existe um elemento em $\mathbb{K}^\times$ cuja ordem é igual à ordem do grupo. Tal elemento é, por definição, um gerador de $\mathbb{K}^\times$. Portanto, o grupo é cíclico.
+\end{proof}
+
+\subsubsection*{Existência de Elementos de Ordem $d$}
+
+Tendo estabelecido que $G = (\mathbb{Z}/p\mathbb{Z})^\times$ é cíclico de ordem $p-1$, justificamos a recíproca mencionada no texto principal: para todo divisor da ordem do grupo, existe um elemento com aquela ordem.
+
+\begin{proposicao}
+    Seja $G$ um grupo cíclico finito de ordem $M$, gerado por $g$. Se $d$ é um divisor de $M$, então existe um elemento em $G$ com ordem exatamente $d$.
+\end{proposicao}
+
+\begin{proof}
+    Como $d \mid M$, podemos escrever $M = d \cdot k$ para algum inteiro $k$. Considere o elemento $h = g^k$. Calculando as potências de $h$:
+    \[
+        h^d = (g^k)^d = g^{kd} = g^M = 1_G.
+    \]
+    Portanto, a ordem de $h$ divide $d$. Para ver que a ordem é exatamente $d$, suponha que $h^r = 1$ para $0 < r < d$. Então:
+    \[
+        (g^k)^r = g^{kr} = 1.
+    \]
+    Como a ordem de $g$ é $M$, isso implicaria que $M \mid kr$, ou seja, $dk \mid kr$, o que implica $d \mid r$. Isso contradiz $r < d$.
+    
+    Logo, $\operatorname{ord}(h) = d$.
+\end{proof}
+
+Aplicando ao contexto do texto principal: como $G = (\mathbb{Z}/p\mathbb{Z})^\times$ tem ordem $M = p-1$, se impusermos a condição $2N \mid (p-1)$, a proposição acima garante a existência de um elemento $\psi$ de ordem $2N$ (uma raiz primitiva $2N$-ésima da unidade).
 
 \printbibliography
 
