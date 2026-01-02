@@ -6,7 +6,7 @@
 \renewcommand{\proofname}{Demonstração}
 \addbibresource{referencias.bib} %
 \begin{document}
-
+\nocite{*}
 \begin{titlepage}
     \begin{center}
         \textbf{\textnormal{Escola Politécnica-USP}}\\
@@ -328,30 +328,51 @@ como pode ser visto na imagem \ref{fig:butterfly}
 \caption{butterfly radix-2}
 \label{fig:butterfly}
 \end{figure}
- a implementacao em SageMath esta no código\ref{lst:FFT}
 
-\begin{lstlisting}[caption={Implementação do algoritmo FFT em SageMath},label={lst:FFT}]
-def fft(a, omega):
-    n = len(a)
-    if n == 1:
-        return a[:]  
+A implementação em pseudocódigo no algoritmo \ref{alg:fft}
 
- 
-    a_par = fft(a[0::2], omega^2)
-    a_impar  = fft(a[1::2], omega^2)
+\begin{algorithm}
+\caption{Cooley--Tukey FFT}
+\label{alg:fft}
+\begin{algorithmic}[1]
+\Require $x \in \mathbb{C}^N$, $N = 2^m$
+\Ensure $X = \mathrm{DFT}(x)$
 
-    A = [0] * n
-    w = 1
-    half = n // 2
-    for k in range(half):
-        t = w * a_impar[k]
-        A[k]          = a_par[k] + t
-        A[k + half]   = a_par[k] - t
-        w *= omega
-    return A
-\end{lstlisting}
+\If{$N = 1$}
+    \State \Return $x$
+\EndIf
 
-Desse modo, reduzimos a complexidade da transformada de $O(n^2) \text{ para } O(n\cdot \log n)$. Por causa disso, podemos utilizar a FFT, junto com o \textbf{Teorema da convolução}, para multiplicar polinômios em $O(n\cdot \log n)$
+\State $x_e \gets$ elementos pares de $x$
+\State $x_o \gets$ elementos ímpares de $x$
+
+\State $X_e \gets \text{FFT}(x_e)$
+\State $X_o \gets \text{FFT}(x_o)$
+
+\For{$k = 0$ to $N/2 - 1$}
+    \State $X[k] \gets X_e[k] + \zeta_N^k X_o[k]$
+    \State $X[k+N/2] \gets X_e[k] - \zeta_N^k X_o[k]$
+\EndFor
+\end{algorithmic}
+\end{algorithm}
+
+Como a IDFT é praticamente identica igual à DFT, podemos usar o mesmo algoritmo da FFT para calcular a IFFT
+\begin{algorithm}
+\caption{IFFT via FFT}
+\label{alg:ifft-via-fft}
+\begin{algorithmic}[1]
+\Require $X \in \mathbb{C}^N$
+\Ensure $x = \mathrm{IFFT}(X)$
+
+\State $Y \gets \overline{X}$ \Comment{i.e. o conjugado de X}
+\State $Z \gets \mathrm{FFT}(Y)$
+\State $x \gets \dfrac{1}{N} \cdot \overline{Z}$
+
+\State \Return $x$
+\end{algorithmic}
+\end{algorithm}
+
+
+Desse modo, reduzimos a complexidade da transformada de $O(n^2) \longrightarrow O(n\cdot \log n)$. Por causa disso, podemos utilizar a FFT, junto com o \textbf{Teorema da convolução}, para multiplicar polinômios em $O(n\cdot \log n)$ 
 
 
 \section{ Problemas da FFT}
@@ -457,7 +478,7 @@ De forma geral, o termo na linha $k$ e coluna $n$ da matriz é dado por:
 \end{figure}
 
 
-\subsection{O Isomorfismo via Teorema Chinês dos Restos (CRT)\cite{nussbaumer1982fft}}
+\subsection{O Isomorfismo via Teorema Chinês dos Restos (CRT)}
 
 A fundamentação algébrica da NTT reside na estrutura do anel quociente
 $\mathbb{Z}_p[x]/(x^N+1)$.
@@ -589,53 +610,84 @@ De modo geral, o termo na linha $n$ e coluna $k$ da matriz inversa é:
 \]
 
 
-\subsection{A NTT como uma FFT: Decomposição Radix-2 via CRT}
+\subsection{A NTT como uma FFT: Decomposição Radix-2   }
 
-A eficiência da NTT reside na estratégia ``dividir para conquistar''. Em vez de avaliar um polinômio $A(x)$ de grau $N-1$ de uma só vez, utilizamos a estrutura algébrica do anel para decompor o problema em dois problemas independentes de tamanho $N/2$.
+A eficiência da NTT negacíclica baseia-se na estratégia \emph{dividir para conquistar}, análoga à FFT clássica (algoritmo de Cooley-Tukey). Em vez de avaliar diretamente um polinômio $A(x)$ em $N$ pontos, decompomos o problema em dois subproblemas de tamanho $N/2$ através da separação dos coeficientes em índices pares e ímpares.
 
-\subsubsection*{1. A Fatoração do Módulo}
-O ponto de partida é a decomposição do polinômio $x^N + 1$.
-Como $\psi$ é uma raiz primitiva $2N$-ésima da unidade, temos que $\psi^N \equiv -1 \pmod p$, o que implica $(\psi^{N/2})^2 \equiv -1$.
-
-Pelo Teorema Chinês dos Restos (CRT), podemos fatorar o módulo original em dois sub-anéis:
+\subsubsection*{1. Definições e Propriedades}
+Seja $N=2^m$ e $p$ um primo tal que exista uma raiz primitiva $\psi \in \mathbb{Z}_p^*$ de ordem $2N$. As propriedades fundamentais para a aritmética negacíclica são:
 \[
-x^N + 1 = x^N - (\psi^{N/2})^2 = \underbrace{(x^{N/2} - \psi^{N/2})}_{\text{Módulo Esquerdo}} \cdot \underbrace{(x^{N/2} + \psi^{N/2})}_{\text{Módulo Direito}}
+\psi^{2N} \equiv 1 \pmod p \quad \text{e} \quad \psi^{N} \equiv -1 \pmod p.
+\]
+A NTT negacíclica consiste na avaliação do polinômio $A(x)$ nas $N$ raízes ímpares da unidade:
+\[
+x_k = \psi^{2k+1}, \quad \text{para } k=0, 1, \dots, N-1.
 \]
 
-\textit{Nota: Essa fatoração particiona o conjunto das raízes de $x^N+1$ (que são as potências ímpares $\psi^{2k+1}$). As raízes que satisfazem o lado esquerdo continuam na recursão $L$, e as que satisfazem o lado direito seguem na recursão $R$.}
-
-\subsubsection*{2. O Colapso da Variável}
-Considere o polinômio de entrada $A(x)$ com coeficientes $a[i]$. Podemos dividir seu somatório em duas partes: os primeiros $N/2$ termos e os últimos $N/2$ termos.
-
+\subsubsection*{2. Decomposição do Polinômio (Decimation-in-Time)}
+Podemos reescrever $A(x)$ separando os termos com potências pares e ímpares de $x$:
+\begin{align*}
+A(x) &= \sum_{i=0}^{N-1} a[i]x^i \\
+     &= \sum_{i=0}^{N/2-1} a[2i]x^{2i} + \sum_{i=0}^{N/2-1} a[2i+1]x^{2i+1} \\
+     &= \sum_{i=0}^{N/2-1} a[2i](x^2)^i + x \cdot \sum_{i=0}^{N/2-1} a[2i+1](x^2)^i.
+\end{align*}
+Definindo os polinômios auxiliares $A_{\text{par}}(y)$ e $A_{\text{impar}}(y)$ como as partes pares e ímpares respectivamente, obtemos a relação recursiva:
 \[
-A(x) = \sum_{i=0}^{N/2-1} a[i]x^i + \sum_{i=0}^{N/2-1} a[i+N/2]x^{i+N/2}
+A(x) = A_{\text{par}}(x^2) + x \cdot A_{\text{impar}}(x^2).
 \]
 
-Colocando $x^{N/2}$ em evidência na segunda metade, obtemos uma estrutura que revela a simetria do problema:
+\subsubsection*{3. A Recursão e o Fator $\psi^2$}
+Ao avaliarmos essa expressão nos pontos $x_k = \psi^{2k+1}$, observamos o comportamento do termo quadrático:
 \[
-A(x) = \sum_{i=0}^{N/2-1} \left( a[i] + x^{N/2} \cdot a[i+N/2] \right) x^i
+x_k^2 = (\psi^{2k+1})^2 = \psi^{4k+2} = (\psi^2)^{2k+1}.
+\]
+Isso revela que, para os subproblemas de tamanho $N/2$, a base da transformação torna-se $\psi^2$. Como a ordem de $\psi$ é $2N$, a ordem de $\psi^2$ é $N$, satisfazendo o requisito de raiz primitiva para o subgrupo de tamanho $N/2$.
+
+Logo, os valores retornados pelas chamadas recursivas são:
+\[
+Y_{\text{par}}[k] = A_{\text{par}}(x_k^2) \quad \text{e} \quad Y_{\text{impar}}[k] = A_{\text{impar}}(x_k^2).
 \]
 
-A intuição chave da NTT é projetar essa equação nos sub-anéis definidos no passo 1. Ao fazer isso, a potência $x^{N/2}$ deixa de ser uma variável e torna-se uma constante escalar:
+\subsubsection*{4. A Borboleta (Butterfly) Negacíclica}
+Para recombinar os resultados e obter $Y[k] = A(x_k)$, exploramos a simetria das raízes.
+Lembre que, após a decomposição $A(x)=A_{\text{par}}(x^2) + x\,A_{\text{impar}}(x^2)$, avaliamos em
+\[
+x_k = \psi^{2k+1}, \qquad k=0,1,\dots,N-1,
+\]
+de modo que
+\[
+Y_{\text{par}}[k] = A_{\text{par}}(x_k^2), 
+\qquad
+Y_{\text{impar}}[k] = A_{\text{impar}}(x_k^2),
+\qquad (0\le k < N/2).
+\]
 
-\begin{itemize}
-    \item \textbf{Ramo Esquerdo} ($x^{N/2} \equiv \psi^{N/2}$): Substituímos $x^{N/2}$ por $+\psi^{N/2}$.
-    \item \textbf{Ramo Direito} ($x^{N/2} \equiv -\psi^{N/2}$): Substituímos $x^{N/2}$ por $-\psi^{N/2}$.
-\end{itemize}
-
-\subsubsection*{3. A Operação Borboleta (Butterfly)}
-Ao realizar as substituições acima diretamente no somatório, os coeficientes dos novos polinômios reduzidos ($a_L$ e $a_R$) surgem imediatamente. Para cada posição $0 \le i < N/2$:
+Para a primeira metade ($0 \le k < N/2$), a recombinação é direta.
+Para a segunda metade, usamos a simetria negacíclica das raízes ímpares:
+\[
+x_{k+N/2} 
+= \psi^{2(k+N/2)+1} 
+= \psi^{2k+1}\cdot \psi^N
+= -\psi^{2k+1}
+= -x_k.
+\]
+Assim, o termo $x\cdot A_{\text{impar}}(x^2)$ apenas troca de sinal na segunda metade. As equações da
+borboleta tornam-se:
 
 \[
 \boxed{
 \begin{aligned}
-    a_L[i] &= a[i] + \psi^{N/2} \cdot a[i+N/2] \pmod p \\
-    a_R[i] &= a[i] - \psi^{N/2} \cdot a[i+N/2] \pmod p
+Y[k] &= Y_{\text{par}}[k] + x_k \cdot Y_{\text{impar}}[k] \pmod p \\
+Y[k+N/2] &= Y_{\text{par}}[k] - x_k \cdot Y_{\text{impar}}[k] \pmod p
 \end{aligned}
 }
 \]
 
-Note que não precisamos calcular polinômios inteiros; a operação acontece pontualmente nos coeficientes. Os valores $a_L$ tornam-se a entrada para a recursão da esquerda, e $a_R$ para a recursão da direita.
+\textbf{Nota de Implementação:}
+Na prática, os valores $x_k=\psi^{2k+1}$ não são recalculados por exponenciação.
+Percorremos as raízes ímpares multiplicando por $\psi^2$ a cada passo:
+inicialize $x\gets \psi$ e atualize $x \gets x\cdot \psi^2$, gerando
+$(\psi^1,\psi^3,\psi^5,\dots)$.
 
 \begin{figure}[H]
     \centering
@@ -652,70 +704,84 @@ Note que não precisamos calcular polinômios inteiros; a operação acontece po
     \label{fig:b4ntt}
 \end{figure}
 
-\subsection{A INTT via Gentleman-Sande (GS): Reconstrução via CRT}
+\subsection{A INTT via Gentleman--Sande (GS): Reconstrução }
 
-Enquanto a transformação direta (NTT) utiliza a decomposição para reduzir o problema, a transformação inversa (INTT) realiza o caminho oposto: ela combina os resultados dos sub-problemas menores para reconstruir o vetor original. O algoritmo de Gentleman-Sande implementa essa reconstrução de forma eficiente.
+Enquanto a transformação direta (NTT) utiliza \emph{dividir para conquistar} separando coeficientes pares e ímpares,
+a transformação inversa (INTT) percorre o caminho oposto: combina resultados de subproblemas menores para recuperar
+o vetor original. O esquema de Gentleman--Sande pode ser visto como a versão “transposta” (em ordem de operações)
+da decomposição de Cooley--Tukey.
 
-\subsubsection*{1. A Inversão do Sistema Linear}
-Na etapa da transformação direta, definimos os valores dos sub-ramos ($a_L$ e $a_R$) através das equações:
+\subsubsection*{1. Paridade e o sistema linear local}
+Na NTT negacíclica por partição par/ímpar, escrevemos
+\[
+A(x)=A_e(x^2)+x\,A_o(x^2),
+\qquad
+A_e(t)=\sum_{i=0}^{N/2-1} a[2i]t^i,\quad
+A_o(t)=\sum_{i=0}^{N/2-1} a[2i+1]t^i.
+\]
+A avaliação ocorre nos pontos ímpares $x_k=\psi^{2k+1}$, $k=0,\dots,N-1$.
+Definindo o \emph{twiddle factor} do nível como
+\[
+w_k = x_k = \psi^{2k+1},
+\]
+e denotando por $Y_e[k]=A_e(x_k^2)$ e $Y_o[k]=A_o(x_k^2)$ (retornados pela recursão), a combinação (borboleta direta) é:
 \[
 \begin{cases}
-    a_L[i] = a[i] + \psi^{N/2} \cdot a[i+N/2] \\
-    a_R[i] = a[i] - \psi^{N/2} \cdot a[i+N/2]
+Y[k] = Y_e[k] + w_k\,Y_o[k],\\
+Y[k+N/2] = Y_e[k] - w_k\,Y_o[k],
 \end{cases}
+\qquad 0\le k < N/2.
 \]
-Na etapa inversa, conhecemos $a_L$ e $a_R$ (retornados pela recursão) e nosso objetivo é recuperar os coeficientes originais $a[i]$ e $a[i+N/2]$. Trata-se apenas de resolver este sistema linear de duas variáveis.
+Na etapa inversa, conhecemos $Y[k]$ e $Y[k+N/2]$ e queremos recuperar $Y_e[k]$ e $Y_o[k]$.
 
-\subsubsection*{2. A Lógica da Recuperação}
-Somando e subtraindo as duas equações do sistema acima, podemos isolar os termos desejádos:
-
-\begin{itemize}
-    \item \textbf{Recuperando a metade inferior ($a[i]$):}
-    Somamos as equações:
-    \[
-    a_L[i] + a_R[i] = 2a[i] \implies a[i] = 2^{-1}(a_L[i] + a_R[i])
-    \]
-    
-    \item \textbf{Recuperando a metade superior ($a[i+N/2]$):}
-    Subtraímos a segunda da primeira:
-    \[
-    a_L[i] - a_R[i] = 2\psi^{N/2} \cdot a[i+N/2]
-    \]
-    Para isolar $a[i+N/2]$, multiplicamos pelo inverso de $2\psi^{N/2}$:
-    \[
-    a[i+N/2] = 2^{-1}(a_L[i] - a_R[i]) \cdot \psi^{-N/2}
-    \]
-\end{itemize}
-
-Esta manipulação algébrica revela a diferença fundamental na ordem das operações entre a ida (Cooley-Tukey) e a volta (Gentleman-Sande).
-
-\subsubsection*{3. A Borboleta GS (Inverse Butterfly)}
-Baseado nas isolações acima, definimos a operação borboleta inversa. Para cada par de entradas $a_L[i]$ e $a_R[i]$ provenientes dos sub-blocos, calculamos:
-
+\subsubsection*{2. A lógica da recuperação (inversão do 2$\times$2)}
+Somando e subtraindo as equações acima, obtemos:
+\[
+Y[k]+Y[k+N/2] = 2Y_e[k],
+\qquad
+Y[k]-Y[k+N/2] = 2w_k\,Y_o[k].
+\]
+Como $p$ é primo ímpar, $2$ é invertível em $\mathbb{Z}_p$ e podemos escrever:
 \[
 \boxed{
 \begin{aligned}
-    a[i] &= 2^{-1} (a_L[i] + a_R[i]) \pmod p \\
-    a[i+N/2] &= 2^{-1} (a_L[i] - a_R[i]) \cdot \psi^{-N/2} \pmod p
-\end{aligned}
-}
+Y_e[k] &= 2^{-1}\bigl(Y[k]+Y[k+N/2]\bigr)\pmod p,\\[2mm]
+Y_o[k] &= 2^{-1}\bigl(Y[k]-Y[k+N/2]\bigr)\,w_k^{-1}\pmod p.
+\end{aligned}}
 \]
+Assim, a borboleta inversa recupera os dois vetores de entrada do nível, que então alimentam as recursões
+de tamanho $N/2$.
 
-Observe a mudança estrutural:
+\subsubsection*{3. Por que a recursão usa $\psi^2$ novamente}
+Na ida, ao avaliar em $x_k=\psi^{2k+1}$, temos
+\[
+x_k^2=(\psi^{2k+1})^2=\psi^{4k+2}=(\psi^2)^{2k+1},
+\]
+ou seja, os subproblemas são novamente NTTs negacíclicas em $N/2$ pontos ímpares, mas agora com parâmetro $\psi^2$.
+Na volta, o mesmo vale: após aplicar a borboleta inversa no nível corrente, chamamos recursivamente a INTT
+nos blocos correspondentes usando $\psi_{inv}^2$ (em completa simetria com o pseudocódigo).
+
+\subsubsection*{4. Ordem das operações: CT vs GS}
+A diferença estrutural entre as duas direções pode ser resumida assim:
 \begin{enumerate}
-    \item Na \textbf{Ida (CT)}, multiplicamos pelo fator de rotação \textit{antes} de somar/subtrair.
-    \item Na \textbf{Volta (GS)}, subtraímos primeiro e multiplicamos pelo fator de rotação inverso \textit{depois}.
+    \item Na \textbf{Ida (CT / DIT)}, primeiro resolvemos recursivamente e \emph{depois} combinamos com o fator $w_k$.
+    \item Na \textbf{Volta (GS)}, primeiro desfazemos a combinação local (somar/subtrair e multiplicar por $w_k^{-1}$)
+    e \emph{depois} prosseguimos recursivamente.
 \end{enumerate}
 
-\textit{Nota de Implementação: O fator escalar $1/2$ (inverso modular de 2) geralmente não é aplicado a cada camada. Para eficiência, acumula-se o fator total $1/N$ e aplica-se uma única multiplicação escalar ao final de toda a transformação.}
+\textit{Nota de implementação:} o fator $2^{-1}$ pode ser acumulado ao longo das camadas e aplicado como um único
+fator global $N^{-1}$ ao final, reduzindo o número de multiplicações escalares.
 
-\subsubsection*{4. Fluxo de Dados e Bit-Reversal}
-O algoritmo Gentleman-Sande é a "transposta" do Cooley-Tukey.
-Se a NTT direta recebe os dados em ordem natural e os devolve em ordem \textit{bit-reversed} (permutada), a INTT via GS aceita os dados em ordem \textit{bit-reversed} e os reconstrói naturalmente para a ordem linear.
+\subsubsection*{5. Fluxo de dados e bit-reversal}
+A discussão de \emph{bit-reversal} depende da variante (DIT/DIF) e do arranjo em memória (implementação iterativa in-place).
+Em muitas implementações práticas, usa-se o par:
+\[
+\text{(DIT) CT}:\ \text{input natural} \to \text{saída permutada}
+\qquad\text{e}\qquad
+\text{(DIF) GS}:\ \text{entrada permutada} \to \text{output natural},
+\]
+o que permite que a multiplicação pontual ocorra no mesmo formato de dados, reduzindo reordenações explícitas.
 
-Isso cria um par perfeito:
-\[ \text{Input Natural} \xrightarrow{\text{CT}} \text{Bit-Reversed} \xrightarrow{\text{Operação Pontual}} \text{Bit-Reversed} \xrightarrow{\text{GS}} \text{Output Natural} \]
-Essa simetria elimina a necessidade de reordenamentos de memória (bit-reversal) custosos entre as transformações.
 
 \begin{figure}[H]
     \centering
@@ -723,49 +789,116 @@ Essa simetria elimina a necessidade de reordenamentos de memória (bit-reversal)
     \caption{Butterfly INTT}
     \label{fig:bINNT}
 \end{figure}
-A implementa da NTT negacíclica está a seguir \ref{lst:NTT}
+A implementa da NTT negacíclica está  no pseudocódigo a seguir
 
-\begin{lstlisting}[caption=código em SageMath,label={lst:NTT}]
-def NTT_Negacyclic(A, R, psi):
+\begin{algorithm}[H]
+\caption{NTT negacíclica iterativa in-place (radix-2 CT / DIT) com saída bit-reversed}
+\begin{algorithmic}[1]
+\Function{NegacyclicNTT\_CT\_DIT}{$a[0..N-1],\, p,\, \psi$}
+    \State \Comment{$N$ é potência de 2; $\psi$ tem ordem $2N$ em $\mathbb{Z}_p$}
+    \Statex \Comment{Após o algoritmo: $a[\mathrm{rev}(k)] = X[k]$, onde $X[k]=\sum_{n} x[n]\psi^{(2k+1)n}$}
     
-    n = len(A)
-    if n == 1:
-        return [A[0]]
+    \State \Comment{(1) Twist: $a[n] \leftarrow a[n]\cdot \psi^n$ (gera raízes ímpares)}
+    \State $t \gets 1$
+    \For{$n \gets 0$ \textbf{to} $N-1$}
+        \State $a[n] \gets (a[n]\cdot t)\bmod p$
+        \State $t \gets (t\cdot \psi)\bmod p$
+    \EndFor
 
-    A_even = A[0::2]
-    A_odd  = A[1::2]
-
-    psi_sq = psi^2
-    Y_even = NTT_Negacyclic(A_even, R, psi_sq)
-    Y_odd  = NTT_Negacyclic(A_odd,  R, psi_sq)
-
-    Y = [R(0)] * n
+    \State \Comment{(2) NTT cíclica CT/DIT com raiz $\omega=\psi^2$ (ordem $N$)}
+    \State $\omega \gets (\psi\cdot \psi)\bmod p$
     
-    w = psi 
-    
-    half = n // 2
-    for k in range(half):
-        t = w * Y_odd[k]
+    \For{$\ell \gets 2$ \textbf{to} $N$ \textbf{step} $\ell \gets 2\ell$}
+        \State $h \gets \ell/2$
+        \State $w_\ell \gets \omega^{\,N/\ell}\bmod p$ \Comment{raiz principal de ordem $\ell$}
         
-        Y[k]        = Y_even[k] + t
-        Y[k + half] = Y_even[k] - t
+        \For{$s \gets 0$ \textbf{to} $N-1$ \textbf{step} $\ell$}
+            \State $w \gets 1$
+            \For{$j \gets 0$ \textbf{to} $h-1$}
+                \State $u \gets a[s+j]$
+                \State $v \gets (a[s+j+h]\cdot w)\bmod p$
+                \State $a[s+j] \gets (u+v)\bmod p$
+                \State $a[s+j+h] \gets (u-v)\bmod p$
+                \State $w \gets (w\cdot w_\ell)\bmod p$
+            \EndFor
+        \EndFor
+    \EndFor
+    
+    \State \Return $a$ \Comment{$a[\mathrm{rev}(k)] = X[k]$}
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[H]
+\caption{INTT negacíclica iterativa in-place (GS / DIF) compatível com NTT CT/DIT de saída bit-reversed}
+\begin{algorithmic}[1]
+\Function{NegacyclicINTT\_GS\_DIF}{$a[0..N-1],\, p,\, \psi$}
+    \State \Comment{$N$ é potência de 2; $\psi$ tem ordem $2N$ em $\mathbb{Z}_p$}
+    \Statex \Comment{Entrada esperada: $a[\mathrm{rev}(k)] = X[k]$, onde $X[k]=\sum_n x[n]\psi^{(2k+1)n}$}
+    \Statex \Comment{Saída: $a[n]=x[n]$ em ordem natural}
+
+    \State \Comment{(1) INTT cíclica GS/DIF de tamanho $N$ com raiz $\omega=\psi^2$}
+    \State $\omega \gets (\psi\cdot \psi)\bmod p$
+    \State $\omega^{-1} \gets \omega^{\,p-2}\bmod p$ \Comment{inverso modular (Fermat)}
+    
+    \For{$\ell \gets N$ \textbf{down to} $2$ \textbf{step} $\ell \gets \ell/2$}
+        \State $h \gets \ell/2$
+        \State $w_\ell \gets (\omega^{-1})^{\,N/\ell}\bmod p$ \Comment{raiz inversa de ordem $\ell$}
         
-        w *= psi_sq 
+        \For{$s \gets 0$ \textbf{to} $N-1$ \textbf{step} $\ell$}
+            \State $w \gets 1$
+            \For{$j \gets 0$ \textbf{to} $h-1$}
+                \State $u \gets a[s+j]$
+                \State $v \gets a[s+j+h]$
+                \State $a[s+j] \gets (u+v)\bmod p$
+                \State $a[s+j+h] \gets ((u-v)\cdot w)\bmod p$
+                \State $w \gets (w\cdot w_\ell)\bmod p$
+            \EndFor
+        \EndFor
+    \EndFor
 
-    return Y
+    \State \Comment{(2) Normalização: multiplica por $N^{-1}$}
+    \State $N^{-1} \gets N^{\,p-2}\bmod p$
+    \For{$n \gets 0$ \textbf{to} $N-1$}
+        \State $a[n] \gets (a[n]\cdot N^{-1})\bmod p$
+    \EndFor
 
-def INTT_Negacyclic(A, R, psi):
-    n = len(A)
-    # A inversa usa psi^-1
-    psi_inv = psi^(-1)
-    
-    Y = NTT_Negacyclic(A, R, psi_inv)
-    
-    n_inv = R(n)^(-1)
-    return [y * n_inv for y in Y]
-\end{lstlisting}
+    \State \Comment{(3) Untwist: $a[n] \leftarrow a[n]\cdot \psi^{-n}$}
+    \State $\psi^{-1} \gets \psi^{\,p-2}\bmod p$
+    \State $t \gets 1$
+    \For{$n \gets 0$ \textbf{to} $N-1$}
+        \State $a[n] \gets (a[n]\cdot t)\bmod p$
+        \State $t \gets (t\cdot \psi^{-1})\bmod p$
+    \EndFor
 
-A comporação computacional dessas ferramentas pode ser vista na tabela a seguir, onde calculou-se o maior número de Fibonacci obtido em menos de um segundo. Todos os testes foram executados em single-core, para mais detalhes veja o repositório.
+    \State \Return $a$
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+\section{Testes compartivos}
+A comporação computacional dessas ferramentas pode ser vista na tabela a seguir, onde calculou-se o maior número de Fibonacci obtido em menos de um segundo. Todos os testes foram executados em single-core.
+
+Nos algoritmos da FFT e da NTT, o n-ésimmo número de Fibonacci foi calculado pela seguinte relação:
+\[\begin{bmatrix}
+    F_{n+1}\\
+    F_{n}
+\end{bmatrix}
+=
+\begin{bmatrix}
+    1&1\\
+    1&0
+\end{bmatrix}^n
+\cdot
+\begin{bmatrix}
+    F_1\\
+    F_0
+\end{bmatrix}
+\]
+sendo a multiplicação que ocorre tanto na exponenciação quanto no procuto interno foram otimizadas com o devido método.
+
+Além disso, como o foco foi apenas em comparar a velocidade dos métodos, utilizou-se de scrpites para a geração de macros com os valores das raízes primitivas, raizes da unidade, entres outras constantes, para mais informações veja o repositório.
+
 
 (A GMP é uma biblioteca otimizada para operações criptográficas)
 
@@ -788,7 +921,7 @@ Algoritmo GMP & 238'961'323 \\ \hline
 
 fonte: \url{https://github.com/SheafificationOfG/Fibsonisheaf}
 
-\subsection{NTT incompleta e a restrição de parâmetros no caso negacíclico}
+\section{NTT incompleta e a restrição de parâmetros no caso negacíclico}
 
 Na multiplicação negacíclica de polinômios no anel
 \[
@@ -815,6 +948,12 @@ mais fraca
 \[
 p \equiv 1 \pmod{2N/2^{\ell}}.
 \]
+\begin{figure}
+    \centering
+    \includegraphics{images/ntt_incompleta.pdf}
+    \caption{árvore de fracionameto da NTT }
+    \label{fig:incompleta}
+\end{figure}
 Dessa forma, o conjunto de primos admissíveis torna-se significativamente maior,
 permitindo escolhas de parâmetros mais flexíveis.
 

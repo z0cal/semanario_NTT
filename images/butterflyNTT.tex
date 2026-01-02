@@ -26,7 +26,7 @@
 
     % --- Fator de Rotação (Twiddle Factor) ---
     % Entrada vindo de baixo para o multiplicador
-    \node (psi) at (2.5, -1.5) {\Large $\psi^{N/2}$};
+    \node (psi) at (2.5, -1.5) {\Large $\omega_k$};
     \draw[->] (psi) -- (times);
 
     % --- Conexões ---
@@ -40,8 +40,8 @@
     \draw[->] (times) -- (plus);      % xb -> + (diagonal subindo)
 
     % --- Saídas ---
-    \node[right=0.8cm of plus] (out_top) {\Large $a + \psi^{N/2} b$};
-    \node[right=0.8cm of minus] (out_bot) {\Large $a - \psi^{N/2} b$};
+    \node[right=0.8cm of plus] (out_top) {\Large $a + \omega_k b$};
+    \node[right=0.8cm of minus] (out_bot) {\Large $a - \omega_k b$};
 
     \draw[->] (plus) -- (out_top);
     \draw[->] (minus) -- (out_bot);
