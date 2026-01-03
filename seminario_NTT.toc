@@ -14,16 +14,11 @@
 \contentsline {subsection}{\numberline {7.3}Transformada Numérica Inversa (INTT)}{13}{subsection.7.3}%
 \contentsline {subsection}{\numberline {7.4}A NTT como uma FFT: Decomposição Radix-2 }{14}{subsection.7.4}%
 \contentsline {subsection}{\numberline {7.5}A INTT via Gentleman--Sande (GS): Reconstrução }{16}{subsection.7.5}%
-\contentsline {paragraph}{O que é bit-reversal?}{17}{section*.17}%
-\contentsline {paragraph}{Por que a permutação aparece no iterativo? (intuição de árvore)}{18}{section*.18}%
-\contentsline {paragraph}{Exemplo pequeno ($N=8$)}{18}{section*.19}%
-\contentsline {paragraph}{DIT vs.\ DIF: onde fica o bit-reversal?}{18}{section*.20}%
-\contentsline {paragraph}{O par “CT (DIT)” e “GS (DIF)” na prática}{18}{section*.21}%
-\contentsline {section}{\numberline {8}Testes comparativos}{21}{section.8}%
-\contentsline {section}{\numberline {9}NTT incompleta e a restrição de parâmetros no caso negacíclico}{22}{section.9}%
-\contentsline {section}{\numberline {10}Agradecimentos}{24}{section.10}%
-\contentsline {section}{\numberline {11}Apêndice}{24}{section.11}%
-\contentsline {subsection}{\numberline {11.1}DFT como transformação linear}{24}{subsection.11.1}%
-\contentsline {subsection}{\numberline {11.2}Exemplo de convolução negacíclica}{25}{subsection.11.2}%
-\contentsline {subsection}{\numberline {11.3}Determinição unívoca do polinômio}{27}{subsection.11.3}%
-\contentsline {subsection}{\numberline {11.4}Estrutura Cíclica de Grupos Multiplicativos de Corpos Finitos}{28}{subsection.11.4}%
+\contentsline {section}{\numberline {8}Testes comparativos}{18}{section.8}%
+\contentsline {section}{\numberline {9}NTT incompleta e a restrição de parâmetros no caso negacíclico}{19}{section.9}%
+\contentsline {section}{\numberline {10}Agradecimentos}{21}{section.10}%
+\contentsline {section}{\numberline {11}Apêndice}{21}{section.11}%
+\contentsline {subsection}{\numberline {11.1}DFT como transformação linear}{21}{subsection.11.1}%
+\contentsline {subsection}{\numberline {11.2}Exemplo de convolução negacíclica}{22}{subsection.11.2}%
+\contentsline {subsection}{\numberline {11.3}Determinição unívoca do polinômio}{24}{subsection.11.3}%
+\contentsline {subsection}{\numberline {11.4}Estrutura Cíclica de Grupos Multiplicativos de Corpos Finitos}{25}{subsection.11.4}%

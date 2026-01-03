@@ -1,266 +1,195 @@
-
 from manim import *
-import numpy as np
 
-class NTT(Scene):
+class NTT_Full_Story_Continuous(Scene):
     def construct(self):
-        self.walkthrough()
-
-    def walkthrough(self):
-        # Configurações de estilo
-        text_scale = 0.7
-        space_y = 0.6
+        # ============================================
+        # PARTE 1: DIAGRAMA BUTTERFLY (LADO DIREITO)
+        # ============================================
         
-        # --- 1. Configuração Inicial ---
-        # Mudamos de FFT para NTT
-        first_call = MathTex(r"\text{NTT}([5, 3, 2, 1])")
-        first_call.scale(0.8)
-        first_call.to_corner(UL).shift(RIGHT * 1)
+        # Configurações de layout
+        row_height = 1.5
+        col_width = 3.5
+        start_x = -2.0 
         
-        first_call[0][4:7].set_color(BLUE)  # Índices pares
-        first_call[0][8:-1].set_color(YELLOW) # Índices ímpares
-
-        self.play(Write(first_call))
-
-        P_x = MathTex("A(x) = 5 + 3x + 2x^2 + x^3").scale(text_scale)
-        P_x.next_to(first_call, DOWN, buff=space_y).align_to(first_call, LEFT)
-        self.play(Write(P_x))
-
-        n_4 = MathTex("N = 4").scale(text_scale)
-        n_4.next_to(P_x, DOWN, buff=space_y).align_to(P_x, LEFT)
-        self.play(Write(n_4))
-
-        # Aqui fazemos a conexão com a raiz primitiva do corpo finito
-        omega_4 = MathTex(r"\psi^4 \equiv 1 \pmod p").scale(text_scale)
-        omega_4.next_to(n_4, DOWN, buff=space_y).align_to(n_4, LEFT)
-        self.play(Write(omega_4))
-        self.wait()
+        rows = [1.5 * row_height, 0.5 * row_height, -0.5 * row_height, -1.5 * row_height]
         
-        # Círculo das Potências (Raízes da Unidade no Corpo Finito)
-        # Visualmente é um círculo, mas representa o ciclo gerado por psi
-        w_i_values = MathTex("[1, \psi, \psi^2, \psi^3]").scale(text_scale)
-        w_i_values.next_to(omega_4, RIGHT, buff=1.5)
+        title = Tex(r"NTT ($N=4$): Estrutura Completa").to_edge(UP)
+        self.play(Write(title), run_time=1.0)
         
-        circle_group = self.create_unity_roots_circle(4, w_i_values.get_center())
+        inputs = VGroup(*[MathTex(f"x[{i}]") for i in range(4)])
+        for i, item in enumerate(inputs):
+            item.move_to([start_x, rows[i], 0])
         
-        self.play(Write(w_i_values))
-        self.wait()
-        self.play(ReplacementTransform(w_i_values, circle_group))
+        self.play(LaggedStart(*[FadeIn(i, shift=RIGHT) for i in inputs], lag_ratio=0.5))
 
-        # Divisão Par/Ímpar (A_lo e A_hi implícitos)
-        P_e = MathTex("A_{par}(x^2) = 5 + 2x", r"\rightarrow [5, 2]").scale(text_scale)
-        P_e[1][-5:].set_color(ORANGE)
-        P_e.next_to(omega_4, DOWN, buff=space_y).align_to(omega_4, LEFT)
+        # Lista VIP: Estes objetos serão preservados
+        self.all_twiddles = VGroup()
+
+        def create_butterfly_stage(start_pos_x, line_indices, twiddles):
+            elements = VGroup()
+            x_base = start_pos_x
+            x_end = start_pos_x + col_width
+            
+            for top, bot in line_indices:
+                top_y = rows[top]
+                bot_y = rows[bot]
+                
+                # Linhas e círculos (não são VIPs)
+                l1 = Line([x_base, top_y, 0], [x_base + 1, top_y, 0])
+                l2 = Line([x_base, bot_y, 0], [x_base + 1, bot_y, 0])
+                elements.add(l1, l2)
+                
+                butterfly_start_x = x_base + 1
+                
+                # Twiddles
+                if bot in twiddles:
+                    mult_circle = Circle(radius=0.25, color=BLUE, fill_opacity=0.2).move_to([x_base + 1, bot_y, 0])
+                    mult_tex = MathTex(r"\times").scale(0.5).move_to(mult_circle.get_center())
+                    
+                    # O Label PSI (Este é VIP!)
+                    psi_label = MathTex(twiddles[bot], color=YELLOW).next_to(mult_circle, DOWN, buff=0.1).scale(0.8)
+                    self.all_twiddles.add(psi_label) # Adiciona à lista de preservação
+                    
+                    elements.add(mult_circle, mult_tex, psi_label)
+                    butterfly_start_x = x_base + 1.25
+                
+                # Nós, símbolos e setas (não são VIPs)
+                sum_node = Circle(radius=0.25, color=GREEN).move_to([x_end - 0.5, top_y, 0])
+                sub_node = Circle(radius=0.25, color=RED).move_to([x_end - 0.5, bot_y, 0])
+                elements.add(sum_node, sub_node, MathTex("+").scale(0.5).move_to(sum_node), MathTex("-").scale(0.5).move_to(sub_node))
+                
+                elements.add(Arrow([butterfly_start_x, top_y, 0], sum_node.get_left(), buff=0.05))
+                elements.add(Arrow([butterfly_start_x, top_y, 0], sub_node.get_left(), buff=0.05))
+                elements.add(Arrow([butterfly_start_x, bot_y, 0], sum_node.get_left(), buff=0.05))
+                elements.add(Arrow([butterfly_start_x, bot_y, 0], sub_node.get_left(), buff=0.05))
+                
+                elements.add(Line(sum_node.get_right(), [x_end, top_y, 0]), Line(sub_node.get_right(), [x_end, bot_y, 0]))
+
+            return elements
+
+        # Desenhar Estágios
+        stage1 = create_butterfly_stage(start_x + 0.5, [(0, 2), (1, 3)], {2: r"\psi^2", 3: r"\psi^2"})
+        self.play(LaggedStart(*[Create(obj) for obj in stage1], lag_ratio=0.05, run_time=3))
         
-        self.play(Write(P_e[0]))
-        self.play(Write(P_e[1]))
+        stage2 = create_butterfly_stage(start_x + col_width + 0.5, [(0, 1), (2, 3)], {1: r"\psi^1", 3: r"\psi^3"})
+        self.play(LaggedStart(*[Create(obj) for obj in stage2], lag_ratio=0.05, run_time=3))
 
-        P_o = MathTex("A_{impar}(x^2) = 3 + x", r"\rightarrow [3, 1]").scale(text_scale)
-        P_o[1][-5:].set_color(ORANGE)
-        P_o.next_to(P_e, DOWN, buff=space_y).align_to(P_e, LEFT)
+        # Saídas
+        outputs = VGroup()
+        for i, label in enumerate([r"X_0", r"X_2", r"X_1", r"X_3"]):
+            tex = MathTex(label).move_to([start_x + 2*col_width + 1.0, rows[i], 0])
+            outputs.add(tex, Arrow([start_x + 2*col_width + 0.5, rows[i], 0], tex.get_left(), buff=0.1))
+        self.play(Write(outputs))
+        self.wait(1)
+
+        # ============================================
+        # PARTE 2: TRANSIÇÃO (FADE OUT SELETIVO)
+        # ============================================
         
-        self.play(Write(P_o[0]))
-        self.play(Write(P_o[1]))
-        self.wait()
+        # Lógica robusta: Criar um grupo com tudo que NÃO for um twiddle VIP
+        stuff_to_fade = VGroup(title, inputs, outputs)
         
-        # Limpar tela para recursão
-        self.play(
-            FadeOut(P_x), FadeOut(n_4), FadeOut(omega_4), FadeOut(circle_group) 
-        )
-
-        # --- 2. Recursão (Árvore) ---
+        # Iterar pelos estágios e pegar tudo que não está na lista VIP
+        for mob in stage1:
+            if mob not in self.all_twiddles:
+                stuff_to_fade.add(mob)
+        for mob in stage2:
+            if mob not in self.all_twiddles:
+                stuff_to_fade.add(mob)
         
-        left_call = MathTex(r"\text{NTT}([5, 2])").scale(0.8)
-        left_call.move_to(LEFT * 3.5 + UP * 1.8)
-        left_call[0][4:7].set_color(BLUE)
-        left_call[0][8:-1].set_color(ORANGE)
-
-        right_call = MathTex(r"\text{NTT}([3, 1])").scale(0.8)
-        right_call.move_to(RIGHT * 3.5 + UP * 1.8)
-        right_call[0][4:7].set_color(BLUE)
-        right_call[0][8:-1].set_color(ORANGE)
-
-        self.play(
-            FadeOut(P_e), FadeOut(P_o),
-            ReplacementTransform(P_e.copy(), left_call),
-            ReplacementTransform(P_o.copy(), right_call)
-        )
-
-        # --- Ramo Esquerdo (N=2) ---
-        P_x_left = MathTex("A(x) = 5 + 2x").scale(text_scale)
-        P_x_left.next_to(left_call, DOWN, buff=space_y)
+        # Apagar o resto. Os twiddles originais ficam na tela nas suas posições.
+        self.play(FadeOut(stuff_to_fade), run_time=1.5)
         
-        n_2_left = MathTex("N = 2").scale(text_scale)
-        n_2_left.next_to(P_x_left, DOWN, buff=space_y)
-
-        # N=2 no corpo finito, a raiz é -1
-        omega_2_left = MathTex(r"\psi^{N/2} \equiv -1").scale(text_scale)
-        omega_2_left.next_to(n_2_left, DOWN, buff=space_y)
-
-        self.play(Write(P_x_left), Write(n_2_left), Write(omega_2_left))
-
-        # Círculo N=2
-        circle_left_pos = n_2_left.get_center() + RIGHT * 2.5
-        circle_left_group = self.create_unity_roots_circle(2, circle_left_pos, radius=0.5, color=ORANGE)
-        self.play(FadeIn(circle_left_group))
-
-        # Casos Base
-        left_l_call = MathTex(r"\text{NTT}([5])", r"\rightarrow [5]").scale(text_scale)
-        left_l_call.next_to(omega_2_left, DOWN, buff=1.5).shift(LEFT * 1.5)
-        left_l_call[0][4:7].set_color(BLUE)
-        left_l_call[1].set_color(GREEN)
+        # --- MOVER OS OBJETOS RESTANTES ---
         
-        left_r_call = MathTex(r"\text{NTT}([2])", r"\rightarrow [2]").scale(text_scale)
-        left_r_call.next_to(omega_2_left, DOWN, buff=1.5).shift(RIGHT * 1.5)
-        left_r_call[0][4:7].set_color(BLUE)
-        left_r_call[1].set_color(GREEN)
-
-        self.play(Write(left_l_call), Write(left_r_call))
-        self.wait()
-
-        # Combinação (Butterfly) Esquerda
-        y_e_l = MathTex("a_L = [5]").scale(text_scale).next_to(omega_2_left, DOWN, buff=space_y).align_to(omega_2_left, LEFT)
-        y_o_l = MathTex("a_R = [2]").scale(text_scale).next_to(y_e_l, DOWN, buff=0.2).align_to(y_e_l, LEFT)
-        VGroup(y_e_l, y_o_l).shift(UP * 0.2)
+        list_title = Tex("Raízes no Diagrama:", color=YELLOW).to_edge(LEFT).shift(UP*2)
+        self.play(Write(list_title))
         
-        self.play(Write(y_e_l), Write(y_o_l))
-
-        y_left = MathTex("y = [0, 0]").scale(text_scale).next_to(y_o_l, DOWN, buff=0.5)
-        self.play(Write(y_left))
-
-        # Cálculos N=2
-        # Mostra a soma simples pois psi^0 = 1
-        y_calc = MathTex(r"y[0] = 5 + 2 = 7").scale(text_scale)
-        y_calc.next_to(y_left, DOWN, buff=0.2)
-        self.play(Write(y_calc), circle_left_group[1][0].animate.set_color(GREEN))
+        base_list_pos = list_title.get_bottom() + RIGHT * 1.0
         
-        y_left_res = MathTex("y = [7, 0]").scale(text_scale).move_to(y_left)
-        self.play(Transform(y_left, y_left_res))
+        target_positions = [
+            base_list_pos + DOWN * 1.0, # psi^2
+            base_list_pos + DOWN * 1.0, # psi^2 (overlap)
+            base_list_pos + DOWN * 2.5, # psi^1
+            base_list_pos + DOWN * 4.0  # psi^3
+        ]
         
-        # Mostra a subtração pois psi^{N/2} = -1
-        y_calc2 = MathTex(r"y[1] = 5 - 2 = 3").scale(text_scale)
-        y_calc2.move_to(y_calc)
-        self.play(Transform(y_calc, y_calc2), circle_left_group[1][1].animate.set_color(GREEN))
-
-        y_left_res = MathTex("y = [7, 3]").scale(text_scale).move_to(y_left)
-        self.play(Transform(y_left, y_left_res))
-        self.wait()
-
-        left_result_arrow = MathTex(r"\rightarrow [7, 3]").scale(0.8).next_to(left_call, RIGHT)
-        left_result_arrow.set_color(ORANGE)
-        self.play(
-            FadeOut(y_calc), FadeOut(y_e_l), FadeOut(y_o_l), 
-            FadeOut(y_left), FadeOut(circle_left_group),
-            FadeOut(P_x_left), FadeOut(n_2_left), FadeOut(omega_2_left),
-            FadeOut(left_l_call), FadeOut(left_r_call),
-            Write(left_result_arrow)
-        )
-
-        # --- Ramo Direito (N=2) ---
-        # Simplificado para poupar tempo
-        P_x_right = MathTex("A(x) = 3 + x").scale(text_scale).next_to(right_call, DOWN, buff=space_y)
-        self.play(Write(P_x_right))
-
-        right_res_text = MathTex(r"\rightarrow [4, 2]").scale(0.8).next_to(right_call, RIGHT)
-        right_res_text.set_color(ORANGE)
+        anims = []
+        # A ordem em all_twiddles é: [psi^2(s1), psi^2(s1), psi^1(s2), psi^3(s2)]
         
-        y_right_sim = MathTex("y = [4, 2]").scale(text_scale).next_to(P_x_right, DOWN)
-        self.play(Write(y_right_sim))
-        self.wait()
-
-        self.play(
-            FadeOut(y_right_sim), FadeOut(P_x_right),
-            Write(right_res_text)
-        )
-
-        # --- 3. Combinação Final (N=4) ---
-        self.play(
-            FadeOut(left_call), FadeOut(left_result_arrow),
-            FadeOut(right_call), FadeOut(right_res_text),
-        )
-
-        y_e_final = MathTex("a_L = [7, 3]").scale(text_scale)
-        y_e_final.next_to(first_call, DOWN, buff=1.0).align_to(first_call, LEFT)
-        y_e_final.set_color(ORANGE)
-
-        y_o_final = MathTex("a_R = [4, 2]").scale(text_scale)
-        y_o_final.next_to(y_e_final, DOWN, buff=0.2).align_to(y_e_final, LEFT)
-        y_o_final.set_color(ORANGE)
-
-        self.play(Write(y_e_final), Write(y_o_final))
-        self.play(FadeIn(circle_group)) 
-
-        y_final = MathTex("y = [0, 0, 0, 0]").scale(text_scale)
-        y_final.next_to(circle_group, DOWN, buff=1)
-        self.play(Write(y_final))
-
-        calc_pos = y_final.get_center() + DOWN * 1.0
-
-        # Esta é a parte CRUCIAL para a sua explicação:
-        # Mostra o cálculo simbólico com psi em vez de números complexos
+        # Usa os PRÓPRIOS objetos que sobraram na tela para a animação
+        # psi^2 (primeiro)
+        anims.append(self.all_twiddles[0].animate.move_to(target_positions[0]).scale(1.5))
+        # psi^2 (segundo) - move para o mesmo lugar e desaparece
+        anims.append(self.all_twiddles[1].animate.move_to(target_positions[0]).set_opacity(0)) 
+        # psi^1
+        anims.append(self.all_twiddles[2].animate.move_to(target_positions[2]).scale(1.5))
+        # psi^3
+        anims.append(self.all_twiddles[3].animate.move_to(target_positions[3]).scale(1.5))
         
-        # y[0] (psi^0 = 1)
-        calc0 = MathTex(r"y[0] = 7 + 1 \cdot 4 = 11").scale(text_scale).move_to(calc_pos)
-        self.play(Write(calc0), circle_group[1][0].animate.set_color(GREEN))
-        self.play(Transform(y_final, MathTex("y = [11, 0, 0, 0]").scale(text_scale).move_to(y_final)))
+        self.play(*anims, run_time=2)
         
-        # y[2] (Simetria: -psi^0 = -1)
-        calc2 = MathTex(r"y[2] = 7 - 1 \cdot 4 = 3").scale(text_scale).move_to(calc_pos)
-        self.play(ReplacementTransform(calc0, calc2), circle_group[1][2].animate.set_color(GREEN))
-        self.play(Transform(y_final, MathTex("y = [11, 0, 3, 0]").scale(text_scale).move_to(y_final)))
+        # Referências para conectar depois (usando os objetos que acabaram de se mover)
+        ref_psi2 = self.all_twiddles[0]
+        ref_psi1 = self.all_twiddles[2]
+        ref_psi3 = self.all_twiddles[3]
 
-        # y[1] (Usa psi)
-        # Aqui usamos notação simbólica para enfatizar a álgebra
-        calc1 = MathTex(r"y[1] = 3 + \psi \cdot 2").scale(text_scale).move_to(calc_pos)
-        self.play(ReplacementTransform(calc2, calc1), circle_group[1][1].animate.set_color(GREEN))
-        self.play(Transform(y_final, MathTex(r"y = [11, 3+2\psi, 3, 0]").scale(text_scale).move_to(y_final)))
+        # ============================================
+        # PARTE 3: BIT REVERSAL (LADO DIREITO/CENTRO)
+        # ============================================
+        
+        br_title = Tex(r"\textbf{Bit Reversal Logic}", color=BLUE).move_to(UP*3 + RIGHT*2)
+        formula = MathTex(r"\text{Exp} = \text{rev}_2(2^s + i)").next_to(br_title, DOWN)
+        self.play(Write(br_title), Write(formula))
+        
+        block_center = RIGHT * 2.5
+        
+        # 1. Caso Stage 0 (Gera psi^2) -> Conecta ao objeto ref_psi2
+        self.run_bit_rev_case(0, 0, 1, "0", "1", 2, block_center, YELLOW, ref_psi2)
+        
+        # 2. Caso Stage 1, i=0 (Gera psi^1) -> Conecta ao objeto ref_psi1
+        self.run_bit_rev_case(1, 0, 2, "1", "0", 1, block_center, GREEN, ref_psi1)
+        
+        # 3. Caso Stage 1, i=1 (Gera psi^3) -> Conecta ao objeto ref_psi3
+        self.run_bit_rev_case(1, 1, 3, "1", "1", 3, block_center, ORANGE, ref_psi3)
 
-        # y[3] (Simetria: -psi)
-        calc3 = MathTex(r"y[3] = 3 - \psi \cdot 2").scale(text_scale).move_to(calc_pos)
-        self.play(ReplacementTransform(calc1, calc3), circle_group[1][3].animate.set_color(GREEN))
-        self.play(Transform(y_final, MathTex(r"y = [11, 3+2\psi, 3, 3-2\psi]").scale(text_scale).move_to(y_final)))
-        self.wait(2)
-
-        # --- Finalização ---
-        final_arrow = MathTex(r"\rightarrow [11, 3+2\psi, 3, 3-2\psi]").scale(0.8)
-        final_arrow.next_to(first_call, RIGHT)
-        final_arrow.set_color(YELLOW)
-
-        self.play(
-            FadeOut(calc3), FadeOut(y_final), FadeOut(y_e_final), FadeOut(y_o_final),
-            circle_group.animate.scale(0.5).next_to(final_arrow, DOWN),
-            Write(final_arrow)
-        )
         self.wait(3)
 
-    def create_unity_roots_circle(self, n, center, radius=0.8, color=YELLOW):
-        circle = Circle(radius=radius, color=BLUE).move_to(center)
-        dots = VGroup()
-        labels = VGroup()
+    def run_bit_rev_case(self, stage, index, val, msb, lsb, res, center, color, target_root):
+        group = VGroup()
+        label = MathTex(rf"s={stage}, i={index} \quad (\text{{Base }} 2^{stage} + {index} = {val})").set_color(color).move_to(center + UP*0.5)
+        group.add(label)
         
-        for k in range(n):
-            angle = k * (2 * np.pi / n)
-            x = radius * np.cos(angle)
-            y = radius * np.sin(angle)
-            point = center + np.array([x, y, 0])
-
-            dot = Dot(point=point, color=color, radius=0.06)
-            dots.add(dot)
-
-            # Labels adaptados para notação de potências de psi
-            label_tex = ""
-            if n == 2:
-                label_tex = "1" if k == 0 else "-1"
-            elif n == 4:
-                if k == 0: label_tex = "1"
-                elif k == 1: label_tex = r"\psi"
-                elif k == 2: label_tex = r"\psi^2" # Equivalente a -1
-                elif k == 3: label_tex = r"\psi^3" # Equivalente a -psi
-            
-            if label_tex:
-                lbl = MathTex(label_tex).scale(0.5)
-                direction = normalize(point - center)
-                lbl.next_to(dot, direction, buff=0.1)
-                labels.add(lbl)
-
-        return VGroup(circle, dots, labels)
+        b_msb = MathTex(msb, color=RED).scale(2).move_to(center + LEFT*0.6 + DOWN*0.5)
+        b_lsb = MathTex(lsb, color=BLUE).scale(2).move_to(center + RIGHT*0.6 + DOWN*0.5)
+        boxes = VGroup(SurroundingRectangle(b_msb, color=GRAY), SurroundingRectangle(b_lsb, color=GRAY))
+        
+        self.play(FadeIn(label), Create(boxes), Write(b_msb), Write(b_lsb))
+        group.add(boxes, b_msb, b_lsb)
+        
+        arrow = MathTex(r"\downarrow").move_to(center + DOWN*1.5)
+        self.play(FadeIn(arrow))
+        group.add(arrow)
+        
+        t_msb, t_lsb = b_msb.copy(), b_lsb.copy()
+        target_y = center[1] + -2.5
+        self.play(
+            t_lsb.animate(path_arc=-1.5).move_to([center[0] - 0.6, target_y, 0]),
+            t_msb.animate(path_arc=1.5).move_to([center[0] + 0.6, target_y, 0]),
+            run_time=1.5
+        )
+        group.add(t_msb, t_lsb)
+        
+        final_box = SurroundingRectangle(VGroup(t_lsb, t_msb), color=color, buff=0.2)
+        res_text = MathTex(rf"= {res} \to \psi^{res}").next_to(final_box, RIGHT)
+        
+        self.play(Create(final_box), Write(res_text))
+        group.add(final_box, res_text)
+        
+        # CONEXÃO: Seta sai do resultado e aponta para a raiz que se moveu anteriormente
+        connection = Arrow(res_text.get_left(), target_root.get_right(), color=color, buff=0.1)
+        self.play(Create(connection))
+        self.play(Indicate(target_root, color=color, scale_factor=1.2))
+        self.wait(1)
+        
+        self.play(FadeOut(group), FadeOut(connection))

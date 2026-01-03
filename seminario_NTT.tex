@@ -775,78 +775,6 @@ A diferença estrutural entre as duas direções pode ser resumida assim:
 \textit{Nota de implementação:} o fator $2^{-1}$ pode ser acumulado ao longo das camadas e aplicado como um único
 fator global $N^{-1}$ ao final, reduzindo o número de multiplicações escalares.
 
-\subsubsection*{5. Fluxo de dados e bit-reversal}
-
-Em implementações \emph{iterativas in-place} (radix-2), a ordem em que os subproblemas são combinados não é apenas um detalhe:
-ela determina \textbf{em quais posições de memória} cada coeficiente transformado vai parar ao final.
-Esse fenômeno é normalmente descrito como uma \emph{permutação por bit-reversal} (reversão de bits).
-
-\paragraph{O que é bit-reversal?}
-Assuma $N = 2^s$. Para um índice $k \in \{0,\dots,N-1\}$, escreva sua expansão binária em $s$ bits:
-\[
-k = (b_{s-1}\, b_{s-2}\, \dots\, b_1\, b_0)_2.
-\]
-O índice \emph{bit-reverso} de $k$ é definido por
-\[
-\operatorname{rev}(k) = (b_0\, b_1\, \dots\, b_{s-2}\, b_{s-1})_2.
-\]
-A “saída permutada” a que nos referimos é tipicamente a saída na ordem $k \mapsto \operatorname{rev}(k)$.
-
-\paragraph{Por que a permutação aparece no iterativo? (intuição de árvore)}
-A decomposição radix-2 divide o problema em metades sucessivas.
-No ponto de vista da árvore de recursão, cada nível “decide” um bit do índice (tempo ou frequência),
-mas no iterativo in-place nós percorremos os níveis numa ordem fixa e reaproveitamos a memória.
-O resultado é que os bits do índice acabam sendo fixados \emph{na ordem inversa} ao índice natural,
-o que se manifesta como bit-reversal.
-
-\paragraph{Exemplo pequeno ($N=8$)}
-Aqui $s=3$. A tabela abaixo mostra a permutação:
-\[
-\begin{array}{c|c|c}
-k & (k)_2 & \operatorname{rev}(k) \\
-\hline
-0 & 000 & 000 = 0 \\
-1 & 001 & 100 = 4 \\
-2 & 010 & 010 = 2 \\
-3 & 011 & 110 = 6 \\
-4 & 100 & 001 = 1 \\
-5 & 101 & 101 = 5 \\
-6 & 110 & 011 = 3 \\
-7 & 111 & 111 = 7 \\
-\end{array}
-\]
-Portanto, “saída permutada” significa, por exemplo, que o valor que conceitualmente é $Y[1]$ pode acabar armazenado
-na posição $4$, pois $\operatorname{rev}(1)=4$.
-
-\paragraph{DIT vs.\ DIF: onde fica o bit-reversal?}
-A presença (e o lado) do bit-reversal depende de duas escolhas:
-(i) se você usa \emph{decimation-in-time} (DIT) ou \emph{decimation-in-frequency} (DIF),
-e (ii) como você organiza os laços no iterativo in-place.
-Em muitas bibliotecas e implementações de alto desempenho, escolhe-se deliberadamente um par de variantes
-que \textbf{faz as permutações se cancelarem} no fluxo completo \emph{NTT $\to$ multiplicação ponto a ponto $\to$ INTT}.
-
-\paragraph{O par “CT (DIT)” e “GS (DIF)” na prática}
-Um arranjo muito comum (e útil para reduzir reordenações explícitas) é:
-\[
-\text{(DIT) CT}:\ \text{input natural} \ \to\  \text{saída em bit-reversal}
-\qquad\text{e}\qquad
-\text{(DIF) GS}:\ \text{entrada em bit-reversal} \ \to\  \text{output natural}.
-\]
-A vantagem é operacional:
-
-\begin{itemize}
-\item Você aplica a NTT (CT/DIT) em $a$ e em $b$, obtendo $A$ e $B$ \textbf{no mesmo formato permutado}.
-\item A multiplicação ponto a ponto $C[i]=A[i]\cdot B[i]$ pode ser feita \textbf{diretamente}, pois as duas saídas
-estão alinhadas pela \emph{mesma} permutação.
-\item Em seguida, a INTT (GS/DIF) consome essa entrada permutada e devolve o vetor no \textbf{formato natural},
-restaurando a ordem sem precisar de uma etapa explícita de bit-reversal.
-\end{itemize}
-
-Em outras palavras, a permutação não “some”: ela é \textbf{administrada} de modo que não vire custo extra no caminho crítico.
-Se, por motivos de depuração/visualização, você quiser a saída natural já após a NTT,
-pode-se aplicar uma permutação $i \leftrightarrow \operatorname{rev}(i)$ em $O(N)$,
-mas em implementações rápidas costuma ser preferível \emph{evitar} esse passo e deixar a ordem permutada “propagar”
-até a INTT.
 
 
 \begin{figure}[H]
@@ -857,90 +785,69 @@ até a INTT.
 \end{figure}
 A implementa da NTT negacíclica está  no pseudocódigo a seguir
 
-\begin{algorithm}[H]
-\caption{NTT negacíclica iterativa in-place (radix-2 CT / DIT) com saída bit-reversed}
-\begin{algorithmic}[1]
-\Function{NegacyclicNTT\_CT\_DIT}{$a[0..N-1],\, p,\, \psi$}
-    \State \Comment{$N$ é potência de 2; $\psi$ tem ordem $2N$ em $\mathbb{Z}_p$}
-    \Statex \Comment{Após o algoritmo: $a[\mathrm{rev}(k)] = X[k]$, onde $X[k]=\sum_{n} x[n]\psi^{(2k+1)n}$}
-    
-    \State \Comment{(1) Twist: $a[n] \leftarrow a[n]\cdot \psi^n$ (gera raízes ímpares)}
-    \State $t \gets 1$
-    \For{$n \gets 0$ \textbf{to} $N-1$}
-        \State $a[n] \gets (a[n]\cdot t)\bmod p$
-        \State $t \gets (t\cdot \psi)\bmod p$
-    \EndFor
-
-    \State \Comment{(2) NTT cíclica CT/DIT com raiz $\omega=\psi^2$ (ordem $N$)}
-    \State $\omega \gets (\psi\cdot \psi)\bmod p$
-    
-    \For{$\ell \gets 2$ \textbf{to} $N$ \textbf{step} $\ell \gets 2\ell$}
-        \State $h \gets \ell/2$
-        \State $w_\ell \gets \omega^{\,N/\ell}\bmod p$ \Comment{raiz principal de ordem $\ell$}
-        
-        \For{$s \gets 0$ \textbf{to} $N-1$ \textbf{step} $\ell$}
-            \State $w \gets 1$
-            \For{$j \gets 0$ \textbf{to} $h-1$}
-                \State $u \gets a[s+j]$
-                \State $v \gets (a[s+j+h]\cdot w)\bmod p$
-                \State $a[s+j] \gets (u+v)\bmod p$
-                \State $a[s+j+h] \gets (u-v)\bmod p$
-                \State $w \gets (w\cdot w_\ell)\bmod p$
+\begin{figure}[ht]
+    \centering
+    % --- ALGORITMO À ESQUERDA (FORWARD NTT) ---
+    \begin{minipage}{0.49\textwidth}
+        \hrule
+        \vskip 2pt
+        \captionof{algorithm}{NTT Negacíclica (CT)}
+        \hrule
+        \begin{algorithmic}[1]
+            \footnotesize
+            \Require $a \in \mathbb{Z}_p[x]/( x^N + 1 )$
+            \Require Raiz $\psi$ de ordem $2N$
+            
+            \State $len \gets N/2$
+            \For{$l \gets m-1$ \textbf{down to} $0$}
+                \State $num\_gr \gets 2^{m-1-l}$
+                \For{$i \gets 0$ \textbf{to} $num\_gr - 1$}
+                    \State $\zeta \gets \psi^{\text{brv}_m(num\_gr + i)}$
+                    \For{$j \gets i \cdot 2^{l+1}$ \textbf{to} $... + 2^l - 1$}
+                        \State $t_0 \gets a[j]$
+                        \State $t_1 \gets \zeta \cdot a[j + 2^l] \pmod p$
+                        \State $a[j] \gets t_0 + t_1 \pmod p$
+                        \State $a[j + 2^l] \gets t_0 - t_1 \pmod p$
+                    \EndFor
+                \EndFor
             \EndFor
-        \EndFor
-    \EndFor
-    
-    \State \Return $a$ \Comment{$a[\mathrm{rev}(k)] = X[k]$}
-\EndFunction
-\end{algorithmic}
-\end{algorithm}
-
-\begin{algorithm}[H]
-\caption{INTT negacíclica iterativa in-place (GS / DIF) compatível com NTT CT/DIT de saída bit-reversed}
-\begin{algorithmic}[1]
-\Function{NegacyclicINTT\_GS\_DIF}{$a[0..N-1],\, p,\, \psi$}
-    \State \Comment{$N$ é potência de 2; $\psi$ tem ordem $2N$ em $\mathbb{Z}_p$}
-    \Statex \Comment{Entrada esperada: $a[\mathrm{rev}(k)] = X[k]$, onde $X[k]=\sum_n x[n]\psi^{(2k+1)n}$}
-    \Statex \Comment{Saída: $a[n]=x[n]$ em ordem natural}
-
-    \State \Comment{(1) INTT cíclica GS/DIF de tamanho $N$ com raiz $\omega=\psi^2$}
-    \State $\omega \gets (\psi\cdot \psi)\bmod p$
-    \State $\omega^{-1} \gets \omega^{\,p-2}\bmod p$ \Comment{inverso modular (Fermat)}
-    
-    \For{$\ell \gets N$ \textbf{down to} $2$ \textbf{step} $\ell \gets \ell/2$}
-        \State $h \gets \ell/2$
-        \State $w_\ell \gets (\omega^{-1})^{\,N/\ell}\bmod p$ \Comment{raiz inversa de ordem $\ell$}
-        
-        \For{$s \gets 0$ \textbf{to} $N-1$ \textbf{step} $\ell$}
-            \State $w \gets 1$
-            \For{$j \gets 0$ \textbf{to} $h-1$}
-                \State $u \gets a[s+j]$
-                \State $v \gets a[s+j+h]$
-                \State $a[s+j] \gets (u+v)\bmod p$
-                \State $a[s+j+h] \gets ((u-v)\cdot w)\bmod p$
-                \State $w \gets (w\cdot w_\ell)\bmod p$
+            \State \Return $a$ (\emph{bit-reversed})
+        \end{algorithmic}
+        \hrule
+    \end{minipage}
+    \hfill
+    % --- ALGORITMO À DIREITA (INVERSE NTT) ---
+    \begin{minipage}{0.49\textwidth}
+        \hrule
+        \vskip 2pt
+        \captionof{algorithm}{NTT Inversa (GS)}
+        \hrule
+        \begin{algorithmic}[1]
+            \footnotesize
+            \Require $\hat{a}$ (\emph{bit-reversed})
+            \Require Raiz $\psi$ de ordem $2N$
+            
+            \For{$l \gets 0$ \textbf{to} $m-1$}
+                \State $num\_gr \gets 2^{m-1-l}$
+                \For{$i \gets 0$ \textbf{to} $num\_gr - 1$}
+                    \State $\zeta \gets \psi^{-\text{brv}_m(num\_gr + i)}$
+                    \For{$j \gets i \cdot 2^{l+1}$ \textbf{to} $... + 2^l - 1$}
+                        \State $t_0 \gets a[j]$
+                        \State $t_1 \gets a[j + 2^l]$
+                        \State $a[j] \gets t_0 + t_1 \pmod p$
+                        \State $a[j + 2^l] \gets (t_0 - t_1)\zeta \pmod p$
+                    \EndFor
+                \EndFor
             \EndFor
-        \EndFor
-    \EndFor
-
-    \State \Comment{(2) Normalização: multiplica por $N^{-1}$}
-    \State $N^{-1} \gets N^{\,p-2}\bmod p$
-    \For{$n \gets 0$ \textbf{to} $N-1$}
-        \State $a[n] \gets (a[n]\cdot N^{-1})\bmod p$
-    \EndFor
-
-    \State \Comment{(3) Untwist: $a[n] \leftarrow a[n]\cdot \psi^{-n}$}
-    \State $\psi^{-1} \gets \psi^{\,p-2}\bmod p$
-    \State $t \gets 1$
-    \For{$n \gets 0$ \textbf{to} $N-1$}
-        \State $a[n] \gets (a[n]\cdot t)\bmod p$
-        \State $t \gets (t\cdot \psi^{-1})\bmod p$
-    \EndFor
-
-    \State \Return $a$
-\EndFunction
-\end{algorithmic}
-\end{algorithm}
+            \State $invN \gets \text{inv}(N) \pmod p$
+            \For{$i \gets 0$ \textbf{to} $N-1$}
+                \State $a[i] \gets a[i] \cdot invN$
+            \EndFor
+            \State \Return $a$ (\emph{normal order})
+        \end{algorithmic}
+        \hrule
+    \end{minipage}
+\end{figure}
 
 \section{Testes comparativos}
 A comporação computacional dessas ferramentas pode ser vista na tabela a seguir, onde calculou-se o maior número de Fibonacci obtido em menos de um segundo. Todos os testes foram executados em single-core.
@@ -966,7 +873,7 @@ sendo a multiplicação que ocorre tanto na exponenciação quanto no procuto in
 Além disso, como o foco foi apenas em comparar a velocidade dos métodos, utilizou-se de scrpites para a geração de macros com os valores das raízes primitivas, raizes da unidade, entres outras constantes, para mais informações veja o repositório.
 
 
-(A GMP é uma biblioteca otimizada para operações criptográficas)
+(GMP é uma biblioteca otimizada para operações com inteiros extremamente grandes)
 
 \textbf{Setup:}
 

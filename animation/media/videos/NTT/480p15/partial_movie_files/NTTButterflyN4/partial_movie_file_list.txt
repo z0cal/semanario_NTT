@@ -1,0 +1,11 @@
+# This file is used internally by FFMPEG.
+file 'file:/home/zocal/text_mk/animation/media/videos/NTT/480p15/partial_movie_files/NTTButterflyN4/1584795214_276769364_223132457.mp4'
+file 'file:/home/zocal/text_mk/animation/media/videos/NTT/480p15/partial_movie_files/NTTButterflyN4/4072820271_799247085_289304295.mp4'
+file 'file:/home/zocal/text_mk/animation/media/videos/NTT/480p15/partial_movie_files/NTTButterflyN4/4072820271_3489022522_4274502543.mp4'
+file 'file:/home/zocal/text_mk/animation/media/videos/NTT/480p15/partial_movie_files/NTTButterflyN4/4072820271_1839128356_4028016751.mp4'
+file 'file:/home/zocal/text_mk/animation/media/videos/NTT/480p15/partial_movie_files/NTTButterflyN4/4072820271_1786888997_3567360739.mp4'
+file 'file:/home/zocal/text_mk/animation/media/videos/NTT/480p15/partial_movie_files/NTTButterflyN4/4072820271_2015106682_3436908167.mp4'
+file 'file:/home/zocal/text_mk/animation/media/videos/NTT/480p15/partial_movie_files/NTTButterflyN4/4072820271_911175172_1453777531.mp4'
+file 'file:/home/zocal/text_mk/animation/media/videos/NTT/480p15/partial_movie_files/NTTButterflyN4/4072820271_252926395_2460863418.mp4'
+file 'file:/home/zocal/text_mk/animation/media/videos/NTT/480p15/partial_movie_files/NTTButterflyN4/4072820271_461399606_778496069.mp4'
+file 'file:/home/zocal/text_mk/animation/media/videos/NTT/480p15/partial_movie_files/NTTButterflyN4/4072820271_2015106682_739248159.mp4'
