@@ -13,7 +13,7 @@ class NTT_Full_Story_Continuous(Scene):
         
         rows = [1.5 * row_height, 0.5 * row_height, -0.5 * row_height, -1.5 * row_height]
         
-        title = Tex(r"NTT ($N=4$): Estrutura Completa").to_edge(UP)
+        title = Tex(r"NTT ($N=4$) ").to_edge(UP)
         self.play(Write(title), run_time=1.0)
         
         inputs = VGroup(*[MathTex(f"x[{i}]") for i in range(4)])
