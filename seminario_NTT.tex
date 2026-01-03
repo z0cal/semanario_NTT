@@ -4,6 +4,9 @@
 \newtheorem{teorema}{Teorema}
 \newtheorem{proposicao}{Proposição}
 \renewcommand{\proofname}{Demonstração}
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+\renewcommand{\algorithmicensure}{\textbf{Output:}}
+
 \addbibresource{referencias.bib} %
 \begin{document}
 \nocite{*}
@@ -784,7 +787,6 @@ fator global $N^{-1}$ ao final, reduzindo o número de multiplicações escalare
     \label{fig:bINNT}
 \end{figure}
 A implementa da NTT negacíclica está  no pseudocódigo a seguir
-
 \begin{figure}[ht]
     \centering
     % --- ALGORITMO À ESQUERDA (FORWARD NTT) ---
@@ -795,8 +797,9 @@ A implementa da NTT negacíclica está  no pseudocódigo a seguir
         \hrule
         \begin{algorithmic}[1]
             \footnotesize
-            \Require $a \in \mathbb{Z}_p[x]/( x^N + 1 )$
-            \Require Raiz $\psi$ de ordem $2N$
+            \Require $a \in \mathbb{Z}_p^N$ (Coeficientes de entrada)
+            \Require $N = 2^m$ e Módulo $p$ 
+            \Require $\psi$: Raiz primitiva $2N$-ésima da unidade
             
             \State $len \gets N/2$
             \For{$l \gets m-1$ \textbf{down to} $0$}
@@ -808,9 +811,13 @@ A implementa da NTT negacíclica está  no pseudocódigo a seguir
                         \State $t_1 \gets \zeta \cdot a[j + 2^l] \pmod p$
                         \State $a[j] \gets t_0 + t_1 \pmod p$
                         \State $a[j + 2^l] \gets t_0 - t_1 \pmod p$
-                    \EndFor
+                        \State
+                                            \EndFor
+                                            \State
                 \EndFor
+                \State
             \EndFor
+
             \State \Return $a$ (\emph{bit-reversed})
         \end{algorithmic}
         \hrule
@@ -824,8 +831,9 @@ A implementa da NTT negacíclica está  no pseudocódigo a seguir
         \hrule
         \begin{algorithmic}[1]
             \footnotesize
-            \Require $\hat{a}$ (\emph{bit-reversed})
-            \Require Raiz $\psi$ de ordem $2N$
+            \Require $\hat{a}$ (Vetor em ordem \emph{bit-reversed})
+            \Require $N = 2^m$ e Módulo $p$
+            \Require $\psi$: Raiz primitiva $2N$-ésima da unidade
             
             \For{$l \gets 0$ \textbf{to} $m-1$}
                 \State $num\_gr \gets 2^{m-1-l}$
@@ -839,11 +847,11 @@ A implementa da NTT negacíclica está  no pseudocódigo a seguir
                     \EndFor
                 \EndFor
             \EndFor
-            \State $invN \gets \text{inv}(N) \pmod p$
+            \State $invN \gets N^{-1} \pmod p$
             \For{$i \gets 0$ \textbf{to} $N-1$}
                 \State $a[i] \gets a[i] \cdot invN$
             \EndFor
-            \State \Return $a$ (\emph{normal order})
+            \State \Return $a$ (Ordem normal)
         \end{algorithmic}
         \hrule
     \end{minipage}

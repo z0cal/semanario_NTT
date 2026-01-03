@@ -145,6 +145,75 @@
       \field{year}{2018}
       \true{nocite}
     \endentry
+    \entry{Longa_Naehrig_2016}{inbook}{}{}
+      \name{author}{2}{}{%
+        {{hash=b57e1e131ee2b0a5b54675628f3c4ea7}{%
+           family={Longa},
+           familyi={L\bibinitperiod},
+           given={Patrick},
+           giveni={P\bibinitperiod}}}%
+        {{hash=b1315d1cb133620e9488e665512a2272}{%
+           family={Naehrig},
+           familyi={N\bibinitperiod},
+           given={Michael},
+           giveni={M\bibinitperiod}}}%
+      }
+      \name{editor}{2}{}{%
+        {{hash=abddd4dda650da33b844ca1d32f42a67}{%
+           family={Foresti},
+           familyi={F\bibinitperiod},
+           given={Sara},
+           giveni={S\bibinitperiod}}}%
+        {{hash=3374fd1e7ade5c9ef25b3562d43be3f3}{%
+           family={Persiano},
+           familyi={P\bibinitperiod},
+           given={Giuseppe},
+           giveni={G\bibinitperiod}}}%
+      }
+      \list{language}{1}{%
+        {en}%
+      }
+      \list{location}{1}{%
+        {Cham}%
+      }
+      \list{publisher}{1}{%
+        {Springer International Publishing}%
+      }
+      \strng{namehash}{172a6dd71de9c0478a3019482f9efa99}
+      \strng{fullhash}{172a6dd71de9c0478a3019482f9efa99}
+      \strng{fullhashraw}{172a6dd71de9c0478a3019482f9efa99}
+      \strng{bibnamehash}{172a6dd71de9c0478a3019482f9efa99}
+      \strng{authorbibnamehash}{172a6dd71de9c0478a3019482f9efa99}
+      \strng{authornamehash}{172a6dd71de9c0478a3019482f9efa99}
+      \strng{authorfullhash}{172a6dd71de9c0478a3019482f9efa99}
+      \strng{authorfullhashraw}{172a6dd71de9c0478a3019482f9efa99}
+      \strng{editorbibnamehash}{482b675f64678f85266762632fbe4014}
+      \strng{editornamehash}{482b675f64678f85266762632fbe4014}
+      \strng{editorfullhash}{482b675f64678f85266762632fbe4014}
+      \strng{editorfullhashraw}{482b675f64678f85266762632fbe4014}
+      \field{sortinit}{L}
+      \field{sortinithash}{7c47d417cecb1f4bd38d1825c427a61a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{Cryptology and Network Security}
+      \field{isbn}{978-3-319-48964-3}
+      \field{series}{Lecture Notes in Computer Science}
+      \field{title}{Speeding up the Number Theoretic Transform for Faster Ideal Lattice-Based Cryptography}
+      \field{volume}{10052}
+      \field{year}{2016}
+      \true{nocite}
+      \field{pages}{124\bibrangedash 139}
+      \range{pages}{16}
+      \verb{doi}
+      \verb 10.1007/978-3-319-48965-0_8
+      \endverb
+      \verb{urlraw}
+      \verb https://link.springer.com/10.1007/978-3-319-48965-0_8
+      \endverb
+      \verb{url}
+      \verb https://link.springer.com/10.1007/978-3-319-48965-0_8
+      \endverb
+    \endentry
     \entry{nussbaumer1982fft}{book}{}{}
       \name{author}{1}{}{%
         {{hash=cfcab2df4e8c6a328bf7440a74bbc2fd}{%
