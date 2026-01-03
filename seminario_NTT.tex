@@ -355,7 +355,7 @@ A implementação em pseudocódigo no algoritmo \ref{alg:fft}
 \end{algorithmic}
 \end{algorithm}
 
-Como a IDFT é praticamente identica igual à DFT, podemos usar o mesmo algoritmo da FFT para calcular a IFFT
+Como a IDFT é praticamente identica à DFT, podemos usar o mesmo algoritmo da FFT para calcular a IFFT
 \begin{algorithm}
 \caption{IFFT via FFT}
 \label{alg:ifft-via-fft}
@@ -381,7 +381,7 @@ Um dos problemas da FFT é que ela trabalha com ponto flutuante, o que, para com
 
 
 
-Solução: utilizar uma transformada que utiliza apenas números exatos e realiza uma convolução cíclica
+Solução: utilizar uma transformada que utiliza apenas números exatos e realiza uma convolução (nega)cíclica
 \section{ Number Theoretic Transform (NTT)}
 
 \subsection{Fundamentos}
@@ -690,18 +690,21 @@ inicialize $x\gets \psi$ e atualize $x \gets x\cdot \psi^2$, gerando
 $(\psi^1,\psi^3,\psi^5,\dots)$.
 
 \begin{figure}[H]
-    \centering
-    \includegraphics{images/butterflyNTT.pdf}
-    \caption{Butterfly NTT}
-    \label{fig:bntt}
-\end{figure}
-
-
-\begin{figure}[H]
-    \centering
-    \includegraphics{images/butterflyNTT_4.pdf}
-    \caption{Butterfly NTT}
-    \label{fig:b4ntt}
+     \centering
+     \begin{subfigure}[b]{0.48\textwidth}
+         \centering
+         \includegraphics[width=\textwidth]{images/butterflyNTT.pdf}
+         \caption{Butterfly NTT}
+         \label{fig:bntt}
+     \end{subfigure}
+     \hfill
+     \begin{subfigure}[b]{0.48\textwidth}
+         \centering
+         \includegraphics[width=\textwidth]{images/butterflyNTT_4.pdf}
+         \caption{Butterfly NTT 4}
+         \label{fig:b4ntt}
+     \end{subfigure}
+     \label{fig:comparison_ntt}
 \end{figure}
 
 \subsection{A INTT via Gentleman--Sande (GS): Reconstrução }
@@ -773,14 +776,77 @@ A diferença estrutural entre as duas direções pode ser resumida assim:
 fator global $N^{-1}$ ao final, reduzindo o número de multiplicações escalares.
 
 \subsubsection*{5. Fluxo de dados e bit-reversal}
-A discussão de \emph{bit-reversal} depende da variante (DIT/DIF) e do arranjo em memória (implementação iterativa in-place).
-Em muitas implementações práticas, usa-se o par:
+
+Em implementações \emph{iterativas in-place} (radix-2), a ordem em que os subproblemas são combinados não é apenas um detalhe:
+ela determina \textbf{em quais posições de memória} cada coeficiente transformado vai parar ao final.
+Esse fenômeno é normalmente descrito como uma \emph{permutação por bit-reversal} (reversão de bits).
+
+\paragraph{O que é bit-reversal?}
+Assuma $N = 2^s$. Para um índice $k \in \{0,\dots,N-1\}$, escreva sua expansão binária em $s$ bits:
 \[
-\text{(DIT) CT}:\ \text{input natural} \to \text{saída permutada}
-\qquad\text{e}\qquad
-\text{(DIF) GS}:\ \text{entrada permutada} \to \text{output natural},
+k = (b_{s-1}\, b_{s-2}\, \dots\, b_1\, b_0)_2.
 \]
-o que permite que a multiplicação pontual ocorra no mesmo formato de dados, reduzindo reordenações explícitas.
+O índice \emph{bit-reverso} de $k$ é definido por
+\[
+\operatorname{rev}(k) = (b_0\, b_1\, \dots\, b_{s-2}\, b_{s-1})_2.
+\]
+A “saída permutada” a que nos referimos é tipicamente a saída na ordem $k \mapsto \operatorname{rev}(k)$.
+
+\paragraph{Por que a permutação aparece no iterativo? (intuição de árvore)}
+A decomposição radix-2 divide o problema em metades sucessivas.
+No ponto de vista da árvore de recursão, cada nível “decide” um bit do índice (tempo ou frequência),
+mas no iterativo in-place nós percorremos os níveis numa ordem fixa e reaproveitamos a memória.
+O resultado é que os bits do índice acabam sendo fixados \emph{na ordem inversa} ao índice natural,
+o que se manifesta como bit-reversal.
+
+\paragraph{Exemplo pequeno ($N=8$)}
+Aqui $s=3$. A tabela abaixo mostra a permutação:
+\[
+\begin{array}{c|c|c}
+k & (k)_2 & \operatorname{rev}(k) \\
+\hline
+0 & 000 & 000 = 0 \\
+1 & 001 & 100 = 4 \\
+2 & 010 & 010 = 2 \\
+3 & 011 & 110 = 6 \\
+4 & 100 & 001 = 1 \\
+5 & 101 & 101 = 5 \\
+6 & 110 & 011 = 3 \\
+7 & 111 & 111 = 7 \\
+\end{array}
+\]
+Portanto, “saída permutada” significa, por exemplo, que o valor que conceitualmente é $Y[1]$ pode acabar armazenado
+na posição $4$, pois $\operatorname{rev}(1)=4$.
+
+\paragraph{DIT vs.\ DIF: onde fica o bit-reversal?}
+A presença (e o lado) do bit-reversal depende de duas escolhas:
+(i) se você usa \emph{decimation-in-time} (DIT) ou \emph{decimation-in-frequency} (DIF),
+e (ii) como você organiza os laços no iterativo in-place.
+Em muitas bibliotecas e implementações de alto desempenho, escolhe-se deliberadamente um par de variantes
+que \textbf{faz as permutações se cancelarem} no fluxo completo \emph{NTT $\to$ multiplicação ponto a ponto $\to$ INTT}.
+
+\paragraph{O par “CT (DIT)” e “GS (DIF)” na prática}
+Um arranjo muito comum (e útil para reduzir reordenações explícitas) é:
+\[
+\text{(DIT) CT}:\ \text{input natural} \ \to\  \text{saída em bit-reversal}
+\qquad\text{e}\qquad
+\text{(DIF) GS}:\ \text{entrada em bit-reversal} \ \to\  \text{output natural}.
+\]
+A vantagem é operacional:
+
+\begin{itemize}
+\item Você aplica a NTT (CT/DIT) em $a$ e em $b$, obtendo $A$ e $B$ \textbf{no mesmo formato permutado}.
+\item A multiplicação ponto a ponto $C[i]=A[i]\cdot B[i]$ pode ser feita \textbf{diretamente}, pois as duas saídas
+estão alinhadas pela \emph{mesma} permutação.
+\item Em seguida, a INTT (GS/DIF) consome essa entrada permutada e devolve o vetor no \textbf{formato natural},
+restaurando a ordem sem precisar de uma etapa explícita de bit-reversal.
+\end{itemize}
+
+Em outras palavras, a permutação não “some”: ela é \textbf{administrada} de modo que não vire custo extra no caminho crítico.
+Se, por motivos de depuração/visualização, você quiser a saída natural já após a NTT,
+pode-se aplicar uma permutação $i \leftrightarrow \operatorname{rev}(i)$ em $O(N)$,
+mas em implementações rápidas costuma ser preferível \emph{evitar} esse passo e deixar a ordem permutada “propagar”
+até a INTT.
 
 
 \begin{figure}[H]
@@ -876,7 +942,7 @@ A implementa da NTT negacíclica está  no pseudocódigo a seguir
 \end{algorithmic}
 \end{algorithm}
 
-\section{Testes compartivos}
+\section{Testes comparativos}
 A comporação computacional dessas ferramentas pode ser vista na tabela a seguir, onde calculou-se o maior número de Fibonacci obtido em menos de um segundo. Todos os testes foram executados em single-core.
 
 Nos algoritmos da FFT e da NTT, o n-ésimmo número de Fibonacci foi calculado pela seguinte relação:
