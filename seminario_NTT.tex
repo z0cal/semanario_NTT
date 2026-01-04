@@ -567,13 +567,21 @@ se traduz em um produto de Hadamard no domínio transformado.
 
 
 \begin{figure}[H]
-\centering
-\resizebox{\textwidth}{!}{%
-  \includegraphics{images/CRT_NTT.pdf}
-
-}
-\caption{CRT da NTT Negacíclica}
-\label{fig:NTT}
+    \centering
+    % --- Primeira Imagem (Esquerda) ---
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{images/CRT_NTT4.pdf}
+        \caption{CRT da NTT Negacíclica (Exemplo N=4)}
+        \label{fig:NTT4}
+    \end{minipage}\hfill % O \hfill cria o espaço entre as figuras
+    % --- Segunda Imagem (Direita) ---
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{images/CRT_NTT.pdf}
+        \caption{CRT da NTT Negacíclica (Geral)}
+        \label{fig:NTT_Geral}
+    \end{minipage}
 \end{figure}
 
 \subsection{Transformada Numérica Inversa (INTT)}
@@ -966,7 +974,7 @@ as opções de parâmetros e se melhora o compromisso entre desempenho e taxa de
 
 \section{Agradecimentos}
 Gostaria de agradecer ao professor doutor \emph{Thales Paiva} pela chance de apresentar o seminário e pelos ensinamentos,
-gostaria de agradecer tambem o professor doutor \emph{João Fernando da Cunha Nariyoshi} por esclarecer algumas dúvidas sobre a parte da matemática pura.
+gostaria de agradecer também o professor doutor \emph{João Fernando da Cunha Nariyoshi} por esclarecer algumas dúvidas sobre a parte da matemática pura.
 Foi realmente divertido pesquisar, escrever, desenhar e animar para esse seminário.
 
 \section{Apêndice}
