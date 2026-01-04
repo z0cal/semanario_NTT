@@ -13,8 +13,8 @@
 ]
 
 % --- Entradas ---
-\node[label_txt] (a) at (0,2) {$A_i$};
-\node[label_txt] (b) at (0,0) {$B_i$};
+\node[label_txt] (a) at (0,2) {$A$};
+\node[label_txt] (b) at (0,0) {$B$};
 
 % --- Operadores (+ e -) ---
 \node[op] (plus)  at (3,2) {$+$};
@@ -33,12 +33,12 @@
 \draw[->] (minus) -- (times);
 
 % --- Fator de rotação inverso (twiddle) ---
-\node[label_txt] (psi) at (6,-1.5) {$\psi^{-k}$};
+\node[label_txt] (psi) at (6,-1.5) {$\psi^{-1}$};
 \draw[->] (psi) -- (times);
 
 % --- Saídas ---
-\node[label_txt, right=4.2cm of plus]  (out_top) {$A_i + B_i$};
-\node[label_txt, right=1.2cm of times] (out_bot) {$(A_i - B_i)\,\psi^{-k}$};
+\node[label_txt, right=4.2cm of plus]  (out_top) {$A + B$};
+\node[label_txt, right=1.2cm of times] (out_bot) {$(A - B)\,\psi^{-1}$};
 
 \draw[->] (plus)  -- (out_top);
 \draw[->] (times) -- (out_bot);

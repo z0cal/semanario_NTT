@@ -60,7 +60,7 @@ Para uma função contínua $g(t)$, a transformada é definida pela integral:
 
 \[\mathcal{F}(f) = \int_{-\infty}^{\infty} g(t) e^{-2\pi if t} \, dt\]
 
-Ela pode ser entendida como um produto interno(uma projeção) do sinal com todas as frequências da reta real $ \langle g, e^{-2\pi i ft} \rangle$, que, devido à ortogonalidade das frequências diferentes e que funções bem comportadas podem ser decompostas em séries de autofunções $e^{-2\pi ift}$, consegue extrair extamente as frequências do sinal.
+Ela pode ser entendida como um produto interno (uma projeção) do sinal com todas as frequências da reta real $ \langle g, e^{-2\pi i ft} \rangle$, que, devido à ortogonalidade das frequências diferentes e que funções bem comportadas podem ser decompostas em séries de autofunções $e^{-2\pi ift}$, consegue extrair exatamente as frequências do sinal.
 Apesar de sua elegância teórica, a CTFT apresenta desafios para a aplicação prática em sistemas digitais:
 
 \begin{enumerate}
@@ -78,8 +78,8 @@ Para viabilizar o processamento em computadores, utilizamos a \textbf{DFT} (\tex
 
 Para $k = 0, 1, \dots, N-1$.
 
-Diferente da versão contínua, a DFT lida com somatórios e vetores numéricos, permitindo que a teoria de Fourier Seja aplicada em qualquer dispositivo digital.
-É possivel provar que a DFT é uma transformação linear \ref{sec:linear}, logo, pode ser representada matricialmente.
+Diferente da versão contínua, a DFT lida com somatórios e vetores numéricos, permitindo que a teoria de Fourier seja aplicada em qualquer dispositivo digital.
+É possível provar que a DFT é uma transformação linear \ref{sec:linear}, logo, pode ser representada matricialmente.
 
 Seja $\zeta_N = e^{-i\frac{2\pi}{N}}$. A representação matricial da DFT para $n = 0, 1, \dots, N-1$ é:
 
@@ -126,9 +126,9 @@ x[0] \\ x[1] \\ x[2] \\ \vdots \\ x[N-1]
 X[0] \\ X[1] \\ X[2] \\ \vdots \\ X[N-1] 
 \end{bmatrix}
 \]
-Percebe-se que nesse caso discreto, a DFT e IDFT atuam como uma matriz mudança de base, saindo da base do tempo e indo para base das raízes unitarias
+Percebe-se que nesse caso discreto, a DFT e IDFT atuam como uma matriz mudança de base, saindo da base do tempo e indo para base das raízes unitárias
 
-Além disso, a DFT pode ser vista de outra óptica, como avalição de polinômios.
+Além disso, a DFT pode ser vista de outra óptica, como avaliação de polinômios.
 
 Seja:
 \[
@@ -144,7 +144,7 @@ A_k
 = \sum_{n=0}^{N-1} a_n(\zeta_N^k)^n
 = \sum_{n=0}^{N-1} a_n\,\zeta_N^{kn},
 \]
-o que é exatamente a formulação da DFT, para $a_n \equiv x[n]$ e $A_n \equiv X[n]$, opostamente, a IDFT é interpretada como interpolção de polinômios:
+o que é exatamente a formulação da DFT, para $a_n \equiv x[n]$ e $A_n \equiv X[n]$, opostamente, a IDFT é interpretada como interpolação de polinômios:
 
 Dados os valores
 \(\{A_k\}_{k=0}^{N-1}\), ela reconstrói os coeficientes \(\{a_n\}_{n=0}^{N-1}\) do
@@ -154,21 +154,22 @@ Explicitamente,
 a_n=\frac{1}{N}\sum_{k=0}^{N-1} A_k\,\zeta_N^{-kn}.
 \]
 Assim, \(\mathrm{DFT}\) é \emph{avaliar} em raízes da unidade e \(\mathrm{IDFT}\) é
-\emph{interpolar} (recuperar os coeficientes) a partir dessas avaliações. (Essa perspectiva baseia-se na determinição unívoca do polinómio de grau $N-1$ por N pontos vejá a seção~\ref{sec:Determinição unívoca do polinômio} para demonstração desse fato)
+\emph{interpolar} (recuperar os coeficientes) a partir dessas avaliações. (Essa perspectiva baseia-se na determinação unívoca do polinômio de grau $N-1$ por N pontos veja a seção~\ref{sec:Determinição unívoca do polinômio} para demonstração desse fato)
+
 
 
 \section{ A Multiplicação de Polinômios e a Complexidade Computacional}
 
-Um problema simplificado pela mudança de domino é a multiplicação de polinômios. Tome os polinômios $f(x)$ e $g(x)$ de grau $N-1$: 
+Um problema simplificado pela mudança de domínio é a multiplicação de polinômios. Tome os polinômios $f(x)$ e $g(x)$ de grau $N-1$: 
 
 \[f(x) = \sum_{i=0}^{N-1} a_i x^i, \quad g(x) = \sum_{j=0}^{N-1} b_j x^j\]
 
-Na abordagem clássica , o produto $h(x) = f(x) \cdot g(x)$ é obtido distribuindo-se cada termo de $f$ sobre todos os termos de $g$. Este processo resulta em um novo polinômio de grau $2N-2$:
+Na abordagem clássica, o produto $h(x) = f(x) \cdot g(x)$ é obtido distribuindo-se cada termo de $f$ sobre todos os termos de $g$. Este processo resulta em um novo polinômio de grau $2N-2$:
 
 \[h(x) = \sum_{k=0}^{2N-2} c_k x^k\]
 onde $c_k = \sum_{i+j=k} a_i b_j$.
 
-Nesta metodologia, o cálculo de cada coeficiente $c_k$ exige múltiplas operações de produto e soma, resultando em uma complexidade assintótica $O(n^2)$. Para polinômios com grandes volumes de coeficientes, este custo computacional torna o método inviavel.
+Nesta metodologia, o cálculo de cada coeficiente $c_k$ exige múltiplas operações de produto e soma, resultando em uma complexidade assintótica $O(n^2)$. Para polinômios com grandes volumes de coeficientes, este custo computacional torna o método inviável.
 
 
 
@@ -202,16 +203,16 @@ Com a transformada direta ingênua, o custo ainda seria $O(N^2)$, portanto, não
 Um exemplo para o convencimento do leitor foi disposto no apêndice~\ref{sec:convolução}.
 \section{ A "Fast Fourier Transform"}
 
-A FFT (Fast Fourier Transform) é uma maneira de otimizar o calculo da DFT.
+A FFT (Fast Fourier Transform) é uma maneira de otimizar o cálculo da DFT.
 
-O algoritmo da FFT foi redescoberto por Cooley e Tukey em 1965, uma vez que Gauss já tinha utilzado um algoritmo semelhante para calcular a órbitas de asteroides em 1805. 
+O algoritmo da FFT foi redescoberto por Cooley e Tukey em 1965, uma vez que Gauss já tinha utilizado um algoritmo semelhante para calcular as órbitas de asteroides em 1805. 
 
 O algoritmo se baseia em \textbf{dividir para conquistar}.
 
 \hrulefill
 \subsection{Números complexos}
 
-As raízes unitárias possuem propriedades cíclicas e certas simetrias que permitem a economia nos cálculos, vejámos um exemplo.
+As raízes unitárias possuem propriedades cíclicas e certas simetrias que permitem a economia nos cálculos, vejamos um exemplo.
 \[\zeta_4^1 = e^{-i\frac{2\pi}{4}} = e^{-i90^\circ} = -i\]
 
 \[
@@ -294,7 +295,7 @@ De forma mais geral:
 \begin{quote}
 $ \zeta_N = e^{\frac{-2\pi i}{N}} $, uma raiz $N$-ésima primitiva da unidade. Então para todo inteiro $a$, $ {\zeta_N^{a+\frac{N}{2}} = -\,\zeta_N^{a}}. $
 \end{quote}
-Álem de que, pela periodicidade $\zeta_N^{a+N}=\zeta_N^a$ e $\zeta_N^{2}=\zeta_{N/2}$, esta última pode ser vista na figura \ref{fig:comparacao_raizes}, onde $\zeta_8^2=\zeta_4$ 
+Além de que, pela periodicidade $\zeta_N^{a+N}=\zeta_N^a$ e $\zeta_N^{2}=\zeta_{N/2}$, esta última pode ser vista na figura \ref{fig:comparacao_raizes}, onde $\zeta_8^2=\zeta_4$ 
 
 Para esse caso a DFT é representada desse modo:
 \[
@@ -303,7 +304,7 @@ Para esse caso a DFT é representada desse modo:
 
 \hrulefill
 
-Voltando a FFT, o algoritmo decompõe uma DFT de tamanho $N$ em duas sub-transformadas de tamanho $N/2$, separando os índices pares e ímpares da sequência original:
+Voltando à FFT, o algoritmo decompõe uma DFT de tamanho $N$ em duas sub-transformadas de tamanho $N/2$, separando os índices pares e ímpares da sequência original:
 
 \begin{align}
 X[k]
@@ -358,7 +359,7 @@ A implementação em pseudocódigo no algoritmo \ref{alg:fft}
 \end{algorithmic}
 \end{algorithm}
 
-Como a IDFT é praticamente identica à DFT, podemos usar o mesmo algoritmo da FFT para calcular a IFFT
+Como a IDFT é praticamente idêntica à DFT, podemos usar o mesmo algoritmo da FFT para calcular a IFFT
 \begin{algorithm}
 \caption{IFFT via FFT}
 \label{alg:ifft-via-fft}
@@ -380,11 +381,12 @@ Desse modo, reduzimos a complexidade da transformada de $O(n^2) \longrightarrow 
 
 \section{ Problemas da FFT}
 
-Um dos problemas da FFT é que ela trabalha com ponto flutuante, o que, para computadores, é um grande problema que pode causar erro de arredondamentos ou limitação nos cálculos. Além disso, na convolução linear, o polinômio dobra de tamanho a cada convolução o que rapidamente torna-se um problema tanto computacional quanto de armazenamento .
+Um dos problemas da FFT é que ela trabalha com ponto flutuante, o que, para computadores, é um grande problema que pode causar erros de arredondamento ou limitação nos cálculos. Além disso, na convolução linear, o polinômio dobra de tamanho a cada convolução, o que rapidamente torna-se um problema tanto computacional quanto de armazenamento.
 
 
 
 Solução: utilizar uma transformada que utiliza apenas números exatos e realiza uma convolução (nega)cíclica
+
 \section{ Number Theoretic Transform (NTT)}
 
 \subsection{Fundamentos}
@@ -430,14 +432,14 @@ Concluímos, portanto, que existe uma raiz primitiva $2N$-ésima da unidade em $
 
 \hrulefill
 
-Dados esses critérios de de existência, trataremos da estrutura algébrica da transformada. A NTT Negacíclica é definida no anel quociente 
+Dados esses critérios de existência, trataremos da estrutura algébrica da transformada. A NTT Negacíclica é definida no anel quociente 
 \[
 R = \frac{\mathbb{Z}_p[x]}{(x^N+1)}
 \]
 
-ou Seja, há uma composição de operações modulares.(a imagem \ref{fig:torus} ilustra a sequencia das duas operações visualmente.)
+ou seja, há uma composição de operações modulares. (A imagem \ref{fig:torus} ilustra a sequência das duas operações visualmente.)
 
- Ela pode ser vista como a avalição do polinômio nas raízes da equação $x^N + 1 = 0$, que correspondem às potências ímpares de $\psi$. A transformada é definida por:
+Ela pode ser vista como a avaliação do polinômio nas raízes da equação $x^N + 1 = 0$, que correspondem às potências ímpares de $\psi$. A transformada é definida por:
 
 \[
 X[k] = \sum_{n=0}^{N-1} x[n] \psi^{(2k+1)n} \pmod{p}
@@ -592,7 +594,7 @@ Na forma matricial, a operação de inversão corresponde à resolução do sist
 \mathbf{x} = \mathbf{W}_N^{-1} \mathbf{X}
 \]
 
-Onde a matriz inversa $\mathbf{W}_N^{-1}$ é definida como o inverso modular das potências impares de $\psi$, escalada pelo fator $N^{-1}$:
+Onde a matriz inversa $\mathbf{W}_N^{-1}$ é definida como o inverso modular das potências ímpares de $\psi$, escalada pelo fator $N^{-1}$:
 
 \[
 \mathbf{W}_N^{-1} = N^{-1}
@@ -634,7 +636,7 @@ A(x) &= \sum_{i=0}^{N-1} a[i]x^i \\
      &= \sum_{i=0}^{N/2-1} a[2i]x^{2i} + \sum_{i=0}^{N/2-1} a[2i+1]x^{2i+1} \\
      &= \sum_{i=0}^{N/2-1} a[2i](x^2)^i + x \cdot \sum_{i=0}^{N/2-1} a[2i+1](x^2)^i.
 \end{align*}
-Definindo os polinômios auxiliares $A_{\text{par}}(y)$ e $A_{\text{impar}}(y)$ como as partes pares e ímpares respectivamente, obtemos a relação recursiva:
+Definindo os polinômios auxiliares $A_{\text{par}}(y)$ e $A_{\text{impar}}(y)$ como as partes pares e ímpares, respectivamente, obtemos a relação recursiva:
 \[
 A(x) = A_{\text{par}}(x^2) + x \cdot A_{\text{impar}}(x^2).
 \]
@@ -674,6 +676,7 @@ x_{k+N/2}
 = -\psi^{2k+1}
 = -x_k.
 \]
+
 Assim, o termo $x\cdot A_{\text{impar}}(x^2)$ apenas troca de sinal na segunda metade. As equações da
 borboleta tornam-se:
 
@@ -726,15 +729,11 @@ A_e(t)=\sum_{i=0}^{N/2-1} a[2i]t^i,\quad
 A_o(t)=\sum_{i=0}^{N/2-1} a[2i+1]t^i.
 \]
 A avaliação ocorre nos pontos ímpares $x_k=\psi^{2k+1}$, $k=0,\dots,N-1$.
-Definindo o \emph{twiddle factor} do nível como
-\[
-w_k = x_k = \psi^{2k+1},
-\]
-e denotando por $Y_e[k]=A_e(x_k^2)$ e $Y_o[k]=A_o(x_k^2)$ (retornados pela recursão), a combinação (borboleta direta) é:
+Denotando por $Y_e[k]=A_e(x_k^2)$ e $Y_o[k]=A_o(x_k^2)$ (retornados pela recursão), a combinação (borboleta direta) é:
 \[
 \begin{cases}
-Y[k] = Y_e[k] + w_k\,Y_o[k],\\
-Y[k+N/2] = Y_e[k] - w_k\,Y_o[k],
+Y[k] = Y_e[k] + x_k\,Y_o[k],\\
+Y[k+N/2] = Y_e[k] - x_k\,Y_o[k],
 \end{cases}
 \qquad 0\le k < N/2.
 \]
@@ -745,14 +744,14 @@ Somando e subtraindo as equações acima, obtemos:
 \[
 Y[k]+Y[k+N/2] = 2Y_e[k],
 \qquad
-Y[k]-Y[k+N/2] = 2w_k\,Y_o[k].
+Y[k]-Y[k+N/2] = 2x_k\,Y_o[k].
 \]
 Como $p$ é primo ímpar, $2$ é invertível em $\mathbb{Z}_p$ e podemos escrever:
 \[
 \boxed{
 \begin{aligned}
 Y_e[k] &= 2^{-1}\bigl(Y[k]+Y[k+N/2]\bigr)\pmod p,\\[2mm]
-Y_o[k] &= 2^{-1}\bigl(Y[k]-Y[k+N/2]\bigr)\,w_k^{-1}\pmod p.
+Y_o[k] &= 2^{-1}\bigl(Y[k]-Y[k+N/2]\bigr)\,x_k^{-1}\pmod p.
 \end{aligned}}
 \]
 Assim, a borboleta inversa recupera os dois vetores de entrada do nível, que então alimentam as recursões
@@ -765,18 +764,20 @@ x_k^2=(\psi^{2k+1})^2=\psi^{4k+2}=(\psi^2)^{2k+1},
 \]
 ou seja, os subproblemas são novamente NTTs negacíclicas em $N/2$ pontos ímpares, mas agora com parâmetro $\psi^2$.
 Na volta, o mesmo vale: após aplicar a borboleta inversa no nível corrente, chamamos recursivamente a INTT
-nos blocos correspondentes usando $\psi_{inv}^2$ (em completa simetria com o pseudocódigo).
+nos blocos correspondentes usando $\psi^{-2}$.
 
 \subsubsection*{4. Ordem das operações: CT vs GS}
 A diferença estrutural entre as duas direções pode ser resumida assim:
 \begin{enumerate}
-    \item Na \textbf{Ida (CT / DIT)}, primeiro resolvemos recursivamente e \emph{depois} combinamos com o fator $w_k$.
-    \item Na \textbf{Volta (GS)}, primeiro desfazemos a combinação local (somar/subtrair e multiplicar por $w_k^{-1}$)
+    \item Na \textbf{Ida (CT / DIT)}, primeiro resolvemos recursivamente e \emph{depois} combinamos com o fator $x_k$.
+    \item Na \textbf{Volta (GS)}, primeiro desfazemos a combinação local (somar/subtrair e multiplicar por $x_k^{-1}$)
     e \emph{depois} prosseguimos recursivamente.
 \end{enumerate}
 
 \textit{Nota de implementação:} o fator $2^{-1}$ pode ser acumulado ao longo das camadas e aplicado como um único
 fator global $N^{-1}$ ao final, reduzindo o número de multiplicações escalares.
+Além disso, para evitar criar uma variável dedicada ao \emph{twiddle factor}, usa-se diretamente $x_k^{-1}$
+(ou o valor já pré-computado em uma tabela de potências) no ponto em que a multiplicação é necessária.
 
 
 
@@ -787,7 +788,7 @@ fator global $N^{-1}$ ao final, reduzindo o número de multiplicações escalare
     \label{fig:bINNT}
 \end{figure}
 A implementa da NTT negacíclica está  no pseudocódigo a seguir
-\begin{figure}[ht]
+\begin{figure}[H]
     \centering
     % --- ALGORITMO À ESQUERDA (FORWARD NTT) ---
     \begin{minipage}{0.49\textwidth}
@@ -798,7 +799,7 @@ A implementa da NTT negacíclica está  no pseudocódigo a seguir
         \begin{algorithmic}[1]
             \footnotesize
             \Require $a \in \mathbb{Z}_p^N$ (Coeficientes de entrada)
-            \Require $N = 2^m$ e Módulo $p$ 
+            \Require $N = 2^m $e Módulo $p$ 
             \Require $\psi$: Raiz primitiva $2N$-ésima da unidade
             
             \State $len \gets N/2$
@@ -812,12 +813,11 @@ A implementa da NTT negacíclica está  no pseudocódigo a seguir
                         \State $a[j] \gets t_0 + t_1 \pmod p$
                         \State $a[j + 2^l] \gets t_0 - t_1 \pmod p$
                         \State
-                                            \EndFor
-                                            \State
+                    \EndFor
+                    \State
                 \EndFor
                 \State
             \EndFor
-
             \State \Return $a$ (\emph{bit-reversed})
         \end{algorithmic}
         \hrule
@@ -827,7 +827,7 @@ A implementa da NTT negacíclica está  no pseudocódigo a seguir
     \begin{minipage}{0.49\textwidth}
         \hrule
         \vskip 2pt
-        \captionof{algorithm}{NTT Inversa (GS)}
+        \captionof{algorithm}{INTT (GS)}
         \hrule
         \begin{algorithmic}[1]
             \footnotesize
@@ -858,9 +858,9 @@ A implementa da NTT negacíclica está  no pseudocódigo a seguir
 \end{figure}
 
 \section{Testes comparativos}
-A comporação computacional dessas ferramentas pode ser vista na tabela a seguir, onde calculou-se o maior número de Fibonacci obtido em menos de um segundo. Todos os testes foram executados em single-core.
+A comparação computacional dessas ferramentas pode ser vista na tabela a seguir, onde calculou-se o maior número de Fibonacci obtido em menos de um segundo. Todos os testes foram executados em single-core.
 
-Nos algoritmos da FFT e da NTT, o n-ésimmo número de Fibonacci foi calculado pela seguinte relação:
+Nos algoritmos da FFT e da NTT, o n-ésimo número de Fibonacci foi calculado pela seguinte relação:
 \[\begin{bmatrix}
     F_{n+1}\\
     F_{n}
@@ -876,9 +876,9 @@ Nos algoritmos da FFT e da NTT, o n-ésimmo número de Fibonacci foi calculado p
     F_0
 \end{bmatrix}
 \]
-sendo a multiplicação que ocorre tanto na exponenciação quanto no procuto interno foram otimizadas com o devido método.
+sendo a multiplicação que ocorre tanto na exponenciação quanto no produto interno foram otimizadas com o devido método.
 
-Além disso, como o foco foi apenas em comparar a velocidade dos métodos, utilizou-se de scrpites para a geração de macros com os valores das raízes primitivas, raizes da unidade, entres outras constantes, para mais informações veja o repositório.
+Além disso, como o foco foi apenas em comparar a velocidade dos métodos, utilizou-se de scripts para a geração de macros com os valores das raízes primitivas, raízes da unidade, entre outras constantes; para mais informações, veja o repositório.
 
 
 (GMP é uma biblioteca otimizada para operações com inteiros extremamente grandes)
@@ -914,7 +914,7 @@ equivalente a
 \[
 p \equiv 1 \pmod{2N}.
 \]
-Em aplicações criptográficas baseadas em reticulados, em especial em esquemas de Fully Homomorphic Encryption
+Em aplicações criptográficas baseadas em reticulados, em especial em esquemas de Fully Homomorphic Encryption,
 o valor de $N$ é tipicamente muito grande. Como consequência, a condição acima impõe
 fortes restrições sobre a escolha do primo $p$, frequentemente forçando o uso de
 módulos grandes ou pouco flexíveis, o que impacta tanto a eficiência quanto o ajuste
@@ -932,7 +932,7 @@ p \equiv 1 \pmod{2N/2^{\ell}}.
 \begin{figure}
     \centering
     \includegraphics{images/ntt_incompleta.pdf}
-    \caption{árvore de fracionameto da NTT }
+    \caption{árvore de fracionamento da NTT }
     \label{fig:incompleta}
 \end{figure}
 Dessa forma, o conjunto de primos admissíveis torna-se significativamente maior,
@@ -951,8 +951,8 @@ transformada inversa incompleta.
 O principal custo adicional desse método está na \emph{multiplicação de base} dentro
 dos anéis $\mathbb{Z}_p[x]/(x^{2^{\ell}} - \psi_i)$, que, para valores maiores de
 $\ell$, tende a ser implementada por algoritmos quadráticos. No entanto, o trabalho
-de \textcite{paiva_incomplete_ntt}  mostra que, no contexto de bootstrapping amortizado para esquemas
-do tipo FHEW/TFHE, esse custo pode sera eliminado. Os autores reformulam a NTT inversa
+de \textcite{paiva_incomplete_ntt} mostra que, no contexto de bootstrapping amortizado para esquemas
+do tipo FHEW/TFHE, esse custo pode ser eliminado. Os autores reformulam a NTT inversa
 como o produto de duas matrizes de borboleta (controladas por um parâmetro de divisão
 $\alpha$) e demonstram que a multiplicação de base da NTT incompleta pode ser
 \emph{incorporada} ao primeiro estágio dessa decomposição matricial, sem aumento no
