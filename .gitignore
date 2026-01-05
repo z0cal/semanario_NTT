@@ -6,6 +6,10 @@
 *.fls
 *.synctex.gz
 *.fdb_latexmk
+*.bbl
+*.bcf
+*.toc
+*.run.xml
 
 
 # animações geradas
