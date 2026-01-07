@@ -55,13 +55,13 @@ Esta ferramenta é um pilar fundamental em diversas áreas do conhecimento:
 \end{itemize}
 
 
-\section{ Transformada de Fourier Contínua (CTFT)}
+\section{ Transformada de Fourier Contínua (CFT)}
 Para uma função contínua $g(t)$, a transformada é definida pela integral:
 
 \[\mathcal{F}(f) = \int_{-\infty}^{\infty} g(t) e^{-2\pi if t} \, dt\]
 
 Ela pode ser entendida como um produto interno (uma projeção) do sinal com todas as frequências da reta real $ \langle g, e^{-2\pi i ft} \rangle$, que, devido à ortogonalidade das frequências diferentes e que funções bem comportadas podem ser decompostas em séries de autofunções $e^{-2\pi ift}$, consegue extrair exatamente as frequências do sinal.
-Apesar de sua elegância teórica, a CTFT apresenta desafios para a aplicação prática em sistemas digitais:
+Apesar de sua elegância teórica, a CFT apresenta desafios para a aplicação prática em sistemas digitais:
 
 \begin{enumerate}
     \item \textbf{Natureza Analítica:} A resolução de integrais impróprias exige uma manipulação simbólica que é difícil de implementar em computadores comuns.
@@ -297,7 +297,7 @@ $ \zeta_N = e^{\frac{-2\pi i}{N}} $, uma raiz $N$-ésima primitiva da unidade. E
 \end{quote}
 Além de que, pela periodicidade $\zeta_N^{a+N}=\zeta_N^a$ e $\zeta_N^{2}=\zeta_{N/2}$, esta última pode ser vista na figura \ref{fig:comparacao_raizes}, onde $\zeta_8^2=\zeta_4$ 
 
-Para esse caso a DFT é representada desse modo:
+Para $N=4$, a DFT é representada desse modo:
 \[
  \begin{bmatrix} 1 & 1 & 1 & 1 \\ 1 & -i & -1 & i \\ 1 & -1 & 1 & -1 \\ 1 & i & -1 & -i \end{bmatrix}
 \]
@@ -320,10 +320,10 @@ X[k]
 
 Esta estrutura permite calcular dois valores de saída ($X[k]$ e $X[k+N/2]$) utilizando os mesmos resultados intermediários, através da denominada \textbf{operação borboleta} (\textit{butterfly operation}):
 
-\begin{enumerate}
-    \item $X[k] = E[k] + \zeta_N^k O[k]$
-    \item $X[k + N/2] = E[k] - \zeta_N^k O[k]$
-\end{enumerate}
+\begin{align}
+    X[k] &= E[k] + \zeta_N^k O[k] \\
+    X[k + N/2] &= E[k] - \zeta_N^k O[k]
+\end{align}
 
 como pode ser visto na imagem \ref{fig:butterfly}
 
@@ -428,7 +428,7 @@ Como em qualquer grupo finito a ordem de um elemento divide a ordem do grupo, ne
 \]
 Reciprocamente, como $(\mathbb{Z}/p\mathbb{Z})^\times$ é cíclico, para todo divisor $d$ de $p-1$ existe um elemento de ordem exatamente $d$; em particular, se $2N\mid(p-1)$ então existe $\psi$ com $\operatorname{ord}(\psi)=2N$.
 
-Concluímos, portanto, que existe uma raiz primitiva $2N$-ésima da unidade em $\mathbb{Z}/p\mathbb{Z}$ se, e somente se, $2N\mid(p-1)$ (equivalentemente via teorema de Euler Totiente, $p\equiv 1 \pmod{2N}$).
+Concluímos, portanto, que existe uma raiz primitiva $2N$-ésima da unidade em $\mathbb{Z}/p\mathbb{Z}$ se, e somente se, $2N\mid(p-1)$ (equivalentemente $p\equiv 1 \pmod{2N}$).
 
 \hrulefill
 
