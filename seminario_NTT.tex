@@ -1,5 +1,6 @@
 \documentclass[12pt]{article}
 \usepackage{zocal}
+\usepackage{booktabs}
 \usepackage{biblatex}
 \newtheorem{teorema}{Teorema}
 \newtheorem{proposicao}{Proposição}
@@ -895,19 +896,23 @@ Além disso, como o foco foi apenas em comparar a velocidade dos métodos, utili
 
 \textbf{CPU:} 13th Gen Intel(R) Core(TM) i7-1365U (12) @ 5.20 GHz
 
-\textbf{GPU:} Intel UHD Graphics @ 1.30 GHz [Integrated]
-\begin{center}
-\begin{tabular}{|l|r|}
-\hline
-Algoritmo & n-ésimo nº de Fibonacci \\ \hline
-Algoritmo Naive & 44 \\ \hline
-Algoritmo iterado & 566'053 \\ \hline
-Algoritmo FFT & 3'145'816 \\ \hline
-Algoritmo NTT & 24'178'839 \\ \hline
-Algoritmo GMP & 238'961'323 \\ \hline
-\end{tabular}
-\end{center}
-
+\begin{table}[ht]
+    \centering
+    \caption{Comparação de Desempenho dos Algoritmos}
+    \label{tab:comparacao_algoritmos}
+    \begin{tabular}{lr} 
+        \toprule
+        \textbf{Algoritmo} & \textbf{Quantidade $nº$  calculados (\%)} \\
+        \midrule
+        Algoritmo Naive   & 44  \\ 
+        Algoritmo Iterado & 566.053  \\ 
+        Algoritmo FFT     & 3.145.816  \\ 
+        Algoritmo NTT     & 24.178.839 \\
+        Algoritmo GMP     & 238.961.323  \\
+        \bottomrule
+    \end{tabular}
+    
+\end{table}
 fonte: \url{https://github.com/SheafificationOfG/Fibsonisheaf}
 
 \section{NTT incompleta e a restrição de parâmetros no caso negacíclico}
@@ -956,21 +961,69 @@ onde $\psi_i$ são potências apropriadas da raiz disponível. A multiplicação
 a ser realizada componente a componente nesses anéis menores, seguida de uma
 transformada inversa incompleta.
 
-O principal custo adicional desse método está na \emph{multiplicação de base} dentro
-dos anéis $\mathbb{Z}_p[x]/(x^{2^{\ell}} - \psi_i)$, que, para valores maiores de
-$\ell$, tende a ser implementada por algoritmos quadráticos. No entanto, o trabalho
-de \textcite{paiva_incomplete_ntt} mostra que, no contexto de bootstrapping amortizado para esquemas
-do tipo FHEW/TFHE, esse custo pode ser eliminado. Os autores reformulam a NTT inversa
-como o produto de duas matrizes de borboleta (controladas por um parâmetro de divisão
-$\alpha$) e demonstram que a multiplicação de base da NTT incompleta pode ser
-\emph{incorporada} ao primeiro estágio dessa decomposição matricial, sem aumento no
-número assintótico de operações.
+Para demonstrar o impacto prático dessa flexibilidade algébrica, analisa-se o cenário de
+\textit{bootstrapping} amortizado em FHE. Como a complexidade das operações aritméticas
+depende diretamente do tamanho do módulo $p$, a capacidade de selecionar primos
+significativamente menores — viabilizada pela incompletude da NTT — traduz-se em
+ganhos de desempenho mensuráveis. A Tabela \ref{tab:ntt_bootstrapping_comparison}
+quantifica essa melhoria, contrastando os custos computacionais e a escolha ótima de
+parâmetros para diferentes níveis de segurança em comparação com a restrição rígida
+imposta pela NTT completa.
 
-Como resultado, obtém-se o que os autores denominam \emph{``NTT incompleta gratuita''}:
-para valores moderados de $\ell$, é possível relaxar substancialmente a condição sobre
-o primo $p$ sem penalidade computacional relevante, ao mesmo tempo em que se ampliam
-as opções de parâmetros e se melhora o compromisso entre desempenho e taxa de falha
-(decryption failure rate).
+\begin{table}[ht]
+    \centering
+    \caption{Comparação de Desempenho: Bootstrapping com NTT Incompleta vs. Completa}
+    \label{tab:ntt_bootstrapping_comparison}
+    \begin{tabular}{ccccc}
+        \toprule
+        \textbf{Nível de} & \textbf{Grau Ótimo de} & \textbf{Módulo Ótimo} & \textbf{Módulo NTT} & \textbf{Ganho de} \\
+        \textbf{Segurança ($\lambda$)} & \textbf{Incompletude ($\ell$)} & \textbf{($p$, Incompleta)} & \textbf{Completa ($\ell=10$)} & \textbf{Desempenho} \\
+        \midrule
+        128 & 6 & 3.329  & 12.289 & 33\% \\
+        192 & 8 & 7.681  & 12.289 & 29\% \\
+        256 & 8 & 12.289 & 12.289 & 6\%  \\
+        512 & 7 & 18.433 & 40.961 & 42\% \\
+        \bottomrule
+    \end{tabular}
+    
+    \vspace{0.2cm}
+    \small
+    \raggedright
+    \textbf{Nota:} Para $\lambda=256$, o módulo ótimo permanece o mesmo ($q=12.289$) em ambos os cenários, resultando em um ganho de desempenho menor comparado aos outros níveis onde a redução do módulo é significativa.
+\end{table}
+
+\begin{figure}[ht]
+    \centering
+    % --- Primeira Figura (n=256) ---
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{images/n=256}
+        \caption{Resultados para $n=256$}
+        \label{fig:n256}
+    \end{subfigure}
+    \hfill % Espaçamento flexível entre as figuras
+    % --- Segunda Figura (n=512) ---
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{images/n=512}
+        \caption{Resultados para $n=512$}
+        \label{fig:n512}
+    \end{subfigure}
+    \hfill % Espaçamento flexível entre as figuras
+    % --- Terceira Figura (n=1024) ---
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{images/n=1024}
+        \caption{Resultados para $n=1024$}
+        \label{fig:n1024}
+    \end{subfigure}
+    
+    \caption{Imagens retiradas do artigo \cite{Hafiz_Yildiz_Jr_Paiva_Ogawa_Micheli_Cominetti} }
+    \label{fig:comparacao_n}
+\end{figure}
+Os resultados experimentais apresentados na Figura \ref{fig:comparacao_n} sugerem que a adoção de valores maiores de $n$ em esquemas FHE (por exemplo, $n \ge 1024$) pode limitar a melhoria de desempenho obtida pela incompletude da NTT. 
+Observa-se que o número de instâncias onde as configurações de NTT incompleta apresentam melhor desempenho diminui à medida que $n$ aumenta. 
+Frequentemente, as restrições de segurança para esses casos exigem a utilização de módulos primos maiores (como $q=12289$), cenário no qual a NTT completa acaba por ser a escolha ótima, anulando os ganhos que seriam obtidos através do uso de módulos menores permitidos pela técnica incompleta.
 
 \section{Agradecimentos}
 Gostaria de agradecer ao professor doutor \emph{Thales Paiva} pela chance de apresentar o seminário e pelos ensinamentos,

@@ -1,0 +1,17 @@
+[0] Config.pm:328> INFO - This is Biber 2.21
+[1] Config.pm:331> INFO - Logfile is 'seminario_NTT.blg'
+[127] biber:342> INFO - === Thu Jan 15, 2026, 13:47:53
+[155] Biber.pm:421> INFO - Reading 'seminario_NTT.bcf'
+[270] Biber.pm:999> INFO - Using all citekeys in bib section 0
+[298] Biber.pm:4487> INFO - Processing section 0
+[315] Biber.pm:4678> INFO - Looking for bibtex file 'referencias.bib' for section 0
+[317] bibtex.pm:1713> INFO - LaTeX decoding ...
+[334] bibtex.pm:1519> INFO - Found BibTeX data source 'referencias.bib'
+[511] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'variable = shifted' with 'variable = non-ignorable'
+[512] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'normalization = NFD' with 'normalization = prenormalized'
+[512] Biber.pm:4307> INFO - Sorting list 'nty/global//global/global/global' of type 'entry' with template 'nty' and locale 'en-US'
+[512] Biber.pm:4313> INFO - No sort tailoring available for locale 'en-US'
+[533] bbl.pm:676> INFO - Writing 'seminario_NTT.bbl' with encoding 'UTF-8'
+[539] bbl.pm:779> INFO - Output to seminario_NTT.bbl
+[540] Biber.pm:132> WARN - Duplicate entry key: '11129329' in file 'referencias.bib', skipping ...
+[540] Biber.pm:134> INFO - WARNINGS: 1
